@@ -13,7 +13,7 @@ public class Album {
 
     void addSong (Song song) {
         // make sure the song isn't in the songList already?
-        // add the song to the array list songList
+        // add the songgit  to the array list songList
     }
 
     void playAlbum(Album album) {
