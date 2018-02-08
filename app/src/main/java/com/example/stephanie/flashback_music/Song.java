@@ -1,6 +1,6 @@
-package com.example.stephanie.flashbackmusic;
+package com.example.stephanie.flashback_music;
 
-import static com.example.stephanie.flashbackmusic.Player.WEEK;
+import static com.example.stephanie.flashback_music.Player.WEEK;
 
 /**
  * Created by Stephanie on 2/6/2018.

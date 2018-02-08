@@ -1,4 +1,4 @@
-package com.example.stephanie.flashbackmusic;
+package com.example.stephanie.flashback_music;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
