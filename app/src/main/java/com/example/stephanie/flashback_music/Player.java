@@ -54,7 +54,7 @@ public class Player {
     // override using comparator class for priority queue
 
     // updates point values for song objects and uses a priority queue to prioritize songs
-    static void prioritizeSongs (int location) {
+    static void prioritizeSongs (int location, ) {
         // set point values for song
         // add song to priority queue
         // repeat until done with all songs from songDatabase
