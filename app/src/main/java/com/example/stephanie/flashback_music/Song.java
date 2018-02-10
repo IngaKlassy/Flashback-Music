@@ -11,7 +11,7 @@ public class Song {
     private int time;   // HHMM
     private int place;
     private int date;   // MMDDYYYY
-    private int [] day;
+    private int day;
 
     private String name;
     private int points;
@@ -21,21 +21,24 @@ public class Song {
     private boolean dislike;
 
     private String album;
+    private String artistName;
     //////////// Variables ////////////
 
 
     //////////// Functions ////////////
-    public Song (String in_name, String in_album, int in_time, int in_place, int in_date, int [] in_day) {
+    public Song (String in_name, String in_album, String in_artist, int in_time, int in_place, int in_date, int in_day) {
         this.setName(in_name);
         this.setAlbum(in_album);
+        this.setArtistName(in_artist);
         this.setTime(in_time);
         this.setPlace(in_place);
         this.setDate(in_date);
         this.setNeutralTrue();
 
-        for(int i = 0; 0 < WEEK; i++) {
+        this.day = in_day;
+        /*for(int i = 0; 0 < WEEK; i++) {
             this.day[i] = in_day[i];
-        }
+        }*/
     }
 
     /* GETTER/SETTER for "time" */
@@ -43,10 +46,9 @@ public class Song {
         return song.time;
     }
     boolean setTime (int in_time) {
-        // make sure input was 4 digits or less
-        int check = in_time;
-        check = check/1000;
-        if (check == 0) {
+
+        if (in_time >=0 && in_time < 2400) {
+
             this.time = in_time;
             return true;
         }
@@ -89,19 +91,23 @@ public class Song {
 
     /* GETTER/SETTER for "day" */
     int getDay (Song song) {
-        for(int i = 0; i < WEEK; i++) {
+        /*for(int i = 0; i < WEEK; i++) {
             if (song.day[i] == 1)
                 return i;
         }
-        return -1;
+        return -1;*/
+        return this.day;
     }
+
+
     void setDay (int in_day) {
-        for(int i = 0; i < WEEK; i++) {
+        /*for(int i = 0; i < WEEK; i++) {
             if (i == in_day)
                 this.day[in_day] = 1;
             else
                 this.day[i] = 0;
-        }
+        }*/
+        this.day = in_day;
     }
 
     /* GETTER/SETTER for "points" */
@@ -144,8 +150,16 @@ public class Song {
     }
 
     /* GETTER/SETTER for "name" */
-    String getName (Song song) {
-        return song.name;
+    String getName () {
+        return name;
+    }
+    void setArtistName (String in_name) {
+        this.artistName = in_name;
+    }
+
+    /* GETTER/SETTER for "artist" */
+    String getartistName () {
+        return artistName;
     }
     void setName (String in_name) {
         this.name = in_name;

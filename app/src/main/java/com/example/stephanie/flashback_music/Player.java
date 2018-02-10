@@ -39,17 +39,62 @@ public class Player {
 
     PriorityQueue<Song> songPriorities;
 
-    List<Album> albums;
+    ArrayList<Album> albums;
 
-    ArrayList<Song> [][] songDatabase;
+    ArrayList<Song> songs;
 
-    List<Song> flashbackQueue;
+    ArrayList<Song> [][] songDatabase; //UNINITIALIZED
+
+    List<Song> flashbackQueue;  //UNINITIALIZED
 
     SortedSet<String> playedSongs = new TreeSet<>();
+
     //////////// Variables ////////////
 
 
     //////////// Functions ////////////
+
+    public Player()
+    {
+        songPriorities = new PriorityQueue<Song>();
+        albums = new ArrayList<Album>();
+        songs = new ArrayList<Song>();
+    }
+
+
+    void add(String songTitle, String albumName, String artist)
+    {
+        Song currSong = new Song(songTitle, albumName, artist, 0, 0, 0, 0);
+
+        if(albums.size() == 0)
+        {
+            albums.add(new Album(albumName, artist));
+            albums.get(0).addSong(currSong);
+        }
+
+        for(int i = 0; i < albums.size(); i++) {
+            if(albums.get(i).getAlbumTitle().equals(albumName))
+            {
+                albums.get(i).addSong(currSong);
+                return;
+            }
+        }
+
+        albums.add(new Album(albumName, artist));
+        albums.get(albums.size() - 1).addSong(currSong);
+
+        songs.add(currSong);
+    }
+
+
+
+
+
+
+
+
+
+
 
     // override using comparator class for priority queue
 
