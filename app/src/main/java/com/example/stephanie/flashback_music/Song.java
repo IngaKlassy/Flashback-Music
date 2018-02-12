@@ -42,8 +42,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "time" */
-    int getTime (Song song) {
-        return song.time;
+    int getTime () {
+        return time;
     }
     boolean setTime (int in_time) {
 
@@ -58,8 +58,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "place" */
-    int getPlace (Song song) {
-        return song.place;
+    int getPlace () {
+        return place;
     }
     void setPlace (int in_place) {
         //TODO some sort of check for whatever place will look like to ensure valid input
@@ -67,8 +67,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "date" */
-    int getDate (Song song) {
-        return song.date;
+    int getDate () {
+        return date;
     }
     boolean setDate (int in_date) {
         // make sure input was 8 digits of less
@@ -90,7 +90,7 @@ public class Song {
     }
 
     /* GETTER/SETTER for "day" */
-    int getDay (Song song) {
+    int getDay () {
         /*for(int i = 0; i < WEEK; i++) {
             if (song.day[i] == 1)
                 return i;
@@ -111,16 +111,16 @@ public class Song {
     }
 
     /* GETTER/SETTER for "points" */
-    int getPoints (Song song) {
-        return song.points;
+    int getPoints () {
+        return points;
     }
     void setPoints (int in_points) {
         this.points = in_points;
     }
 
     /* GETTER/SETTER for "neutral" */
-    boolean getNeutralStatus (Song song) {
-        return song.neutral;
+    boolean getNeutralStatus () {
+        return neutral;
     }
     void setNeutralTrue () {
         this.neutral = true;
@@ -130,8 +130,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "favorite" */
-    boolean getFavoriteStatus (Song song) {
-        return song.favorite;
+    boolean getFavoriteStatus () {
+        return favorite;
     }
     void setFavoriteTrue () {
         this.favorite = true;
@@ -140,8 +140,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "dislike" */
-    boolean getDislikeStatus (Song song) {
-        return song.dislike;
+    boolean getDislikeStatus () {
+        return dislike;
     }
     void setDislikeTrue () {
         this.dislike = true;
@@ -166,8 +166,8 @@ public class Song {
     }
 
     /* GETTER/SETTER for "album" */
-    String getAlbum (Song song) {
-        return song.album;
+    String getAlbum () {
+        return album;
     }
     void setAlbum (String in_album) {
         this.album = in_album;
