@@ -1,6 +1,7 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.ActionBar;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
@@ -58,17 +60,14 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < fields.length; i++)
         {
             String temp = fields[i].getName();
-            System.err.print("temp = " + temp);
             list.add(temp);
-            mainPlayer.add("Single_Ladies", "Girls", "Beyonce");
-            mainPlayer.add("Scrub", "Girls", "Beyonce");
-            mainPlayer.add("Fire", "Girls", "Beyonce");
-            mainPlayer.add("Go", "Run", "Amanda and Inga");
-            /*path = Uri.parse("android.resource://" + getPackageName() + "/raw/" + temp);
+            int resID = getResources().getIdentifier(fields[i].getName(), "raw", getPackageName());
+
+            path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
             metaRetriever.setDataSource(this, path);
             mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                             metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));*/
+                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
         }
 
         HashMap<String, List<String>> mHashSongs = new HashMap<String, List<String>>();
@@ -83,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
+
+
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
             @Override
@@ -90,24 +91,40 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
         expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
 
             @Override
             public void onGroupCollapse(int groupPosition) {
             }
         });
+
+
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                return false;
+                String s = v.toString();
+                int resID = getResources().getIdentifier(s, "raw", getPackageName());
+
+                if(mediaPlayer != null)
+                {
+                    mediaPlayer.release();
+                }
+
+
+                mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.after_the_storm);
+                mediaPlayer.start();
+                return true;
 
             }
         });
 
 
 
-        /*adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, list);
+        /*
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, list);
         expandableListView.setAdapter(adapter);
 
         expandableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
                 mediaPlayer.start();
             }
-        });**************************************************/
+        });*/
 
 
         /*metaRetriever = new MediaMetadataRetriever();
