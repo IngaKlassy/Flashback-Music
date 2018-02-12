@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
 
-                String songName = expandableListAdapter.getChild(childPosition, groupPosition).toString();
+                String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
 
 
