@@ -22,7 +22,10 @@ import android.widget.Toast;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /*
  * SongList Activity/ Homescreen
@@ -32,15 +35,14 @@ public class MainActivity extends AppCompatActivity {
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
     List<String> expandableListTitle;
-    HashMap<String, List<String>> expandableListDetail;
+    TreeMap<String, List<String>> expandableListDetail;
 
     MediaMetadataRetriever metaRetriever;
 
     Player mainPlayer = new Player();
 
-    List<String> list;
-
-    ListAdapter adapter;
+    //List<String> list;
+    Map<String, Integer> songToIdMap;
 
     MediaPlayer mediaPlayer;
 
@@ -51,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
 
-        list = new ArrayList<>();
+        songToIdMap = new LinkedHashMap<String, Integer>();
+        //list = new list<String>();
 
         metaRetriever = new MediaMetadataRetriever();
         Uri path;
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < fields.length; i++)
         {
             String temp = fields[i].getName();
-            list.add(temp);
+            //list.add(temp);
             int resID = getResources().getIdentifier(fields[i].getName(), "raw", getPackageName());
 
             path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
@@ -68,17 +71,18 @@ public class MainActivity extends AppCompatActivity {
             mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                             metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
                             metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+            songToIdMap.put(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), resID);
         }
 
-        HashMap<String, List<String>> mHashSongs = new HashMap<String, List<String>>();
+        TreeMap<String, List<String>> mapOfSongs = new TreeMap<String, List<String>>();
 
         ArrayList<Album> albums = mainPlayer.albums;
         for(int i = 0; i < albums.size(); i++)
         {
-            mHashSongs.put(albums.get(i).getAlbumTitle(), albums.get(i).returnSongTitles());
+            mapOfSongs.put(albums.get(i).getAlbumTitle(), albums.get(i).returnSongTitles());
         }
 
-        expandableListDetail = mHashSongs;
+        expandableListDetail = mapOfSongs;
         expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
@@ -105,16 +109,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
+
+                String songName = expandableListAdapter.getChild(childPosition, groupPosition).toString();
+                Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
+
+
                 String s = v.toString();
-                int resID = getResources().getIdentifier(s, "raw", getPackageName());
+                int resID = getResources().getIdentifier(songName, "raw", getPackageName());
 
                 if(mediaPlayer != null)
                 {
                     mediaPlayer.release();
                 }
 
-
-                mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.after_the_storm);
+                Integer resourceID = songToIdMap.get(songName);
+                mediaPlayer = MediaPlayer.create(MainActivity.this, resourceID.intValue());
                 mediaPlayer.start();
                 return true;
 
@@ -143,49 +152,16 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
 
-        /*metaRetriever = new MediaMetadataRetriever();
-        metaRetriever.setDataSource("/sdcard/audio.mp3");
-
-        mainPlayer.add(metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE,
-                    metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM,
-                    metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);*/
-
             /*
             album.setText("Unknown Album");
             artist.setText("Unknown Artist");
             genre.setText("Unknown Genre");*/
 
 
-        //Read more: http://mrbool.com/how-to-extract-meta-data-from-media-file-in-android/28130#ixzz56fcMhW4p
-
-
-        //expandableListView = (ExpandableListView) findViewById(R.id.songlist);
-        //expandableListDetail = ExpandableListDataPump.getData();
-        //expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-        //expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
-        /*expandableListView.setAdapter(expandableListAdapter);
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-
-            }
-        });
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-            }
-        });
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                return false;
-
-            }
-        });*/
+        //Read more: http://mrbool.com/how-to-extract-meta-data-from-media-file-in-android/28130#ixzz56fcMhW4p*/
     }
+
+
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {

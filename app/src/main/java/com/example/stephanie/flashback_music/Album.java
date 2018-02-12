@@ -42,7 +42,6 @@ public class Album {
 
         songObList.add(song);
         songTitleList.add(inSong);
-        System.out.print("Added " + inSong + "\n");
     }
 
     void playAlbum() {
