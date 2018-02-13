@@ -1,6 +1,8 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     Player mainPlayer = new Player();
 
+    OnSwipeTouchListener onSwipeTouchListener;
+
 
     Map<String, Integer> songToIdMap;
     Map<String, Album> albumToAlbum;
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
+
 
         songToIdMap = new LinkedHashMap<String, Integer>();
         //list = new list<String>();
@@ -133,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
+            @Override
+            public void onSwipeLeft() {
+                launchActivity();
+            }
+        };
 
         /*
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, list);
@@ -163,7 +174,10 @@ public class MainActivity extends AppCompatActivity {
         //Read more: http://mrbool.com/how-to-extract-meta-data-from-media-file-in-android/28130#ixzz56fcMhW4p*/
     }
 
-
+    public void launchActivity() {
+        Intent intent = new Intent(this, Flashback_Activity.class);
+        startActivity(intent);
+    }
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
