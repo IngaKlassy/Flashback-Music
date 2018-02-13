@@ -1,5 +1,11 @@
 package com.example.stephanie.flashback_music;
 
+import android.app.Activity;
+import android.location.Location;
+import android.media.MediaPlayer;
+import android.widget.AdapterView;
+import android.widget.Toast;
+
 import java.util.*;
 
 /**
@@ -24,6 +30,8 @@ public class Player {
 
 
     //////////// Variables ////////////
+    MediaPlayer mp;
+
     String currentSong;
     String currentSpotInSong;
     String currentTime;    // formatted: HHMM (HourHourMinuteMinute)
@@ -41,13 +49,14 @@ public class Player {
 
     ArrayList<Album> albums;
 
-    ArrayList<Song> songs;
+    Map<Integer, Song> idsToSongs;
 
     ArrayList<Song> [][] songDatabase; //UNINITIALIZED
 
     List<Song> flashbackQueue;  //UNINITIALIZED
 
     SortedSet<String> playedSongs = new TreeSet<>();
+
 
     //////////// Variables ////////////
 
@@ -58,14 +67,15 @@ public class Player {
     {
         songPriorities = new PriorityQueue<Song>();
         albums = new ArrayList<Album>();
-        songs = new ArrayList<Song>();
+        idsToSongs = new LinkedHashMap<>();
+
     }
 
 
-    void add(String songTitle, String albumName, String artist)
+    void add(String songTitle, String albumName, String artist, int resId)
     {
-        Song currSong = new Song(songTitle, albumName, artist, 0, 0, 0, 0);
-
+        Song currSong = new Song(songTitle, albumName, artist, resId);
+        idsToSongs.put(resId, currSong);
         if(albums.size() == 0)
         {
             albums.add(new Album(albumName, artist));
@@ -83,8 +93,41 @@ public class Player {
         albums.add(new Album(albumName, artist));
         albums.get(albums.size() - 1).addSong(currSong);
 
-        songs.add(currSong);
+
     }
+
+
+    void playSong(Activity a, int resID)
+    {   Calendar calendar = Calendar.getInstance();
+        Location location = new Location("La Jolla");
+
+        if(mp != null)
+        {
+            mp.release();
+        }
+
+        mp = MediaPlayer.create(a, resID);
+        mp.start();
+
+        idsToSongs.get(resID).update(calendar, location);
+        Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+    }
+
+    void playAlbum(Activity a, Album album)
+    {
+        if(mp != null)
+        {
+            mp.release();
+        }
+        ArrayList<Integer> songs = album.getSongIds();
+
+        for (int i = 0; i < songs.size(); i++) {
+            playSong(a, songs.get(i));
+            while(mp.isPlaying())
+            {}
+        }
+    }
+
 
 
 
@@ -122,11 +165,6 @@ public class Player {
         // copy current values into previous values
     }
 
-    //TODO this should happen after savePrevious
-    void playSong() {
-        // update the current values
-        // play the song
-    }
 
     //TODO this should happen after savePrevious
     //TODO this should be able to happen at the same time as the create method

@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
     Player mainPlayer = new Player();
 
-    //List<String> list;
-    Map<String, Integer> songToIdMap;
 
-    MediaPlayer mediaPlayer;
+    Map<String, Integer> songToIdMap;
+    Map<String, Album> albumToAlbum;
+    boolean playNewSong = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         //list = new list<String>();
 
         metaRetriever = new MediaMetadataRetriever();
+        albumToAlbum = new LinkedHashMap<>();
         Uri path;
 
         Field[] fields = R.raw.class.getFields();
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             metaRetriever.setDataSource(this, path);
             mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                             metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST), resID);
             songToIdMap.put(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), resID);
         }
 
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Album> albums = mainPlayer.albums;
         for(int i = 0; i < albums.size(); i++)
         {
+            albumToAlbum.put(albums.get(i).getAlbumTitle(), albums.get(i));
             mapOfSongs.put(albums.get(i).getAlbumTitle(), albums.get(i).returnSongTitles());
         }
 
@@ -110,23 +114,21 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
 
-                String songName = expandableListAdapter.getChild(childPosition, groupPosition).toString();
+                String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
 
 
-                String s = v.toString();
-                int resID = getResources().getIdentifier(songName, "raw", getPackageName());
+                if(songName.equals("PLAY ALBUM")) {
+                    Album temp = albumToAlbum.get(expandableListAdapter.getGroup(groupPosition).toString());
 
-                if(mediaPlayer != null)
-                {
-                    mediaPlayer.release();
+                    mainPlayer.playAlbum(MainActivity.this, temp);
                 }
+                else {
+                    Integer resourceID = songToIdMap.get(songName);
 
-                Integer resourceID = songToIdMap.get(songName);
-                mediaPlayer = MediaPlayer.create(MainActivity.this, resourceID.intValue());
-                mediaPlayer.start();
+                    mainPlayer.playSong(MainActivity.this, resourceID.intValue());
+                }
                 return true;
-
             }
         });
 
