@@ -144,34 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 launchActivity();
             }
         };
-
-        /*
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, list);
-        expandableListView.setAdapter(adapter);
-
-        expandableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                if(mediaPlayer != null)
-                {
-                    mediaPlayer.release();
-                }
-
-                int resID = getResources().getIdentifier(list.get(i), "raw", getPackageName());
-                mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
-                mediaPlayer.start();
-            }
-        });*/
-
-
-            /*
-            album.setText("Unknown Album");
-            artist.setText("Unknown Artist");
-            genre.setText("Unknown Genre");*/
-
-
-        //Read more: http://mrbool.com/how-to-extract-meta-data-from-media-file-in-android/28130#ixzz56fcMhW4p*/
     }
 
     public void launchActivity() {
@@ -179,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /*@Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);

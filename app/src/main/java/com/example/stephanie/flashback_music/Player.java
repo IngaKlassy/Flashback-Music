@@ -97,9 +97,9 @@ public class Player {
     }
 
 
-    void playSong(Activity a, int resID)
-    {   Calendar calendar = Calendar.getInstance();
-        Location location = new Location("La Jolla");
+    void playSong(final Activity a, final int resID) {
+        final Calendar calendar = Calendar.getInstance();
+        final Location location = new Location("La Jolla");
 
         if(mp != null)
         {
@@ -109,8 +109,17 @@ public class Player {
         mp = MediaPlayer.create(a, resID);
         mp.start();
 
-        idsToSongs.get(resID).update(calendar, location);
-        Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+
+        mp.setLooping(false);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                idsToSongs.get(resID).update(calendar, location);
+                Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+
+                mediaPlayer.reset();
+            }
+        });
     }
 
     void playAlbum(Activity a, Album album)
@@ -126,6 +135,36 @@ public class Player {
             while(mp.isPlaying())
             {}
         }
+
+
+
+        /*
+                mp = MediaPlayer.create(a, resID);
+        mp.setLooping(false);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.reset();
+                try {
+                    mediaPlayer.setDataSource(MainActivity.this, tracks.getNextTrack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mediaPlayer.prepareAsync();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.start();
+                    }
+                });
+            }
+        }
+    });
+         */
     }
 
 
