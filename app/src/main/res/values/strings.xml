@@ -2,6 +2,7 @@
     <string name="app_name">Flashback Music</string>
     <string name="title_activity_flashback_">Flashback_Activity</string>
     <string name="regular_mode">REGULAR MODE</string>
-    <string name="regular_message">select a song or album to play</string>
+    <string name="regular_message">Select a song or album to play</string>
     <string name="flashback_mode">FLASHBACK MODE</string>
+    <string name="flashback_message">Enjoy reminiscing</string>
 </resources>

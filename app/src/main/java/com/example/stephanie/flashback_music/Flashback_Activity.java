@@ -17,7 +17,7 @@ public class Flashback_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_flashback_);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
 
         onSwipeTouchListener = new OnSwipeTouchListener(Flashback_Activity.this) {
