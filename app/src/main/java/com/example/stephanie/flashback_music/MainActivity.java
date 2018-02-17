@@ -1,98 +1,104 @@
 package com.example.stephanie.flashback_music;
 
-import android.app.ActionBar;
-import android.app.Activity;
+
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.Toolbar;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+
 /*
- * SongList Activity/ Homescreen
+ * Main Activity:
+ *      SongList Screen
  */
 public class MainActivity extends AppCompatActivity {
+    //VARIABLE DECLARATIONS*****
+    Player mainActivityPlayerOb;
+
+    MediaMetadataRetriever metaRetriever;
 
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
-    MediaMetadataRetriever metaRetriever;
-
-    Player mainPlayer = new Player();
-
     OnSwipeTouchListener onSwipeTouchListener;
 
+    Map<String, Integer> songTitleToResourceId;
+    Map<String, Album> albumTitleToAlbumOb;
 
-    Map<String, Integer> songToIdMap;
-    Map<String, Album> albumToAlbum;
-    boolean playNewSong = false;
+    TreeMap<String, List<String>> AlbumToTrackListMap;
 
+    Uri path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        expandableListView = (ExpandableListView) findViewById(R.id.songlist);
+        //ACTION BAR SETUP*****
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setActionBar(toolbar);
+        //toolbar.setTitle("@string/app_name");
+        //toolbar.setSubtitle("REGULAR MODE");
 
-
-        songToIdMap = new LinkedHashMap<String, Integer>();
-        //list = new list<String>();
-
+        //INITIALIZING VARIABLES*****
+        mainActivityPlayerOb = new Player();
         metaRetriever = new MediaMetadataRetriever();
-        albumToAlbum = new LinkedHashMap<>();
-        Uri path;
+        songTitleToResourceId = new LinkedHashMap<>();
+        albumTitleToAlbumOb = new LinkedHashMap<>();
+        AlbumToTrackListMap = new TreeMap<>();
 
+        expandableListView = findViewById(R.id.songlist);
+
+
+        //CREATING SONG OBJECTS AND ALBUM OBJECTS IN THE PROCESS*****
         Field[] fields = R.raw.class.getFields();
         for(int i = 0; i < fields.length; i++)
         {
-            String temp = fields[i].getName();
-            //list.add(temp);
-            int resID = getResources().getIdentifier(fields[i].getName(), "raw", getPackageName());
+            String nameOfResourceItem = fields[i].getName();
+
+            int resID = getResources().getIdentifier(nameOfResourceItem, "raw", getPackageName());
 
             path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
             metaRetriever.setDataSource(this, path);
-            mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST), resID);
-            songToIdMap.put(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), resID);
+
+            String songTitle = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String songAlbum = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            String songArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+
+            mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, resID);
+
+            songTitleToResourceId.put(songTitle, resID);
         }
 
-        TreeMap<String, List<String>> mapOfSongs = new TreeMap<String, List<String>>();
 
-        ArrayList<Album> albums = mainPlayer.albums;
+        ArrayList<Album> albums = mainActivityPlayerOb.albums;
         for(int i = 0; i < albums.size(); i++)
         {
-            albumToAlbum.put(albums.get(i).getAlbumTitle(), albums.get(i));
-            mapOfSongs.put(albums.get(i).getAlbumTitle(), albums.get(i).returnSongTitles());
+            Album currentAlbum = albums.get(i);
+            String albumTitle = currentAlbum.getAlbumTitle();
+
+            albumTitleToAlbumOb.put(albumTitle, currentAlbum);
+            AlbumToTrackListMap.put(albumTitle, currentAlbum.returnSongTitles());
         }
 
-        expandableListDetail = mapOfSongs;
-        expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+
+        //EXPANDABLE LIST SETUP*****
+        expandableListDetail = AlbumToTrackListMap;
+        expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
 
@@ -100,17 +106,14 @@ public class MainActivity extends AppCompatActivity {
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
             @Override
-            public void onGroupExpand(int groupPosition) {
-
-            }
+            public void onGroupExpand(int groupPosition) {}
         });
 
 
         expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
 
             @Override
-            public void onGroupCollapse(int groupPosition) {
-            }
+            public void onGroupCollapse(int groupPosition) {}
         });
 
 
@@ -124,14 +127,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if(songName.equals("PLAY ALBUM")) {
-                    Album temp = albumToAlbum.get(expandableListAdapter.getGroup(groupPosition).toString());
+                    Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
 
-                    mainPlayer.playAlbum(MainActivity.this, temp);
+                    mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
                 }
                 else {
-                    Integer resourceID = songToIdMap.get(songName);
+                    Integer resourceID = songTitleToResourceId.get(songName);
 
-                    mainPlayer.playSong(MainActivity.this, resourceID.intValue());
+                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue());
                 }
                 return true;
             }
