@@ -30,7 +30,7 @@ public class Album {
 
 
     void addSong (Song song) {
-        String inSong = song.getName();
+        String inSong = song.getSongTitle();
         for(int i = 0; i < songTitleList.size(); i++)
         {
             if(inSong.equals(songTitleList.get(i)))

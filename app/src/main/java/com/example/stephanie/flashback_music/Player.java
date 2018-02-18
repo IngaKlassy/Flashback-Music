@@ -3,7 +3,6 @@ package com.example.stephanie.flashback_music;
 import android.app.Activity;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import java.util.*;
@@ -190,23 +189,14 @@ public class Player {
     }
 
 
-
-
-
-
     public void prioritizeSongsPlayed () {
         for(int i = 0; i < songDatabase.size(); i++){
             for(int j = 0; j < songDatabase.get(i).size(); j++){
                 String currName = songDatabase.get(i).get(j).getName();
                 if(playedSongs.contains(currName)){
                     songDatabase.get(i).get(j).setPoints(songDatabase.get(i).get(j).getPoints() + 1);
-
-
-
                 }
-
                 songPriorities.add(songDatabase.get(i).get(j));
-
             }
         }
     }

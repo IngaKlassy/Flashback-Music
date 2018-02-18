@@ -1,13 +1,9 @@
 package com.example.stephanie.flashback_music;
 
 import android.location.Location;
-import android.widget.Toast;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import static com.example.stephanie.flashback_music.Player.WEEK;
 
@@ -17,61 +13,66 @@ import static com.example.stephanie.flashback_music.Player.WEEK;
 
 public class Song {
     //////////// Variables ////////////
-    private int time;   // HHMM
-    //private int place;
-    private int date;   // MMDDYYYY
-    //private int day;
-    private int resId;
-    private String name;
-    private int points;
+    private String songTitle;
+    private String songsAlbumTitle;
+    private String songsArtistName;
+    private int resourceId;
 
     private boolean neutral;
     private boolean favorite;
     private boolean dislike;
 
-    private String album;
-    private String artistName;
+    private int timestampOfLastPlay;   // HHMM
+    private int datestampOfLastPlay;   // MMDDYYYY
+    private int points;
 
     private ArrayList<Location> locations;
-    private ArrayList<Integer> weekDays;
-    private ArrayList<String> timeOfDay;
+    private int[] weekDays;   //Seven: Sunday, Monday, etc...
+    private int[] timesOfDay;  //Three: Morning, Afternoon, Night
     //////////// Variables ////////////
 
 
     //////////// Functions ////////////
     public Song (String in_name, String in_album, String in_artist, int rId) {
-        this.setName(in_name);
-        this.setAlbum(in_album);
-        this.setArtistName(in_artist);
+        this.songTitle = in_name;
+        this.songsAlbumTitle = in_album;
+        this.songsArtistName = in_artist;
+        this.resourceId = rId;
+
         this.setNeutralTrue();
-        this.resId = rId;
+
+        timestampOfLastPlay = 0;
+        datestampOfLastPlay = 0;
+
+        locations = new ArrayList<>();
+        weekDays = new int [7];
+        for(int i = 0; i < weekDays.length; i++)
+        { weekDays[i] = 0; }
+        timesOfDay = new int [3];
+        for(int i = 0; i < timesOfDay.length; i++)
+        { timesOfDay[i] = 0; }
     }
 
-    int getResId () {
-        return resId;
-    }
+    String getSongTitle () { return songTitle; }
 
-    /* GETTER/SETTER for "time" */
-    int getTime () {
-        return time;
-    }
+    String getArtistName () { return songsArtistName; }
+
+    String getAlbumTitle () { return songsAlbumTitle; }
+
+    int getResId () { return resourceId; }
+
+
+
+    int getTime () { return timestampOfLastPlay; }
+
     boolean setTime (int in_time) {
-
-        if (in_time >=0 && in_time < 2400) {
-
-            this.time = in_time;
-            return true;
-        }
-
-        // invalid input
-        return false;
+        this.timestampOfLastPlay = in_time;
+        return true;
     }
 
 
-    /* GETTER/SETTER for "date" */
-    int getDate () {
-        return date;
-    }
+    int getDate () { return datestampOfLastPlay; }
+
     boolean setDate (int in_date) {
         // make sure input was 8 digits of less
         int check = in_date;
@@ -86,7 +87,7 @@ public class Song {
         if (i != 7)
             return false;
         else {
-            this.date = in_date;
+            this.datestampOfLastPlay = in_date;
             return true;
         }
     }
@@ -100,21 +101,20 @@ public class Song {
         this.points = in_points;
     }
 
+
     /* GETTER/SETTER for "neutral" */
-    boolean getNeutralStatus () {
-        return neutral;
-    }
+    boolean getNeutralStatus () { return neutral; }
+
     void setNeutralTrue () {
         this.neutral = true;
         this.favorite = false;
         this.dislike = false;
-
     }
+
 
     /* GETTER/SETTER for "favorite" */
-    boolean getFavoriteStatus () {
-        return favorite;
-    }
+    boolean getFavoriteStatus () { return favorite; }
+
     void setFavoriteTrue () {
         this.favorite = true;
         this.dislike = false;
@@ -123,46 +123,24 @@ public class Song {
 
 
     /* GETTER/SETTER for "dislike" */
-    boolean getDislikeStatus () {
-        return dislike;
-    }
+    boolean getDislikeStatus () { return dislike; }
+
     void setDislikeTrue () {
         this.dislike = true;
         this.neutral = false;
         this.favorite = false;
     }
 
-    /* GETTER/SETTER for "name" */
-    String getName () {
-        return name;
-    }
 
-    void setArtistName (String in_name) {
-        this.artistName = in_name;
-    }
+    void update (Calendar c, Location location) {
+        locations.add(location);
 
+        //Pull weekday from Calender and change
+        //appropriate slot in weekdays array to 1
 
-    /* GETTER/SETTER for "artist" */
-    String getartistName () {
-        return artistName;
-    }
-
-    void setName (String in_name) {
-        this.name = in_name;
-    }
-
-
-    /* GETTER/SETTER for "album" */
-    String getAlbum () {
-        return album;
-    }
-    void setAlbum (String in_album) {
-        this.album = in_album;
-    }
-
-    void update (Calendar c, Location l) {
-
-
+        //Set datestampOfLastPlay and
+        //timestampOfLastPlay from Calender
+        //Also update timesOfDay array
     }
     //////////// Functions ////////////
 }
@@ -171,27 +149,6 @@ public class Song {
 
 
 /* ALL original code from Stephanie and Mathias
-
-ORGINAL CONSTRUCTOR
-public Song (String in_name, String in_album, String in_artist, int in_time, int in_place, int in_date, int in_day) {
-        this.setName(in_name);
-        this.setAlbum(in_album);
-        this.setArtistName(in_artist);
-        this.setTime(in_time);
-        this.setPlace(in_place);
-        this.setDate(in_date);
-        this.setNeutralTrue();
-
-        this.day = in_day;
-        for(int i = 0; 0 < WEEK; i++) {
-            this.day[i] = in_day[i];
-        }
-
-
-
-Original Setters/Getters for changed variables
-
-
 
 /* GETTER/SETTER for "place"
 int getPlace () {
