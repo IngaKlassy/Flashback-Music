@@ -18,16 +18,21 @@ public class Album {
     private String albumTitle;
     private String albumArtist;
 
-    private ArrayList<Song> songObList;
-    private List<String> songTitleList;
+
+    ArrayList<Song> songObList;
+    List<String> songTitleList;
+    ArrayList<Integer> songIds;
+
 
     public Album (String title, String artist) {
-        albumTitle = title;
         albumArtist = artist;
-
+        songIds = new ArrayList<>();
         songObList = new ArrayList<>();
-        songTitleList = new ArrayList<String>();
+        songTitleList = new ArrayList<>();
+        songTitleList.add("PLAY ALBUM");
     }
+
+
 
     void addSong (Song song) {
         String inSong = song.getName();
@@ -42,6 +47,11 @@ public class Album {
 
         songObList.add(song);
         songTitleList.add(inSong);
+        songIds.add((song.getResId()));
+    }
+
+    ArrayList<Integer> getSongIds() {
+        return songIds;
     }
 
     void playAlbum() {

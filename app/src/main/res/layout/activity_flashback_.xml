@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.stephanie.flashback_music.MainActivity">
+    tools:context="com.example.stephanie.flashback_music.Flashback_Activity">
 
     <android.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -16,7 +16,6 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" >
 
         <LinearLayout
-            android:id="@+id/title_layout"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="@id/my_toolbar"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -41,7 +40,7 @@
                 android:id="@+id/toolbar_Mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/regular_mode"
+                android:text="@string/flashback_mode"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_Title"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
@@ -50,7 +49,7 @@
                 android:id="@+id/toolbar_Instructions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/regular_message"
+                android:text="@string/flashback_message"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_Mode"
                 app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -59,13 +58,14 @@
         </LinearLayout>
     </android.widget.Toolbar>
 
+    <include layout="@layout/content_flashback_" />
 
-    <ExpandableListView
-        android:id="@+id/songlist"
-        android:layout_marginTop="100dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/my_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

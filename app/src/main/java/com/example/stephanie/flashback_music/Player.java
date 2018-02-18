@@ -1,5 +1,11 @@
 package com.example.stephanie.flashback_music;
 
+import android.app.Activity;
+import android.location.Location;
+import android.media.MediaPlayer;
+import android.widget.AdapterView;
+import android.widget.Toast;
+
 import java.util.*;
 
 /**
@@ -24,6 +30,8 @@ public class Player {
 
 
     //////////// Variables ////////////
+    MediaPlayer mp;
+
     String currentSong;
     String currentSpotInSong;
     String currentTime;    // formatted: HHMM (HourHourMinuteMinute)
@@ -41,31 +49,41 @@ public class Player {
 
     ArrayList<Album> albums;
 
-    ArrayList<Song> songs;
+    Map<Integer, Song> idsToSongs;
 
-    ArrayList<Song> [][] songDatabase; //UNINITIALIZED
+    ArrayList<ArrayList<Song>> songDatabase; //UNINITIALIZED
 
     List<Song> flashbackQueue;  //UNINITIALIZED
 
     SortedSet<String> playedSongs = new TreeSet<>();
+
 
     //////////// Variables ////////////
 
 
     //////////// Functions ////////////
 
-    public Player()
-    {
-        songPriorities = new PriorityQueue<Song>();
+    public Player() {
+        Comparator<Song> comp = new SongPointsComparator();
+        songPriorities = new PriorityQueue<>(comp);
         albums = new ArrayList<Album>();
-        songs = new ArrayList<Song>();
+        idsToSongs = new LinkedHashMap<>();
+
     }
 
 
-    void add(String songTitle, String albumName, String artist)
-    {
-        Song currSong = new Song(songTitle, albumName, artist, 0, 0, 0, 0);
+    public MediaPlayer getMp(){
+        return this.mp;
+    }
 
+    public PriorityQueue<Song> getSongPriorities(){
+        return songPriorities;
+    }
+
+    void add(String songTitle, String albumName, String artist, int resId)
+    {
+        Song currSong = new Song(songTitle, albumName, artist, resId);
+        idsToSongs.put(resId, currSong);
         if(albums.size() == 0)
         {
             albums.add(new Album(albumName, artist));
@@ -83,7 +101,92 @@ public class Player {
         albums.add(new Album(albumName, artist));
         albums.get(albums.size() - 1).addSong(currSong);
 
-        songs.add(currSong);
+
+    }
+
+
+    void playSong(final Activity a, final int resID) {
+        final Calendar calendar = Calendar.getInstance();
+        final Location location = new Location("La Jolla");
+
+        if(mp != null)
+        {
+            mp.release();
+        }
+
+        mp = MediaPlayer.create(a, resID);
+        mp.start();
+
+
+        mp.setLooping(false);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                idsToSongs.get(resID).update(calendar, location);
+                Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+
+                mediaPlayer.reset();
+            }
+        });
+    }
+
+    void playAlbum(Activity a, Album album)
+    {
+        if(mp != null)
+        {
+            mp.release();
+        }
+        ArrayList<Integer> songs = album.getSongIds();
+
+        for (int i = 0; i < songs.size(); i++) {
+            playSong(a, songs.get(i));
+            while(mp.isPlaying())
+            {}
+        }
+
+
+
+        /*
+                mp = MediaPlayer.create(a, resID);
+        mp.setLooping(false);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.reset();
+                try {
+                    mediaPlayer.setDataSource(MainActivity.this, tracks.getNextTrack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mediaPlayer.prepareAsync();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.start();
+                    }
+                });
+            }
+        }
+    });
+         */
+    }
+
+
+    public class SongPointsComparator implements Comparator<Song>{
+        @Override
+        public int compare(Song x, Song y){
+            if (x.getPoints() < y.getPoints()){
+                return -1;
+            }
+            if (x.getPoints() > y.getPoints()){
+                return 1;
+            }
+            return 0;
+        }
     }
 
 
@@ -91,16 +194,30 @@ public class Player {
 
 
 
+    public void prioritizeSongsPlayed () {
+        for(int i = 0; i < songDatabase.size(); i++){
+            for(int j = 0; j < songDatabase.get(i).size(); j++){
+                String currName = songDatabase.get(i).get(j).getName();
+                if(playedSongs.contains(currName)){
+                    songDatabase.get(i).get(j).setPoints(songDatabase.get(i).get(j).getPoints() + 1);
 
 
 
+                }
+
+                songPriorities.add(songDatabase.get(i).get(j));
+
+            }
+        }
+    }
 
 
     // override using comparator class for priority queue
 
     // updates point values for song objects and uses a priority queue to prioritize songs
-    static void prioritizeSongs (int location) {
+    static void prioritizeSongs (String location) {
         // set point values for song
+
         // add song to priority queue
         // repeat until done with all songs from songDatabase
 
@@ -120,13 +237,13 @@ public class Player {
     //TODO this should happen upon completion of a song
     void savePrevious () {
         // copy current values into previous values
+        previousSong = currentSong;
+        previousTime = currentTime;
+        previousDate = currentDate;
+        previousDay = currentDay;
+        previousLocation = currentLocation;
     }
 
-    //TODO this should happen after savePrevious
-    void playSong() {
-        // update the current values
-        // play the song
-    }
 
     //TODO this should happen after savePrevious
     //TODO this should be able to happen at the same time as the create method
@@ -134,10 +251,10 @@ public class Player {
         // update the current values
         // check if the song is in the binary tree (try to insert)
         // if insertion succeeded
-            // play the song
+        // play the song
         // if insertion failed
-            // remove the song from the list
-            // repeat from start of function
+        // remove the song from the list
+        // repeat from start of function
     }
 
     //TODO this should happen at the same time as playFlashbackSong/playSong
