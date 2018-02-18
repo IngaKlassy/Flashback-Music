@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
-        //toolbar.setTitle("@string/app_name");
-        //toolbar.setSubtitle("REGULAR MODE");
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
