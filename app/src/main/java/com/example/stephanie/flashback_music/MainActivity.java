@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     Map<String, Integer> songTitleToResourceId;
     Map<String, Album> albumTitleToAlbumOb;
+    Map<String, String> songToAlbum;
+    Map<String, String> songToArtist;
 
     TreeMap<String, List<String>> AlbumToTrackListMap;
 
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         songTitleToResourceId = new LinkedHashMap<>();
         albumTitleToAlbumOb = new LinkedHashMap<>();
         AlbumToTrackListMap = new TreeMap<>();
+        songToAlbum = new TreeMap<>();
+        songToArtist = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
 
@@ -80,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, resID);
 
             songTitleToResourceId.put(songTitle, resID);
+            songToAlbum.put(songTitle, songAlbum);
+            songToArtist.put(songTitle, songArtist);
         }
 
 
@@ -125,13 +131,15 @@ public class MainActivity extends AppCompatActivity {
                 TextView tv = (TextView)findViewById(R.id.songInfo);
 
                 if(songName.equals("PLAY ALBUM")) {
+
                     Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
 
                     mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
                 }
                 else {
                     Integer resourceID = songTitleToResourceId.get(songName);
-                    tv.setText("hhhh");
+                    tv.setText(songName + "\n" + songToAlbum.get(songName) + "\n" + songToArtist.get(songName));
+
                     mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue());
                 }
                 return true;
