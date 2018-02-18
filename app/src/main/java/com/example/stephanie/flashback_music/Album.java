@@ -4,14 +4,8 @@
 
 package com.example.stephanie.flashback_music;
 
-import android.media.MediaPlayer;
-import android.support.annotation.NonNull;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 
 public class Album {
@@ -19,16 +13,17 @@ public class Album {
     private String albumArtist;
 
 
-    ArrayList<Song> songObList;
-    List<String> songTitleList;
-    ArrayList<Integer> songIds;
+    private ArrayList<Song> songObList;
+    private List<String> songTitleList;
+    private ArrayList<Integer> songIds;
 
 
     public Album (String title, String artist) {
+        albumTitle = title;
         albumArtist = artist;
-        songIds = new ArrayList<>();
         songObList = new ArrayList<>();
         songTitleList = new ArrayList<>();
+        songIds = new ArrayList<>();
         songTitleList.add("PLAY ALBUM");
     }
 
@@ -50,14 +45,9 @@ public class Album {
         songIds.add((song.getResId()));
     }
 
+
     ArrayList<Integer> getSongIds() {
         return songIds;
-    }
-
-    void playAlbum() {
-        for(int i = 0; i < songObList.size(); i++) {
-            // play the song at i
-        }
     }
 
 
@@ -67,10 +57,12 @@ public class Album {
     }
 
     String getAlbumTitle() {
+
         return albumTitle;
     }
 
     String getAlbumArtist() {
+
         return albumArtist;
     }
 }
