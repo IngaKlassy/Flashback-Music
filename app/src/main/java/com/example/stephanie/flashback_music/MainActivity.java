@@ -139,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        /*mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
 
             }
-        });
+        });*/
 
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
