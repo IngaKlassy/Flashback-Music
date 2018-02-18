@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         albumToAlbum = new LinkedHashMap<>();
         Uri path;
 
+
+
         Field[] fields = R.raw.class.getFields();
         for(int i = 0; i < fields.length; i++)
         {
@@ -77,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
             metaRetriever.setDataSource(this, path);
             mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST), resID);
+                    metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
+                    metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST), resID);
             songToIdMap.put(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), resID);
         }
 
@@ -137,6 +139,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
+            }
+        });*/
 
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
