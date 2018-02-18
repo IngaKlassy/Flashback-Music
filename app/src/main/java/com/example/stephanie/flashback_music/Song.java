@@ -92,6 +92,7 @@ public class Song {
         }
     }
 
+    String getName() { return songTitle;}
 
     /* GETTER/SETTER for "points" */
     int getPoints () {

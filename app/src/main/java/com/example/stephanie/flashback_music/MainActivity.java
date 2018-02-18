@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 import java.lang.reflect.Field;
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
-
+                TextView tv = (TextView)findViewById(R.id.songInfo);
 
                 if(songName.equals("PLAY ALBUM")) {
                     Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     Integer resourceID = songTitleToResourceId.get(songName);
-
+                    tv.setText("hhhh");
                     mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue());
                 }
                 return true;
