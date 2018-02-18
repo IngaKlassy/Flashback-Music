@@ -1,12 +1,15 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,10 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
     Player mainPlayer = new Player();
 
-    //List<String> list;
-    Map<String, Integer> songToIdMap;
+    OnSwipeTouchListener onSwipeTouchListener;
 
-    MediaPlayer mediaPlayer;
+
+    Map<String, Integer> songToIdMap;
+    Map<String, Album> albumToAlbum;
+    boolean playNewSong = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
 
+
         songToIdMap = new LinkedHashMap<String, Integer>();
         //list = new list<String>();
 
         metaRetriever = new MediaMetadataRetriever();
+        albumToAlbum = new LinkedHashMap<>();
         Uri path;
+
+
 
         Field[] fields = R.raw.class.getFields();
         for(int i = 0; i < fields.length; i++)
@@ -69,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
             metaRetriever.setDataSource(this, path);
             mainPlayer.add(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                            metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                    metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
+                    metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST), resID);
             songToIdMap.put(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), resID);
         }
 
@@ -79,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Album> albums = mainPlayer.albums;
         for(int i = 0; i < albums.size(); i++)
         {
+            albumToAlbum.put(albums.get(i).getAlbumTitle(), albums.get(i));
             mapOfSongs.put(albums.get(i).getAlbumTitle(), albums.get(i).returnSongTitles());
         }
 
@@ -110,27 +121,37 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
 
-                String songName = expandableListAdapter.getChild(childPosition, groupPosition).toString();
+                String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
 
 
-                String s = v.toString();
-                int resID = getResources().getIdentifier(songName, "raw", getPackageName());
+                if(songName.equals("PLAY ALBUM")) {
+                    Album temp = albumToAlbum.get(expandableListAdapter.getGroup(groupPosition).toString());
 
-                if(mediaPlayer != null)
-                {
-                    mediaPlayer.release();
+                    mainPlayer.playAlbum(MainActivity.this, temp);
                 }
+                else {
+                    Integer resourceID = songToIdMap.get(songName);
 
-                Integer resourceID = songToIdMap.get(songName);
-                mediaPlayer = MediaPlayer.create(MainActivity.this, resourceID.intValue());
-                mediaPlayer.start();
+                    mainPlayer.playSong(MainActivity.this, resourceID.intValue());
+                }
                 return true;
-
             }
         });
 
+        /*mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
 
+            }
+        });*/
+
+        onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
+            @Override
+            public void onSwipeLeft() {
+                launchActivity();
+            }
+        };
 
         /*
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, list);
@@ -161,7 +182,10 @@ public class MainActivity extends AppCompatActivity {
         //Read more: http://mrbool.com/how-to-extract-meta-data-from-media-file-in-android/28130#ixzz56fcMhW4p*/
     }
 
-
+    public void launchActivity() {
+        Intent intent = new Intent(this, Flashback_Activity.class);
+        startActivity(intent);
+    }
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {

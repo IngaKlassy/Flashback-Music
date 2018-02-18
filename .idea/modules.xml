@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\looki\AndroidStudioProjects\cse-110-team-project-team-29\Flashback_Music.iml" filepath="C:\Users\looki\AndroidStudioProjects\cse-110-team-project-team-29\Flashback_Music.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cse-110-team-project-team-29.iml" filepath="$PROJECT_DIR$/cse-110-team-project-team-29.iml" />
     </modules>
