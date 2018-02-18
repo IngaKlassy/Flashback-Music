@@ -1,6 +1,5 @@
 package com.example.stephanie.flashback_music;
 
-
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
