@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         expandableListView = findViewById(R.id.songlist);
 
 
-        //CREATING SONG OBJECTS AND ALBUM OBJECTS IN THE PROCESS*****
+        //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
         Field[] fields = R.raw.class.getFields();
         for(int i = 0; i < fields.length; i++)
         {
@@ -140,6 +140,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
+            }
+        });*/
 
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
