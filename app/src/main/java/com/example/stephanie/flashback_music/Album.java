@@ -29,7 +29,7 @@ public class Album {
 
 
 
-    void addSong (Song song) {
+    public void addSong (Song song) {
         String inSong = song.getSongTitle();
         for(int i = 0; i < songTitleList.size(); i++)
         {
@@ -46,22 +46,22 @@ public class Album {
     }
 
 
-    ArrayList<Integer> getSongIds() {
+    public ArrayList<Integer> getSongIds() {
         return songIds;
     }
 
 
-    List<String> returnSongTitles()
+    public List<String> returnSongTitles()
     {
         return songTitleList;
     }
 
-    String getAlbumTitle() {
+    public String getAlbumTitle() {
 
         return albumTitle;
     }
 
-    String getAlbumArtist() {
+    public String getAlbumArtist() {
 
         return albumArtist;
     }
