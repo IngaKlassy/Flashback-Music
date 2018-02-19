@@ -110,31 +110,29 @@
                 android:orientation="horizontal"
                 android:weightSum="3">
 
-
-
-                <Button
+                <ImageView
                     android:id="@+id/status"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:drawableLeft="@drawable/plus" />
+                    android:src="@drawable/plus" />
 
-                <Button
-                    android:id="@+id/playButton"
+                <ImageView
+                    android:id="@+id/play"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:drawableLeft="@drawable/play" />
+                    android:src="@drawable/play" />
 
-                <Button
-                    android:id="@+id/pauseButton"
+                <ImageView
+                    android:id="@+id/pause"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:drawableLeft="@drawable/pause_green" />
+                    android:src="@drawable/pause_green" />
 
-                <Button
+                <ImageView
                     android:id="@+id/next"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:drawableLeft="@drawable/skip" />
+                    android:src="@drawable/skip" />
 
             </LinearLayout>
         </android.widget.Toolbar>
