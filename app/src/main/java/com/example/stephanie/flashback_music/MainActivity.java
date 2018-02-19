@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,7 +29,7 @@ import java.util.TreeMap;
  * Main Activity:
  *      SongList Screen
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Serializable {
     //VARIABLE DECLARATIONS*****
     static Player mainActivityPlayerOb;
 
@@ -51,10 +53,17 @@ public class MainActivity extends AppCompatActivity {
     Uri path;
     int count = 0;
 
+    private AlbumService albumService;
+    private boolean isRunning = false;
+
+    Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        intent = new Intent(MainActivity.this, AlbumService.class);
 
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
@@ -79,6 +88,28 @@ public class MainActivity extends AppCompatActivity {
         songToArtist = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
+        ImageView pauseBt = (ImageView) findViewById(R.id.pause);
+        pauseBt.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View view) {
+                                               if(mainActivityPlayerOb.getMp().isPlaying()) {
+                                                   mainActivityPlayerOb.getMp().pause();
+                                               }
+                                           }
+                                       }
+        );
+
+        final int currentResource;
+        ImageView playBt = (ImageView) findViewById(R.id.play);
+        playBt.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                                  if(!mainActivityPlayerOb.getMp().isPlaying()) {
+                                                      mainActivityPlayerOb.getMp().start();
+                                                  }
+                                          }
+                                      }
+        );
 
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
@@ -145,17 +176,28 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
                 TextView tv = findViewById(R.id.songInfo);
 
-                Intent intent = new Intent(MainActivity.this, AlbumService.class);
+                //Intent intent = new Intent(MainActivity.this, AlbumService.class);
 
                 if(songName.equals("PLAY ALBUM")) {
-                    startService(intent);
+                    if(isRunning) {
+                        stopService(intent);
+                        isRunning = false;
+                    }
 
                     Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
+
+                    intent.putExtra("Album", temp);
+
+                    startService(intent);
+                    isRunning = true;
 
                     mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
                 }
                 else {
-                    stopService(intent);
+                    if(isRunning) {
+                        stopService(intent);
+                        isRunning = false;
+                    }
 
                     Integer resourceID = songTitleToResourceId.get(songName);
                     tv.setText(songName + "\n" + songToAlbum.get(songName) + "\n" + songToArtist.get(songName));

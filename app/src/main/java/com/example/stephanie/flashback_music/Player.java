@@ -1,17 +1,19 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by Stephanie on 2/6/2018.
  */
 
-public class Player {
+public class Player implements Serializable{
     //////////// Constants ////////////
 
     // DAY OF THE WEEK CORRESPONDS TO INDEX VALUE (THE INT VALUE)
@@ -66,7 +68,7 @@ public class Player {
     public Player() {
         Comparator<Song> comp = new SongPointsComparator();
         songPriorities = new PriorityQueue<>(comp);
-        albums = new ArrayList<Album>();
+        albums = new ArrayList<>();
         idsToSongs = new LinkedHashMap<>();
         //songDatabase = new ArrayList<ArrayList<Song>>();
         songDatabase = new ArrayList<Song>();
@@ -113,7 +115,6 @@ public class Player {
     void playSong(final Activity a, final int resID) {
         final Calendar calendar = Calendar.getInstance();
         final Location location = new Location("La Jolla");
-
         if(mp != null)
         {
             mp.release();
@@ -148,47 +149,10 @@ public class Player {
         {
             mp.release();
         }
-        ArrayList<Integer> songs = album.getSongIds();
-
-        for (int i = 0; i < songs.size(); i++) {
-            playSong(a, songs.get(i));
-            //while(mp.isPlaying())
-            //{}
-        }
-
-
-
-        /*
-                mp = MediaPlayer.create(a, resID);
-        mp.setLooping(false);
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.reset();
-                try {
-                    mediaPlayer.setDataSource(MainActivity.this, tracks.getNextTrack);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    mediaPlayer.prepareAsync();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
-                        mediaPlayer.start();
-                    }
-                });
-            }
-        }
-    });
-         */
     }
 
 
-    public class SongPointsComparator implements Comparator<Song>{
+    public class SongPointsComparator implements Comparator<Song>, Serializable {
         @Override
         public int compare(Song x, Song y){
             if (x.getPoints() < y.getPoints()){

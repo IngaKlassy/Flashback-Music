@@ -4,11 +4,12 @@
 
 package com.example.stephanie.flashback_music;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Album {
+public class Album implements Serializable{
     private String albumTitle;
     private String albumArtist;
 
@@ -45,11 +46,13 @@ public class Album {
         songIds.add((song.getResId()));
     }
 
+    ArrayList<Song> getSongObs() {
+        return songObList;
+    }
 
     public ArrayList<Integer> getSongIds() {
         return songIds;
     }
-
 
     public List<String> returnSongTitles()
     {
@@ -62,7 +65,6 @@ public class Album {
     }
 
     public String getAlbumArtist() {
-
         return albumArtist;
     }
 }

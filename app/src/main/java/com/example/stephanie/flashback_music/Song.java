@@ -2,6 +2,7 @@ package com.example.stephanie.flashback_music;
 
 import android.location.Location;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -11,7 +12,7 @@ import static com.example.stephanie.flashback_music.Player.WEEK;
  * Created by Stephanie on 2/6/2018.
  */
 
-public class Song {
+public class Song implements Serializable{
     //////////// Variables ////////////
     private String songTitle;
     private String songsAlbumTitle;
