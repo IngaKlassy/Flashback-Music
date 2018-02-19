@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
+    CompoundButton flashbackSwitch;
     OnSwipeTouchListener onSwipeTouchListener;
 
     Map<String, Integer> songTitleToResourceId;
@@ -171,6 +173,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        flashbackSwitch = (CompoundButton) findViewById(R.id.flashback_switch);
+        flashbackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b == true) {
+                    // generate priority queue
+                    // mainPlayer.prioritizeSongsPlayed();
+                    launchActivity();
+                    flashbackSwitch.setChecked(false);
+                }
+            }
+        });
+
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
             public void onSwipeLeft() {
@@ -180,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchActivity() {
-        Intent intent = new Intent(this, Flashback_Activity.class);
+        Intent intent = new Intent(this, FlashbackActivity.class);
         startActivity(intent);
     }
 
