@@ -88,6 +88,28 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         songToArtist = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
+        ImageView pauseBt = (ImageView) findViewById(R.id.pause);
+        pauseBt.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View view) {
+                                               if(mainActivityPlayerOb.getMp().isPlaying()) {
+                                                   mainActivityPlayerOb.getMp().pause();
+                                               }
+                                           }
+                                       }
+        );
+
+        final int currentResource;
+        ImageView playBt = (ImageView) findViewById(R.id.play);
+        playBt.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                                  if(!mainActivityPlayerOb.getMp().isPlaying()) {
+                                                      mainActivityPlayerOb.getMp().start();
+                                                  }
+                                          }
+                                      }
+        );
 
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****

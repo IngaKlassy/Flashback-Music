@@ -111,7 +111,6 @@ public class Player implements Serializable{
     void playSong(final Activity a, final int resID) {
         final Calendar calendar = Calendar.getInstance();
         final Location location = new Location("La Jolla");
-
         if(mp != null)
         {
             mp.release();
