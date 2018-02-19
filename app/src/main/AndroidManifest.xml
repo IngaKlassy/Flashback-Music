@@ -23,6 +23,11 @@
             android:name=".Flashback_Activity"
             android:configChanges="orientation"
             android:label="@string/title_activity_flashback_" />
+
+        <service
+            android:name=".AlbumService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
