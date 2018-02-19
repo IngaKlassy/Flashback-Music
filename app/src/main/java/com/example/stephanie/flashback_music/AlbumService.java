@@ -9,6 +9,18 @@ public class AlbumService extends Service {
     public AlbumService() {
     }
 
+    final class myThread implements Runnable {
+        int startId;
+        public myThread(int startId) {
+            this.startId = startId;
+        }
+
+        @Override
+        public void run() {
+
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -18,6 +30,10 @@ public class AlbumService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(AlbumService.this, "Service Started", Toast.LENGTH_LONG).show();
+
+        Thread thread = new Thread(new myThread(startId));
+        thread.start();
+
         return super.onStartCommand(intent, flags, startId);
     }
 
