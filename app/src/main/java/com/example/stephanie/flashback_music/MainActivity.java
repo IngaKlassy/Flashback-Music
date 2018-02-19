@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        // flashback mode activity switch
         flashbackSwitch = (CompoundButton) findViewById(R.id.flashback_switch);
         flashbackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
