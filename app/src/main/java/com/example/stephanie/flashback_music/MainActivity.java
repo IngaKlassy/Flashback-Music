@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     TreeMap<String, List<String>> AlbumToTrackListMap;
 
     Uri path;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,39 @@ public class MainActivity extends AppCompatActivity {
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
+
+        //BOTTOM BAR SETUP*****
+        ImageView statusButton = findViewById(R.id.status);
+        statusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //NOT IMPLEMENTED YET
+            }
+        });
+
+        ImageView playButton = findViewById(R.id.play);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //NOT IMPLEMENTED YET
+            }
+        });
+
+        ImageView pauseButton = findViewById(R.id.pause);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //NOT IMPLEMENTED YET
+            }
+        });
+
+        ImageView nextButton = findViewById(R.id.next);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //NOT IMPLEMENTED YET
+            }
+        });
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
