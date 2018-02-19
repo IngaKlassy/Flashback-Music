@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -56,41 +57,15 @@ public class MainActivity extends AppCompatActivity {
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
-        //toolbar.setTitle("@string/app_name");
-        //toolbar.setSubtitle("REGULAR MODE");
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
-        statusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView playButton = findViewById(R.id.play);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView pauseButton = findViewById(R.id.pause);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView nextButton = findViewById(R.id.next);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
@@ -166,15 +141,20 @@ public class MainActivity extends AppCompatActivity {
 
                 String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
-                TextView tv = (TextView)findViewById(R.id.songInfo);
+                TextView tv = findViewById(R.id.songInfo);
+
+                Intent intent = new Intent(MainActivity.this, AlbumService.class);
 
                 if(songName.equals("PLAY ALBUM")) {
+                    startService(intent);
 
                     Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
 
                     mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
                 }
                 else {
+                    stopService(intent);
+
                     Integer resourceID = songTitleToResourceId.get(songName);
                     tv.setText(songName + "\n" + songToAlbum.get(songName) + "\n" + songToArtist.get(songName));
 

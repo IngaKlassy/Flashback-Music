@@ -142,8 +142,8 @@ public class Player {
 
         for (int i = 0; i < songs.size(); i++) {
             playSong(a, songs.get(i));
-            while(mp.isPlaying())
-            {}
+            //while(mp.isPlaying())
+            //{}
         }
 
 

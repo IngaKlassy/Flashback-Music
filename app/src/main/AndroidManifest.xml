@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        //android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -22,8 +21,13 @@
         </activity>
         <activity
             android:name=".Flashback_Activity"
-            android:label="@string/title_activity_flashback_"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"></activity>
+            android:configChanges="orientation"
+            android:label="@string/title_activity_flashback_" />
+
+        <service
+            android:name=".AlbumService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
