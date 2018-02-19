@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
-        //toolbar.setTitle("@string/app_name");
-        //toolbar.setSubtitle("REGULAR MODE");
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
@@ -166,15 +164,20 @@ public class MainActivity extends AppCompatActivity {
 
                 String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
-                TextView tv = (TextView)findViewById(R.id.songInfo);
+                TextView tv = findViewById(R.id.songInfo);
+
+                Intent intent = new Intent(MainActivity.this, AlbumService.class);
 
                 if(songName.equals("PLAY ALBUM")) {
+                    startService(intent);
 
                     Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
 
                     mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
                 }
                 else {
+                    stopService(intent);
+
                     Integer resourceID = songTitleToResourceId.get(songName);
                     tv.setText(songName + "\n" + songToAlbum.get(songName) + "\n" + songToArtist.get(songName));
 
