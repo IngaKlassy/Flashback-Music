@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -59,36 +60,12 @@ public class MainActivity extends AppCompatActivity {
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
-        statusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView playButton = findViewById(R.id.play);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView pauseButton = findViewById(R.id.pause);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView nextButton = findViewById(R.id.next);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
