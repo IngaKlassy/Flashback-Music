@@ -29,7 +29,7 @@ import java.util.TreeMap;
  */
 public class MainActivity extends AppCompatActivity {
     //VARIABLE DECLARATIONS*****
-    Player mainActivityPlayerOb;
+    static Player mainActivityPlayerOb;
 
     MediaMetadataRetriever metaRetriever;
 
@@ -179,8 +179,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b == true) {
+                    if (mainActivityPlayerOb.getMp().isPlaying()) {
+                        mainActivityPlayerOb.getMp().pause();
+                        mainActivityPlayerOb.getMp().reset();
+                    }
                     // generate priority queue
-                    // mainPlayer.prioritizeSongsPlayed();
+                    startFlashbackMode();
                     launchActivity();
                     flashbackSwitch.setChecked(false);
                 }
@@ -198,6 +202,10 @@ public class MainActivity extends AppCompatActivity {
     public void launchActivity() {
         Intent intent = new Intent(this, FlashbackActivity.class);
         startActivity(intent);
+    }
+
+    public void startFlashbackMode() {
+        mainActivityPlayerOb.prioritizeSongsPlayed();
     }
 
    /* @Override

@@ -44,18 +44,19 @@ public class Player {
     String previousDate;
     int [] previousDay;
 
+    static boolean inFlashback;
+
     PriorityQueue<Song> songPriorities;
 
     ArrayList<Album> albums;
 
     Map<Integer, Song> idsToSongs;
 
-    ArrayList<ArrayList<Song>> songDatabase; //UNINITIALIZED
+    ArrayList<Song> songDatabase; //UNINITIALIZED
 
     List<Song> flashbackQueue;  //UNINITIALIZED
 
     SortedSet<String> playedSongs = new TreeSet<>();
-
 
     //////////// Variables ////////////
 
@@ -67,7 +68,9 @@ public class Player {
         songPriorities = new PriorityQueue<>(comp);
         albums = new ArrayList<Album>();
         idsToSongs = new LinkedHashMap<>();
-
+        //songDatabase = new ArrayList<ArrayList<Song>>();
+        songDatabase = new ArrayList<Song>();
+        inFlashback = false;
     }
 
     public ArrayList<Album> returnAlbums() {
@@ -124,9 +127,16 @@ public class Player {
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+                Song song = idsToSongs.get(resID);
+
+                if (song.fromFlashback) {
+                    song.completed = true;
+                }
+
+                //songDatabase.get(0).add(song);
+                songDatabase.add(song);
                 idsToSongs.get(resID).update(calendar, location);
                 Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
-
                 mediaPlayer.reset();
             }
         });
@@ -194,13 +204,16 @@ public class Player {
 
     public void prioritizeSongsPlayed () {
         for(int i = 0; i < songDatabase.size(); i++){
-            for(int j = 0; j < songDatabase.get(i).size(); j++){
+        /*    for(int j = 0; j < songDatabase.get(i).size(); j++){
                 String currName = songDatabase.get(i).get(j).getName();
                 if(playedSongs.contains(currName)){
                     songDatabase.get(i).get(j).setPoints(songDatabase.get(i).get(j).getPoints() + 1);
-                }
-                songPriorities.add(songDatabase.get(i).get(j));
-            }
+                }*/
+                //songPriorities.add(songDatabase.get(i).get(j));
+            songDatabase.get(i).completed = false;
+            songDatabase.get(i).fromFlashback = true;
+            songPriorities.add(songDatabase.get(i));
+            //}
         }
     }
 

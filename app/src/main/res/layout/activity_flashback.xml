@@ -63,4 +63,76 @@
         </LinearLayout>
     </android.widget.Toolbar>
 
+    <Button
+        android:id="@+id/play_pause"
+        android:layout_width="110dp"
+        android:layout_height="56dp"
+        android:text="Play"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.87" />
+
+    <TextView
+        android:id="@+id/song_title"
+        android:layout_width="384dp"
+        android:layout_height="45dp"
+        android:background="#6dbf7c"
+        android:gravity="center"
+        android:text="Current Song: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.302" />
+
+    <TextView
+        android:id="@+id/song_album"
+        android:layout_width="384dp"
+        android:layout_height="44dp"
+        android:background="#6dbf7c"
+        android:gravity="center"
+        android:text="From Album: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.388" />
+
+    <TextView
+        android:id="@+id/song_artist"
+        android:layout_width="384dp"
+        android:layout_height="57dp"
+        android:background="#6dbf7c"
+        android:gravity="center"
+        android:text="By Artist: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.484" />
+
+    <TextView
+        android:id="@+id/last_played"
+        android:layout_width="384dp"
+        android:layout_height="112dp"
+        android:layout_marginTop="152dp"
+        android:background="#10afb2"
+        android:gravity="center"
+        android:text="Last played: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </android.support.constraint.ConstraintLayout>

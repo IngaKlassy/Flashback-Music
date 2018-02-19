@@ -22,6 +22,9 @@ public class Song {
     private boolean favorite;
     private boolean dislike;
 
+    public boolean completed;
+    public boolean fromFlashback;
+
     private int timestampOfLastPlay;   // HHMM
     private int datestampOfLastPlay;   // MMDDYYYY
     private int points;
@@ -38,6 +41,9 @@ public class Song {
         this.songsAlbumTitle = in_album;
         this.songsArtistName = in_artist;
         this.resourceId = rId;
+
+        completed = false;
+        fromFlashback = false;
 
         this.setNeutralTrue();
 
