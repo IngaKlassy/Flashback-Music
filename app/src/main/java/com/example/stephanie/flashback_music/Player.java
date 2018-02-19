@@ -71,6 +71,9 @@ public class Player implements Serializable{
 
     }
 
+    public ArrayList<Album> returnAlbums() {
+        return albums;
+    }
 
     public MediaPlayer getMp(){
         return this.mp;
@@ -80,7 +83,7 @@ public class Player implements Serializable{
         return songPriorities;
     }
 
-    void add(String songTitle, String albumName, String artist, int resId)
+    public void add(String songTitle, String albumName, String artist, int resId)
     {
         Song currSong = new Song(songTitle, albumName, artist, resId);
         idsToSongs.put(resId, currSong);

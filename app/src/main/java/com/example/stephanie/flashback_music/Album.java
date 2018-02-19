@@ -30,7 +30,7 @@ public class Album implements Serializable{
 
 
 
-    void addSong (Song song) {
+    public void addSong (Song song) {
         String inSong = song.getSongTitle();
         for(int i = 0; i < songTitleList.size(); i++)
         {
@@ -50,16 +50,30 @@ public class Album implements Serializable{
         return songObList;
     }
 
-    ArrayList<Integer> getSongIds() {
+    public ArrayList<Integer> getSongIds() {
         return songIds;
     }
 
+<<<<<<< HEAD
     List<String> returnSongTitles()
+=======
+
+    public List<String> returnSongTitles()
+>>>>>>> 0f5bd85decac15cd9cced274570e46943dd93c2c
     {
         return songTitleList;
     }
 
+<<<<<<< HEAD
     String getAlbumTitle() { return albumTitle; }
+=======
+    public String getAlbumTitle() {
+
+        return albumTitle;
+    }
+
+    public String getAlbumArtist() {
+>>>>>>> 0f5bd85decac15cd9cced274570e46943dd93c2c
 
     String getAlbumArtist() { return albumArtist; }
 }

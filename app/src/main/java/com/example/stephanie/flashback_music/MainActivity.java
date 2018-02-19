@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
+    CompoundButton flashbackSwitch;
     OnSwipeTouchListener onSwipeTouchListener;
 
     Map<String, Integer> songTitleToResourceId;
@@ -67,36 +71,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
-        statusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView playButton = findViewById(R.id.play);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView pauseButton = findViewById(R.id.pause);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         ImageView nextButton = findViewById(R.id.next);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NOT IMPLEMENTED YET
-            }
-        });
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
@@ -213,6 +193,20 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
         });*/
 
+        // flashback mode activity switch
+        flashbackSwitch = (CompoundButton) findViewById(R.id.flashback_switch);
+        flashbackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b == true) {
+                    // generate priority queue
+                    // mainPlayer.prioritizeSongsPlayed();
+                    launchActivity();
+                    flashbackSwitch.setChecked(false);
+                }
+            }
+        });
+
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
             public void onSwipeLeft() {
@@ -222,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     }
 
     public void launchActivity() {
-        Intent intent = new Intent(this, Flashback_Activity.class);
+        Intent intent = new Intent(this, FlashbackActivity.class);
         startActivity(intent);
     }
 

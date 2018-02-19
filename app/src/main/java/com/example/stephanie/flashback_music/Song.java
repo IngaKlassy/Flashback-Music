@@ -54,27 +54,27 @@ public class Song implements Serializable{
         { timesOfDay[i] = 0; }
     }
 
-    String getSongTitle () { return songTitle; }
+    public String getSongTitle () { return songTitle; }
 
-    String getArtistName () { return songsArtistName; }
+    public String getArtistName () { return songsArtistName; }
 
-    String getAlbumTitle () { return songsAlbumTitle; }
+    public String getAlbumTitle () { return songsAlbumTitle; }
 
-    int getResId () { return resourceId; }
+    public int getResId () { return resourceId; }
 
 
 
-    int getTime () { return timestampOfLastPlay; }
+    public int getTime () { return timestampOfLastPlay; }
 
-    boolean setTime (int in_time) {
+    public boolean setTime (int in_time) {
         this.timestampOfLastPlay = in_time;
         return true;
     }
 
 
-    int getDate () { return datestampOfLastPlay; }
+    public int getDate () { return datestampOfLastPlay; }
 
-    boolean setDate (int in_date) {
+    public boolean setDate (int in_date) {
         // make sure input was 8 digits of less
         int check = in_date;
         int i;
@@ -93,21 +93,21 @@ public class Song implements Serializable{
         }
     }
 
-    String getName() { return songTitle;}
+    public String getName() { return songTitle;}
 
     /* GETTER/SETTER for "points" */
-    int getPoints () {
+    public int getPoints () {
         return points;
     }
-    void setPoints (int in_points) {
+    public void setPoints (int in_points) {
         this.points = in_points;
     }
 
 
     /* GETTER/SETTER for "neutral" */
-    boolean getNeutralStatus () { return neutral; }
+    public boolean getNeutralStatus () { return neutral; }
 
-    void setNeutralTrue () {
+    public void setNeutralTrue () {
         this.neutral = true;
         this.favorite = false;
         this.dislike = false;
@@ -115,9 +115,9 @@ public class Song implements Serializable{
 
 
     /* GETTER/SETTER for "favorite" */
-    boolean getFavoriteStatus () { return favorite; }
+    public boolean getFavoriteStatus () { return favorite; }
 
-    void setFavoriteTrue () {
+    public void setFavoriteTrue () {
         this.favorite = true;
         this.dislike = false;
         this.neutral = false;
@@ -125,16 +125,16 @@ public class Song implements Serializable{
 
 
     /* GETTER/SETTER for "dislike" */
-    boolean getDislikeStatus () { return dislike; }
+    public boolean getDislikeStatus () { return dislike; }
 
-    void setDislikeTrue () {
+    public void setDislikeTrue () {
         this.dislike = true;
         this.neutral = false;
         this.favorite = false;
     }
 
 
-    void update (Calendar c, Location location) {
+    public void update (Calendar c, Location location) {
         locations.add(location);
 
         //Pull weekday from Calender and change
@@ -150,7 +150,7 @@ public class Song implements Serializable{
 
 
 
-/* ALL original code from Stephanie and Mathias
+
 
 /* GETTER/SETTER for "place"
 int getPlace () {
@@ -159,28 +159,5 @@ int getPlace () {
     void setPlace (int in_place) {
         //TODO some sort of check for whatever place will look like to ensure valid input
         this.place = in_place;
-    }
-
-
-
-    /* GETTER/SETTER for "day"
-int getDay () {
-        for(int i = 0; i < WEEK; i++) {
-            if (song.day[i] == 1)
-                return i;
-        }
-        return -1;
-    return this.day;
-}
-
-
-    void setDay (int in_day) {
-        for(int i = 0; i < WEEK; i++) {
-            if (i == in_day)
-                this.day[in_day] = 1;
-            else
-                this.day[i] = 0;
-        }
-        this.day = in_day;
     }
 */
