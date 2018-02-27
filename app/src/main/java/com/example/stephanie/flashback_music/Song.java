@@ -23,14 +23,14 @@ public class Song implements Serializable{
     private boolean favorite;
     private boolean dislike;
 
-    public boolean completed;
-    public boolean fromFlashback;
+    public boolean completed = false;
+    public boolean fromFlashback = false;
 
-    private int timestampOfLastPlay;   // HHMM
-    private int datestampOfLastPlay;   // MMDDYYYY
+    private int timestampOfLastPlay = 0;   // HHMM
+    private int datestampOfLastPlay = 0;   // MMDDYYYY
     private int points;
 
-    private ArrayList<Location> locations;
+    private ArrayList<Location> locations = new ArrayList<>();
     private int[] weekDays;   //Seven: Sunday, Monday, etc...
     private int[] timesOfDay;  //Three: Morning, Afternoon, Night
     //////////// Variables ////////////
@@ -43,15 +43,9 @@ public class Song implements Serializable{
         this.songsArtistName = in_artist;
         this.resourceId = rId;
 
-        completed = false;
-        fromFlashback = false;
-
         this.setNeutralTrue();
 
-        timestampOfLastPlay = 0;
-        datestampOfLastPlay = 0;
-
-        locations = new ArrayList<>();
+        //sets base values for weekdays, timesOfDay
         weekDays = new int [7];
         for(int i = 0; i < weekDays.length; i++)
         { weekDays[i] = 0; }
@@ -68,15 +62,12 @@ public class Song implements Serializable{
 
     public int getResId () { return resourceId; }
 
-
-
     public int getTime () { return timestampOfLastPlay; }
 
     public boolean setTime (int in_time) {
         this.timestampOfLastPlay = in_time;
         return true;
     }
-
 
     public int getDate () { return datestampOfLastPlay; }
 
@@ -152,18 +143,3 @@ public class Song implements Serializable{
     }
     //////////// Functions ////////////
 }
-
-
-
-
-
-
-/* GETTER/SETTER for "place"
-int getPlace () {
-    return place;
-}
-    void setPlace (int in_place) {
-        //TODO some sort of check for whatever place will look like to ensure valid input
-        this.place = in_place;
-    }
-*/
