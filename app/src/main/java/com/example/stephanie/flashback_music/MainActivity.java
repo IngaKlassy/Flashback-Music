@@ -8,15 +8,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import java.io.Serializable;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,7 +27,7 @@ import java.util.TreeMap;
  * Main Activity:
  *      SongList Screen
  */
-public class MainActivity extends AppCompatActivity implements Serializable {
+public class MainActivity extends AppCompatActivity {
     //VARIABLE DECLARATIONS*****
     static Player mainActivityPlayerOb;
 
@@ -45,25 +43,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     Map<String, Integer> songTitleToResourceId;
     Map<String, Album> albumTitleToAlbumOb;
-    Map<String, String> songToAlbum;
-    Map<String, String> songToArtist;
+    Map<String, String> songTitleToAlbumName;
+    Map<String, String> songTitleToArtistName;
 
     TreeMap<String, List<String>> AlbumToTrackListMap;
 
     Uri path;
-    int count = 0;
-
-    private AlbumService albumService;
-    private boolean isRunning = false;
-
-    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        intent = new Intent(MainActivity.this, AlbumService.class);
 
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
@@ -84,16 +74,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         songTitleToResourceId = new LinkedHashMap<>();
         albumTitleToAlbumOb = new LinkedHashMap<>();
         AlbumToTrackListMap = new TreeMap<>();
-        songToAlbum = new TreeMap<>();
-        songToArtist = new TreeMap<>();
+        songTitleToAlbumName = new TreeMap<>();
+        songTitleToArtistName = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
         ImageView pauseBt = (ImageView) findViewById(R.id.pause);
         pauseBt.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View view) {
-                                               if(mainActivityPlayerOb.getMp().isPlaying()) {
-                                                   mainActivityPlayerOb.getMp().pause();
+                                               if(mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
+                                                   mainActivityPlayerOb.getMediaPlayer().pause();
                                                }
                                            }
                                        }
@@ -104,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         playBt.setOnClickListener(new View.OnClickListener() {
                                           @Override
                                           public void onClick(View view) {
-                                                  if(!mainActivityPlayerOb.getMp().isPlaying()) {
-                                                      mainActivityPlayerOb.getMp().start();
+                                                  if(!mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
+                                                      mainActivityPlayerOb.getMediaPlayer().start();
                                                   }
                                           }
                                       }
@@ -130,12 +120,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, resID);
 
             songTitleToResourceId.put(songTitle, resID);
-            songToAlbum.put(songTitle, songAlbum);
-            songToArtist.put(songTitle, songArtist);
+            songTitleToAlbumName.put(songTitle, songAlbum);
+            songTitleToArtistName.put(songTitle, songArtist);
         }
 
 
-        ArrayList<Album> albums = mainActivityPlayerOb.albums;
+        ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
         for(int i = 0; i < albums.size(); i++)
         {
             Album currentAlbum = albums.get(i);
@@ -179,28 +169,14 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 //Intent intent = new Intent(MainActivity.this, AlbumService.class);
 
                 if(songName.equals("PLAY ALBUM")) {
-                    if(isRunning) {
-                        stopService(intent);
-                        isRunning = false;
-                    }
+                    String albumName = expandableListAdapter.getGroup(groupPosition).toString();
+                    Album albumOb = albumTitleToAlbumOb.get(albumName);
 
-                    Album temp = albumTitleToAlbumOb.get(expandableListAdapter.getGroup(groupPosition).toString());
-
-                    intent.putExtra("Album", temp);
-
-                    startService(intent);
-                    isRunning = true;
-
-                    mainActivityPlayerOb.playAlbum(MainActivity.this, temp);
+                    mainActivityPlayerOb.playAlbum(MainActivity.this, albumOb);
                 }
                 else {
-                    if(isRunning) {
-                        stopService(intent);
-                        isRunning = false;
-                    }
-
                     Integer resourceID = songTitleToResourceId.get(songName);
-                    tv.setText(songName + "\n" + songToAlbum.get(songName) + "\n" + songToArtist.get(songName));
+                    tv.setText(songName + "\n" + songTitleToAlbumName.get(songName) + "\n" + songTitleToArtistName.get(songName));
 
                     mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue());
                 }
@@ -208,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
         });
 
-        /*mainPlayer.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        /*mainPlayer.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
 
@@ -221,9 +197,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b == true) {
-                    if (mainActivityPlayerOb.getMp().isPlaying()) {
-                        mainActivityPlayerOb.getMp().pause();
-                        mainActivityPlayerOb.getMp().reset();
+                    if (mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
+                        mainActivityPlayerOb.getMediaPlayer().pause();
+                        mainActivityPlayerOb.getMediaPlayer().reset();
                     }
                     // generate priority queue
                     startFlashbackMode();

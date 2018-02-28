@@ -20,11 +20,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".AlbumService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity android:name=".FlashbackActivity"></activity>
     </application>
 

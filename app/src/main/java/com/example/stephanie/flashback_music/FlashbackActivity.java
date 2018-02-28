@@ -1,7 +1,6 @@
 package com.example.stephanie.flashback_music;
 
 import android.media.MediaPlayer;
-import android.media.MediaTimestamp;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,8 +8,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import javax.xml.datatype.Duration;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
 
@@ -64,7 +61,7 @@ public class FlashbackActivity extends AppCompatActivity {
             }
         });
 
-        mainActivityPlayerOb.getMp().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        mainActivityPlayerOb.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 song_ended = true;
@@ -91,11 +88,11 @@ public class FlashbackActivity extends AppCompatActivity {
             mainActivityPlayerOb.playSong(FlashbackActivity.this, song.getResId());
         }
         else {
-            mainActivityPlayerOb.getMp().start();
+            mainActivityPlayerOb.getMediaPlayer().start();
         }
     }
 
     public void pauseQueue() {
-        mainActivityPlayerOb.getMp().pause();
+        mainActivityPlayerOb.getMediaPlayer().pause();
     }
 }

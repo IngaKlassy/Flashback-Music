@@ -1,7 +1,6 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.widget.Toast;
@@ -14,43 +13,25 @@ import java.util.*;
  */
 
 public class Player implements Serializable{
-    //////////// Constants ////////////
-
-    // DAY OF THE WEEK CORRESPONDS TO INDEX VALUE (THE INT VALUE)
-    public static final int SUNDAY = 0;
-    public static final int MONDAY = 1;
-    public static final int TUESDAY = 2;
-    public static final int WEDNESDAY = 3;
-    public static final int THURSDAY = 4;
-    public static final int FRIDAY = 5;
-    public static final int SATURDAY = 6;
-
-    public static final int WEEK = 7;
-
-    //////////// Constants ////////////
-
 
     //////////// Variables ////////////
-    MediaPlayer mp;
+    static boolean inRegularMode;
+    static boolean inFlashbackMode;
+
+
+    MediaPlayer mediaPlayer;
 
     String currentSong;
     String currentSpotInSong;
+
     String currentTime;    // formatted: HHMM (HourHourMinuteMinute)
     String currentLocation;
     String currentDate;    // formatted: MMDDYYY
-    int [] currentDay = new int[7];  // will be size 7, all 0's except the index of the correct day is non-zero
-
-    String previousSong;
-    String previousTime;
-    String previousLocation;
-    String previousDate;
-    int [] previousDay;
-
-    static boolean inFlashback;
 
     PriorityQueue<Song> songPriorities;
 
-    ArrayList<Album> albums;
+    ArrayList<Album> albumObjects;
+    ArrayList<Song> songObjects;
 
     Map<Integer, Song> idsToSongs;
 
@@ -58,7 +39,9 @@ public class Player implements Serializable{
 
     List<Song> flashbackQueue;  //UNINITIALIZED
 
-    SortedSet<String> playedSongs = new TreeSet<>();
+    SortedSet<String> playedSongs;
+
+    LinkedList<Integer> regularModePlaylist;
 
     //////////// Variables ////////////
 
@@ -66,21 +49,25 @@ public class Player implements Serializable{
     //////////// Functions ////////////
 
     public Player() {
+        albumObjects = new ArrayList<>();
+        songObjects = new ArrayList<>();
+
         Comparator<Song> comp = new SongPointsComparator();
         songPriorities = new PriorityQueue<>(comp);
-        albums = new ArrayList<>();
         idsToSongs = new LinkedHashMap<>();
-        //songDatabase = new ArrayList<ArrayList<Song>>();
-        songDatabase = new ArrayList<Song>();
-        inFlashback = false;
+        songDatabase = new ArrayList<>();
+        inFlashbackMode = false;
+
+        playedSongs = new TreeSet<>();
+        regularModePlaylist =  new LinkedList<>();
     }
 
-    public ArrayList<Album> returnAlbums() {
-        return albums;
+    public ArrayList<Album> getListOfAlbumObs() {
+        return albumObjects;
     }
 
-    public MediaPlayer getMp(){
-        return this.mp;
+    public MediaPlayer getMediaPlayer(){
+        return this.mediaPlayer;
     }
 
     public PriorityQueue<Song> getSongPriorities(){
@@ -90,65 +77,98 @@ public class Player implements Serializable{
     public void add(String songTitle, String albumName, String artist, int resId)
     {
         Song currSong = new Song(songTitle, albumName, artist, resId);
+
+        songObjects.add(currSong);
         idsToSongs.put(resId, currSong);
-        if(albums.size() == 0)
+
+        if(albumObjects.size() == 0)
         {
-            albums.add(new Album(albumName, artist));
-            albums.get(0).addSong(currSong);
+            albumObjects.add(new Album(albumName, artist));
+            albumObjects.get(0).addSong(currSong);
+            return;
         }
 
-        for(int i = 0; i < albums.size(); i++) {
-            if(albums.get(i).getAlbumTitle().equals(albumName))
+        for(int i = 0; i < albumObjects.size(); i++) {
+            if(albumObjects.get(i).getAlbumTitle().equals(albumName))
             {
-                albums.get(i).addSong(currSong);
+                albumObjects.get(i).addSong(currSong);
                 return;
             }
         }
 
-        albums.add(new Album(albumName, artist));
-        albums.get(albums.size() - 1).addSong(currSong);
-
-
+        albumObjects.add(new Album(albumName, artist));
+        albumObjects.get(albumObjects.size() - 1).addSong(currSong);
     }
 
 
-    void playSong(final Activity a, final int resID) {
-        final Calendar calendar = Calendar.getInstance();
-        final Location location = new Location("La Jolla");
-        if(mp != null)
+    void playSong(final Activity activity, final int resID) {
+        if(!regularModePlaylist.isEmpty())
         {
-            mp.release();
+            regularModePlaylist.clear();
         }
 
-        mp = MediaPlayer.create(a, resID);
-        mp.start();
+        regularModePlaylist.add(new Integer(resID));
+
+        play(activity);
+    }
 
 
-        mp.setLooping(false);
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+    void playAlbum(Activity activity, Album album)
+    {
+        if(!regularModePlaylist.isEmpty())
+        {
+            regularModePlaylist.clear();
+        }
+
+        ArrayList<Integer> albumTrackList = album.getSongIds();
+        for(int i = 0; i < albumTrackList.size(); i++)
+        {
+            regularModePlaylist.add(new Integer(albumTrackList.get(i)));
+        }
+
+        play(activity);
+    }
+
+
+    void play(final Activity activity)
+    {
+        if(mediaPlayer != null)
+        {
+            if(mediaPlayer.isPlaying())
+            {
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        final int currentResourceId = regularModePlaylist.poll();
+        mediaPlayer = MediaPlayer.create(activity, currentResourceId);
+        mediaPlayer.start();
+
+        mediaPlayer.setLooping(false);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                Song song = idsToSongs.get(resID);
-
-                if (song.fromFlashback) {
+            public void onCompletion(MediaPlayer mp) {
+                /*if (song.fromFlashback) {
                     song.completed = true;
+                }*/
+
+                Song finishedSong = idsToSongs.get(new Integer(currentResourceId));
+                songDatabase.add(finishedSong);
+
+                idsToSongs.get(currentResourceId).update(Calendar.getInstance(), new Location("La Jolla"));
+                Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+
+                if(!regularModePlaylist.isEmpty())
+                {
+                    play(activity);
                 }
 
-                //songDatabase.get(0).add(song);
-                songDatabase.add(song);
-                idsToSongs.get(resID).update(calendar, location);
-                Toast.makeText(a.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
-                mediaPlayer.reset();
+                mediaPlayer.release();
+                mediaPlayer = null;
             }
         });
-    }
-
-    void playAlbum(Activity a, Album album)
-    {
-        if(mp != null)
-        {
-            mp.release();
-        }
     }
 
 
@@ -202,16 +222,6 @@ public class Player implements Serializable{
         // true if it will play
         // false if it will not play
         return true;
-    }
-
-    //TODO this should happen upon completion of a song
-    void savePrevious () {
-        // copy current values into previous values
-        previousSong = currentSong;
-        previousTime = currentTime;
-        previousDate = currentDate;
-        previousDay = currentDay;
-        previousLocation = currentLocation;
     }
 
 

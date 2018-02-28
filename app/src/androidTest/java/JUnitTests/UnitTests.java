@@ -10,7 +10,6 @@ import com.example.stephanie.flashback_music.Song;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import java.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class UnitTests {
     public void testPlayer() {
         player.add("Single Ladies", "Formation", "Beyonce", 56);
         player.add("Dance", "My album", "Beyonce", 72);
-        ArrayList<Album> albums = player.returnAlbums();
+        ArrayList<Album> albums = player.getListOfAlbumObs();
         assertEquals(albums.get(0).getAlbumTitle(), "Formation");
         assertEquals(albums.get(1).getAlbumTitle(), "My album");
     }
