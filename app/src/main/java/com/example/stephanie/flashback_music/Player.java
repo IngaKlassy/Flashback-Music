@@ -3,63 +3,51 @@ package com.example.stephanie.flashback_music;
 import android.app.Activity;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by Stephanie on 2/6/2018.
  */
 
-public class Player implements Serializable{
+public class Player {
 
     //////////// Variables ////////////
     static boolean inRegularMode;
     static boolean inFlashbackMode;
 
 
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
-    String currentSong;
-    String currentSpotInSong;
+    public ArrayList<Album> albumObjects;
+    private ArrayList<Song> songObjects;
 
-    String currentTime;    // formatted: HHMM (HourHourMinuteMinute)
-    String currentLocation;
-    String currentDate;    // formatted: MMDDYYY
+    private Map<Integer, Song> idsToSongs;
 
-    PriorityQueue<Song> songPriorities;
+    //SortedSet<String> playedSongs;
+    //playedSongs = new TreeSet<>();
 
-    ArrayList<Album> albumObjects;
-    ArrayList<Song> songObjects;
+    private LinkedList<Integer> regularModePlaylist;
+    protected PriorityQueue<Song> vibeModePlaylist;
 
-    Map<Integer, Song> idsToSongs;
-
-    ArrayList<Song> songDatabase; //UNINITIALIZED
-
-    List<Song> flashbackQueue;  //UNINITIALIZED
-
-    SortedSet<String> playedSongs;
-
-    LinkedList<Integer> regularModePlaylist;
-
-    //////////// Variables ////////////
 
 
     //////////// Functions ////////////
-
     public Player() {
         albumObjects = new ArrayList<>();
         songObjects = new ArrayList<>();
 
         Comparator<Song> comp = new SongPointsComparator();
-        songPriorities = new PriorityQueue<>(comp);
+
         idsToSongs = new LinkedHashMap<>();
-        songDatabase = new ArrayList<>();
+
+        inRegularMode = true;
         inFlashbackMode = false;
 
-        playedSongs = new TreeSet<>();
         regularModePlaylist =  new LinkedList<>();
+        vibeModePlaylist = new PriorityQueue<>(comp);
     }
 
     public ArrayList<Album> getListOfAlbumObs() {
@@ -70,11 +58,21 @@ public class Player implements Serializable{
         return this.mediaPlayer;
     }
 
-    public PriorityQueue<Song> getSongPriorities(){
-        return songPriorities;
+
+    protected void switchMode()
+    {
+        if(inRegularMode) {
+            inRegularMode = false;
+            inFlashbackMode = true;
+            return;
+        }
+
+        inRegularMode = true;
+        inFlashbackMode = false;
     }
 
-    public void add(String songTitle, String albumName, String artist, int resId)
+
+    protected void add(String songTitle, String albumName, String artist, int resId)
     {
         Song currSong = new Song(songTitle, albumName, artist, resId);
 
@@ -101,36 +99,32 @@ public class Player implements Serializable{
     }
 
 
-    void playSong(final Activity activity, final int resID) {
+    protected void playSong(Activity activity, final int resID, TextView textView) {
         if(!regularModePlaylist.isEmpty())
         {
             regularModePlaylist.clear();
         }
 
-        regularModePlaylist.add(new Integer(resID));
+        regularModePlaylist.add(resID);
 
-        play(activity);
+        regularModePlay(activity, textView);
     }
 
 
-    void playAlbum(Activity activity, Album album)
+    protected void playAlbum(Activity activity, Album album, TextView textView)
     {
         if(!regularModePlaylist.isEmpty())
         {
             regularModePlaylist.clear();
         }
 
-        ArrayList<Integer> albumTrackList = album.getSongIds();
-        for(int i = 0; i < albumTrackList.size(); i++)
-        {
-            regularModePlaylist.add(new Integer(albumTrackList.get(i)));
-        }
+        regularModePlaylist.addAll(album.getSongIds());
 
-        play(activity);
+        regularModePlay(activity, textView);
     }
 
 
-    void play(final Activity activity)
+    private void regularModePlay(final Activity activity, final TextView textView)
     {
         if(mediaPlayer != null)
         {
@@ -143,6 +137,54 @@ public class Player implements Serializable{
         }
 
         final int currentResourceId = regularModePlaylist.poll();
+        Song currentPlayingSong = idsToSongs.get(currentResourceId);
+
+        mediaPlayer = MediaPlayer.create(activity, currentResourceId);
+        updateRegModeSongDataTextview(textView, currentPlayingSong);
+        mediaPlayer.start();
+
+        mediaPlayer.setLooping(false);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                Song finishedSong = idsToSongs.get(currentResourceId);
+
+                finishedSong.update(Calendar.getInstance(), new Location("La Jolla"));
+                Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
+
+                if(!regularModePlaylist.isEmpty())
+                {
+                    regularModePlay(activity, textView);
+                }
+
+                updateRegModeNoSongDataTextview(textView);
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        });
+    }
+
+
+    protected void vibeModePlay(final Activity activity)
+    {
+        if(mediaPlayer != null)
+        {
+            if(mediaPlayer.isPlaying())
+            {
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        if(vibeModePlaylist.isEmpty()) {
+            return;
+        }
+
+        Song currentSongInPlaylist = vibeModePlaylist.poll();
+        final int currentResourceId = currentSongInPlaylist.getResId();
+
         mediaPlayer = MediaPlayer.create(activity, currentResourceId);
         mediaPlayer.start();
 
@@ -150,19 +192,16 @@ public class Player implements Serializable{
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                /*if (song.fromFlashback) {
-                    song.completed = true;
-                }*/
 
-                Song finishedSong = idsToSongs.get(new Integer(currentResourceId));
-                songDatabase.add(finishedSong);
+                Song finishedSong = idsToSongs.get(currentResourceId);
+                songObjects.add(finishedSong);
 
                 idsToSongs.get(currentResourceId).update(Calendar.getInstance(), new Location("La Jolla"));
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
-                if(!regularModePlaylist.isEmpty())
+                if(!vibeModePlaylist.isEmpty())
                 {
-                    play(activity);
+                    vibeModePlay(activity);
                 }
 
                 mediaPlayer.release();
@@ -172,7 +211,87 @@ public class Player implements Serializable{
     }
 
 
-    public class SongPointsComparator implements Comparator<Song>, Serializable {
+    public void play()
+    {
+        if(mediaPlayer != null) {
+            if(!mediaPlayer.isPlaying()) {
+                mediaPlayer.start();
+            }
+        }
+    }
+
+    public void pause()
+    {
+        if(mediaPlayer != null) {
+            if(mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
+        }
+    }
+
+    public void next(Activity activity, TextView textView)
+    {
+        if(inRegularMode)
+        {
+            if(!regularModePlaylist.isEmpty())
+            {
+                regularModePlay(activity, textView);
+                return;
+            }
+            else
+            {
+                if(mediaPlayer != null)
+                {
+                    if(mediaPlayer.isPlaying())
+                    {
+                        mediaPlayer.stop();
+                    }
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
+
+                updateRegModeNoSongDataTextview(textView);
+                return;
+            }
+        }
+        else
+        {
+            //In flashback mode
+        }
+    }
+
+
+    public void updateRegModeSongDataTextview(TextView textView, Song song)
+    {
+        String songTitle = song.getSongTitle();
+        if(songTitle == null){
+            songTitle = "Unknown";
+        }
+        String songTitleWhole = "Song Title: " + songTitle;
+
+        String albumTitle = song.getAlbumTitle();
+        if(albumTitle == null){
+            albumTitle = "Unknown";
+        }
+        String albumTitleWhole = "Album: " + albumTitle;
+
+        String artistName = song.getArtistName();
+        if(artistName == null){
+            artistName = "Unknown";
+        }
+        String artistNameWhole = "Artist: " + artistName;
+
+        textView.setText(songTitleWhole + "\n" + albumTitleWhole + "\n" + artistNameWhole);
+    }
+
+
+    public void updateRegModeNoSongDataTextview(TextView textView)
+    {
+        textView.setText("");
+    }
+
+
+    public class SongPointsComparator implements Comparator<Song> {
         @Override
         public int compare(Song x, Song y){
             if (x.getPoints() < y.getPoints()){
@@ -187,16 +306,19 @@ public class Player implements Serializable{
 
 
     public void prioritizeSongsPlayed () {
-        for(int i = 0; i < songDatabase.size(); i++){
+        for(int i = 0; i < songObjects.size(); i++){
         /*    for(int j = 0; j < songDatabase.get(i).size(); j++){
                 String currName = songDatabase.get(i).get(j).getName();
                 if(playedSongs.contains(currName)){
                     songDatabase.get(i).get(j).setPoints(songDatabase.get(i).get(j).getPoints() + 1);
                 }*/
-                //songPriorities.add(songDatabase.get(i).get(j));
-            songDatabase.get(i).completed = false;
-            songDatabase.get(i).fromFlashback = true;
-            songPriorities.add(songDatabase.get(i));
+                //vibeModePlaylist.add(songDatabase.get(i).get(j));
+            Song currentSong = songObjects.get(i);
+
+            if(currentSong.completed) {
+                vibeModePlaylist.add(currentSong);
+            }
+            vibeModePlaylist.add(currentSong);
             //}
         }
     }
@@ -219,8 +341,8 @@ public class Player implements Serializable{
 
     boolean shuffle (int points) {
         // determine, based on points, the probability that this song will be played
-        // true if it will play
-        // false if it will not play
+        // true if it will regularModePlay
+        // false if it will not regularModePlay
         return true;
     }
 
@@ -231,7 +353,7 @@ public class Player implements Serializable{
         // update the current values
         // check if the song is in the binary tree (try to insert)
         // if insertion succeeded
-        // play the song
+        // regularModePlay the song
         // if insertion failed
         // remove the song from the list
         // repeat from start of function

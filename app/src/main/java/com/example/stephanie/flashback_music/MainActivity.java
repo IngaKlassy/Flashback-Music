@@ -59,14 +59,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
 
-        //BOTTOM BAR SETUP*****
-        ImageView statusButton = findViewById(R.id.status);
-
-        ImageView playButton = findViewById(R.id.play);
-
-        ImageView pauseButton = findViewById(R.id.pause);
-
-        ImageView nextButton = findViewById(R.id.next);
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
@@ -78,28 +70,42 @@ public class MainActivity extends AppCompatActivity {
         songTitleToArtistName = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
-        ImageView pauseBt = (ImageView) findViewById(R.id.pause);
-        pauseBt.setOnClickListener(new View.OnClickListener() {
-                                           @Override
-                                           public void onClick(View view) {
-                                               if(mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
-                                                   mainActivityPlayerOb.getMediaPlayer().pause();
-                                               }
-                                           }
-                                       }
-        );
+
+
+        //BOTTOM BAR SETUP*****
+        ImageView statusButton = findViewById(R.id.status);
+
+        ImageView playButton = findViewById(R.id.play);
+
+        ImageView pauseButton = findViewById(R.id.pause);
+
+        ImageView nextButton = findViewById(R.id.next);
+
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainActivityPlayerOb.pause();
+            }
+        });
+
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainActivityPlayerOb.play();
+            }
+        });
+
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView textView = findViewById(R.id.songInfo);
+                mainActivityPlayerOb.next(MainActivity.this, textView);
+            }
+        });
 
         final int currentResource;
-        ImageView playBt = (ImageView) findViewById(R.id.play);
-        playBt.setOnClickListener(new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View view) {
-                                                  if(!mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
-                                                      mainActivityPlayerOb.getMediaPlayer().start();
-                                                  }
-                                          }
-                                      }
-        );
 
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
@@ -164,21 +170,18 @@ public class MainActivity extends AppCompatActivity {
 
                 String songName = expandableListAdapter.getChild(groupPosition, childPosition).toString();
                 Toast.makeText(getBaseContext(), " Clicked on :: " + songName, Toast.LENGTH_LONG).show();
-                TextView tv = findViewById(R.id.songInfo);
-
-                //Intent intent = new Intent(MainActivity.this, AlbumService.class);
+                TextView textView = findViewById(R.id.songInfo);
 
                 if(songName.equals("PLAY ALBUM")) {
                     String albumName = expandableListAdapter.getGroup(groupPosition).toString();
                     Album albumOb = albumTitleToAlbumOb.get(albumName);
 
-                    mainActivityPlayerOb.playAlbum(MainActivity.this, albumOb);
+                    mainActivityPlayerOb.playAlbum(MainActivity.this, albumOb, textView);
                 }
                 else {
                     Integer resourceID = songTitleToResourceId.get(songName);
-                    tv.setText(songName + "\n" + songTitleToAlbumName.get(songName) + "\n" + songTitleToArtistName.get(songName));
 
-                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue());
+                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue(), textView);
                 }
                 return true;
             }
@@ -196,11 +199,11 @@ public class MainActivity extends AppCompatActivity {
         flashbackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b == true) {
-                    if (mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
+                if (b) {
+                    /*if (mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
                         mainActivityPlayerOb.getMediaPlayer().pause();
                         mainActivityPlayerOb.getMediaPlayer().reset();
-                    }
+                    }*/
                     // generate priority queue
                     startFlashbackMode();
                     launchActivity();

@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:checked="false"
-                android:text="Switch to Flashback mode "
+                android:text="Switch to Vibe mode "
                 android:textSize="15dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -98,7 +98,7 @@
         android:id="@+id/songlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/bottomToolbar"
         app:layout_constraintTop_toBottomOf="@id/my_toolbar" />
 
 

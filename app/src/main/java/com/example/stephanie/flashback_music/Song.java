@@ -2,7 +2,6 @@ package com.example.stephanie.flashback_music;
 
 import android.location.Location;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -11,7 +10,7 @@ import java.util.Calendar;
  * Created by Stephanie on 2/6/2018.
  */
 
-public class Song implements Serializable{
+public class Song {
     //////////// Variables ////////////
     private String songTitle;
     private String songsAlbumTitle;
@@ -139,8 +138,9 @@ public class Song implements Serializable{
     }
 
 
-    public void update (Calendar c, Location location) {
+    public void update (Calendar calendar, Location location) {
         locations.add(location);
+        completed = true;
 
         //Pull weekday from Calender and change
         //appropriate slot in weekdays array to 1
