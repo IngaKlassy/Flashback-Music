@@ -2,8 +2,10 @@ package com.example.stephanie.flashback_music;
 
 import android.location.Location;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -24,13 +26,12 @@ public class Song {
     public boolean completed;
     public boolean fromFlashback;
 
-    private int timestampOfLastPlay;   // HHMM
-    private int datestampOfLastPlay;   // MMDDYYYY
     private int points;
+    String timeAndDate;
+    Calendar cal;
 
-    private ArrayList<Location> locations;
-    private int[] weekDays;   //Seven: Sunday, Monday, etc...
-    private int[] timesOfDay;  //Three: Morning, Afternoon, Night
+
+    private ArrayList<Location> locations = new ArrayList<>();
     //////////// Variables ////////////
 
 
@@ -40,64 +41,53 @@ public class Song {
         this.songsAlbumTitle = in_album;
         this.songsArtistName = in_artist;
         this.resourceId = rId;
-
+        timeAndDate = null;
         completed = false;
         fromFlashback = false;
 
         this.setNeutralTrue();
-
-        timestampOfLastPlay = 0;
-        datestampOfLastPlay = 0;
-
-        locations = new ArrayList<>();
-        weekDays = new int [7];
-        for(int i = 0; i < weekDays.length; i++)
-        { weekDays[i] = 0; }
-        timesOfDay = new int [3];
-        for(int i = 0; i < timesOfDay.length; i++)
-        { timesOfDay[i] = 0; }
     }
 
-    public String getSongTitle () { return songTitle; }
+    public String getSongTitle () {
+        return songTitle;
+    }
 
-    public String getArtistName () { return songsArtistName; }
+    public String getArtistName () {
+        return songsArtistName;
+    }
 
-    public String getAlbumTitle () { return songsAlbumTitle; }
+    public String getAlbumTitle () {
+        return songsAlbumTitle;
+    }
 
-    public int getResId () { return resourceId; }
+    public int getResId () {
+        return resourceId;
+    }
 
+    public ArrayList<Location> getLocations () {
+        return locations;
+    }
 
-
-    public int getTime () { return timestampOfLastPlay; }
-
-    public boolean setTime (int in_time) {
-        this.timestampOfLastPlay = in_time;
-        return true;
+    public String getName() {
+        return songTitle;
     }
 
 
-    public int getDate () { return datestampOfLastPlay; }
 
-    public boolean setDate (int in_date) {
-        // make sure input was 8 digits of less
-        int check = in_date;
-        int i;
+    public String getTimeAndDate () { return timeAndDate; }
 
-        for(i = 0 ; i < 8; i++) {
-            check = check/10;
-            if (check == 0)
-                break;
-        }
-        // invalid input
-        if (i != 7)
-            return false;
-        else {
-            this.datestampOfLastPlay = in_date;
-            return true;
-        }
+    public void setTimeAndDate () {
+        Date date = cal.getTime();
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat ft2 = new SimpleDateFormat("HH:mm");
+        timeAndDate = ft.format(date) + " at " + ft2.format(date);
     }
 
-    public String getName() { return songTitle;}
+    public Calendar getCalendar () {
+        return cal;
+    }
+
+
 
     /* GETTER/SETTER for "points" */
     public int getPoints () {
@@ -109,7 +99,9 @@ public class Song {
 
 
     /* GETTER/SETTER for "neutral" */
-    public boolean getNeutralStatus () { return neutral; }
+    public boolean getNeutralStatus () {
+        return neutral;
+    }
 
     public void setNeutralTrue () {
         this.neutral = true;
@@ -119,7 +111,9 @@ public class Song {
 
 
     /* GETTER/SETTER for "favorite" */
-    public boolean getFavoriteStatus () { return favorite; }
+    public boolean getFavoriteStatus () {
+        return favorite;
+    }
 
     public void setFavoriteTrue () {
         this.favorite = true;
@@ -129,7 +123,9 @@ public class Song {
 
 
     /* GETTER/SETTER for "dislike" */
-    public boolean getDislikeStatus () { return dislike; }
+    public boolean getDislikeStatus () {
+        return dislike;
+    }
 
     public void setDislikeTrue () {
         this.dislike = true;
@@ -141,28 +137,9 @@ public class Song {
     public void update (Calendar calendar, Location location) {
         locations.add(location);
         completed = true;
-
-        //Pull weekday from Calender and change
-        //appropriate slot in weekdays array to 1
-
-        //Set datestampOfLastPlay and
-        //timestampOfLastPlay from Calender
-        //Also update timesOfDay array
+        cal = calendar;
+        setTimeAndDate();
     }
     //////////// Functions ////////////
 }
 
-
-
-
-
-
-/* GETTER/SETTER for "place"
-int getPlace () {
-    return place;
-}
-    void setPlace (int in_place) {
-        //TODO some sort of check for whatever place will look like to ensure valid input
-        this.place = in_place;
-    }
-*/
