@@ -1,14 +1,11 @@
 package com.example.stephanie.flashback_music;
 
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,8 +22,6 @@ public class FlashbackActivity extends AppCompatActivity {
     TextView songArtist;
     TextView lastPlayed;
 
-    boolean song_ended;
-    boolean nothingToPlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +71,6 @@ public class FlashbackActivity extends AppCompatActivity {
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    TextView textView = findViewById(R.id.song_title);
                     mainActivityPlayerOb.next(FlashbackActivity.this, textviews);
                 }
             });
@@ -95,38 +89,6 @@ public class FlashbackActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-        /*mainActivityPlayerOb.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                song_ended = true;
-                playQueue();
-            }
-        });*/
-    }
-
-    public void playQueue() {
-        /*if (song_ended == true) {
-            Song song = mainActivityPlayerOb.vibeModePlaylist.poll();
-            song_ended = false;
-
-            if (song == null) {
-                Toast.makeText(getBaseContext(), "Nothing to play!", Toast.LENGTH_SHORT).show();
-                nothingToPlay = true;
-                return;
-            }
-
-            songName.setText(song.getSongTitle());
-            songAlbum.setText(song.getAlbumTitle());
-            songArtist.setText(song.getArtistName());
-            lastPlayed.setText("La Jolla");
-            //mainActivityPlayerOb.playSong(FlashbackActivity.this, song.getResId());
-        }
-        else {
-            mainActivityPlayerOb.getMediaPlayer().start();
-        }*/
     }
 
     public void displayNoSongsToPlay(ArrayList<TextView> textviews) {

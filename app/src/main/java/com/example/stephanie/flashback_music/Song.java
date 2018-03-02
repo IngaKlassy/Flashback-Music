@@ -60,7 +60,6 @@ public class Song {
         return songsAlbumTitle;
     }
 
-
     public String getWhoPlayedSong() {
         return whoPlayedSong;
     }
@@ -73,7 +72,10 @@ public class Song {
         return locations;
     }
 
-
+    public String getMostRecentLocation(){
+        Location lastPlayedLocation = locations.get(locations.size() - 1);
+        return lastPlayedLocation.getProvider();
+    }
 
     public String getTimeAndDate () {
         return timeAndDate;
@@ -89,7 +91,6 @@ public class Song {
     public Calendar getCalendar () {
         return cal;
     }
-
 
 
     /* GETTER/SETTER for "points" */
