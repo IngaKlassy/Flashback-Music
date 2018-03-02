@@ -3,6 +3,6 @@
     <string name="title_activity_flashback_">Flashback_Activity</string>
     <string name="regular_mode">REGULAR MODE</string>
     <string name="regular_message">Select a song or album to play</string>
-    <string name="flashback_mode">VIBE MODE</string>
-    <string name="flashback_message">Enjoy vibing</string>
+    <string name="vibe_mode">VIBE MODE</string>
+    <string name="vibe_message">Enjoy vibing</string>
 </resources>

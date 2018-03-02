@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity {
                         mainActivityPlayerOb.getMediaPlayer().reset();
                     }*/
                     // generate priority queue
-                    startFlashbackMode();
-                    launchActivity();
+
+                    startVibeMode();
                     flashbackSwitch.setChecked(false);
                 }
             }
@@ -215,19 +215,16 @@ public class MainActivity extends AppCompatActivity {
         onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
             public void onSwipeLeft() {
-                launchActivity();
+                startVibeMode();
             }
         };
     }
 
-    public void launchActivity() {
+    public void startVibeMode() {
         Intent intent = new Intent(this, FlashbackActivity.class);
         startActivity(intent);
     }
 
-    public void startFlashbackMode() {
-        mainActivityPlayerOb.prioritizeSongsPlayed();
-    }
 
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {

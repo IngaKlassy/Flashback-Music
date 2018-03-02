@@ -256,7 +256,9 @@ public class Player {
         }
         else
         {
-            //In flashback mode
+            if(!vibeModePlaylist.isEmpty()) {
+                vibeModePlay(activity);
+            }
         }
     }
 
@@ -280,6 +282,7 @@ public class Player {
             artistName = "Unknown";
         }
         String artistNameWhole = "Artist: " + artistName;
+
 
         textView.setText(songTitleWhole + "\n" + albumTitleWhole + "\n" + artistNameWhole);
     }
@@ -305,7 +308,7 @@ public class Player {
     }
 
 
-    public void prioritizeSongsPlayed () {
+    public void prioritizeSongsPlayed (Activity activity) {
         for(int i = 0; i < songObjects.size(); i++){
         /*    for(int j = 0; j < songDatabase.get(i).size(); j++){
                 String currName = songDatabase.get(i).get(j).getName();

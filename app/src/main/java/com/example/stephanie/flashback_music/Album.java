@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Album implements Serializable{
+public class Album {
     private String albumTitle;
     private String albumArtist;
 
@@ -22,6 +22,7 @@ public class Album implements Serializable{
     public Album (String title, String artist) {
         albumTitle = title;
         albumArtist = artist;
+
         songObList = new ArrayList<>();
         songTitleList = new ArrayList<>();
         songIds = new ArrayList<>();
@@ -45,6 +46,7 @@ public class Album implements Serializable{
         songTitleList.add(inSong);
         songIds.add((song.getResId()));
     }
+
 
     ArrayList<Song> getSongObs() {
         return songObList;

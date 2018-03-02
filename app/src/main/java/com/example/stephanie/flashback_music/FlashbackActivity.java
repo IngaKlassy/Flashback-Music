@@ -14,7 +14,7 @@ import static com.example.stephanie.flashback_music.MainActivity.mainActivityPla
 
 public class FlashbackActivity extends AppCompatActivity {
 
-    CompoundButton flashbackSwitch;
+    CompoundButton flashbackSwitch;git
 
     TextView songName;
     TextView songAlbum;
@@ -29,7 +29,7 @@ public class FlashbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flashback);
 
-        mainActivityPlayerOb.vibeModePlay(FlashbackActivity.this);
+        mainActivityPlayerOb.prioritizeSongsPlayed(FlashbackActivity.this);
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
