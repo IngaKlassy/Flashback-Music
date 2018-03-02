@@ -54,10 +54,6 @@ public class Player {
         return albumObjects;
     }
 
-    public MediaPlayer getMediaPlayer(){
-        return this.mediaPlayer;
-    }
-
 
     protected void switchMode()
     {
@@ -166,7 +162,7 @@ public class Player {
     }
 
 
-    protected void vibeModePlay(final Activity activity)
+    protected void vibeModePlay(final Activity activity, final ArrayList<TextView> textViews)
     {
         if(mediaPlayer != null)
         {
@@ -186,6 +182,7 @@ public class Player {
         final int currentResourceId = currentSongInPlaylist.getResId();
 
         mediaPlayer = MediaPlayer.create(activity, currentResourceId);
+        updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
         mediaPlayer.start();
 
         mediaPlayer.setLooping(false);
@@ -196,16 +193,13 @@ public class Player {
                 Song finishedSong = idsToSongs.get(currentResourceId);
                 songObjects.add(finishedSong);
 
-                idsToSongs.get(currentResourceId).update(Calendar.getInstance(), new Location("La Jolla"), "Someone");
-                Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
-
                 if(!vibeModePlaylist.isEmpty())
                 {
-                    vibeModePlay(activity);
+                    vibeModePlay(activity, textViews);
                 }
 
-                mediaPlayer.release();
-                mediaPlayer = null;
+                prioritizeSongsPlayed();
+                vibeModePlay(activity, textViews);
             }
         });
     }
@@ -229,13 +223,13 @@ public class Player {
         }
     }
 
-    public void next(Activity activity, TextView textView)
+    public void next(Activity activity, ArrayList<TextView> textViews)
     {
         if(inRegularMode)
         {
             if(!regularModePlaylist.isEmpty())
             {
-                regularModePlay(activity, textView);
+                regularModePlay(activity, textViews.get(0));
                 return;
             }
             else
@@ -250,15 +244,34 @@ public class Player {
                     mediaPlayer = null;
                 }
 
-                updateRegModeNoSongDataTextview(textView);
+                updateRegModeNoSongDataTextview(textViews.get(0));
                 return;
             }
         }
         else
         {
             if(!vibeModePlaylist.isEmpty()) {
-                vibeModePlay(activity);
+                vibeModePlay(activity, textViews);
             }
+            else
+            {
+                prioritizeSongsPlayed();
+                vibeModePlay(activity, textViews);
+            }
+        }
+    }
+
+
+    public void stop()
+    {
+        if(mediaPlayer != null)
+        {
+            if(mediaPlayer.isPlaying())
+            {
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
@@ -313,6 +326,53 @@ public class Player {
     }
 
 
+    public void updateVibeModeSongDataTextview(ArrayList<TextView> textViews, Song song)
+    {
+        String songTitle = song.getSongTitle();
+        if(songTitle == null){
+            songTitle = "Unknown";
+        }
+        String songTitleWhole = "Current Song: " + "\n" + songTitle;
+        textViews.get(0).setText(songTitleWhole);
+
+
+        String albumTitle = song.getAlbumTitle();
+        if(albumTitle == null){
+            albumTitle = "Unknown";
+        }
+        String albumTitleWhole = "Album: " + "\n" + albumTitle;
+        textViews.get(1).setText(albumTitleWhole);
+
+
+        String artistName = song.getArtistName();
+        if(artistName == null){
+            artistName = "Unknown";
+        }
+        String artistNameWhole = "Artist: " + "\n" + artistName;
+        textViews.get(2).setText(artistNameWhole);
+
+
+        String timeAndDate = song.getTimeAndDate();
+        if(timeAndDate == null){
+            timeAndDate = "";
+        }
+
+        String playedByWho = song.getWhoPlayedSong();
+        if(playedByWho == null){
+            playedByWho = "";
+        }
+
+        String lastPlayed = "Last played " + playedByWho + "\n" + timeAndDate;
+
+        if(timeAndDate == "" && playedByWho == "")
+        {
+            lastPlayed = "";
+        }
+
+        textViews.get(3).setText(lastPlayed);
+    }
+
+
     public class SongPointsComparator implements Comparator<Song> {
         @Override
         public int compare(Song x, Song y){
@@ -327,7 +387,7 @@ public class Player {
     }
 
 
-    public void prioritizeSongsPlayed (Activity activity) {
+    public void prioritizeSongsPlayed () {
         for(int i = 0; i < songObjects.size(); i++){
         /*    for(int j = 0; j < songDatabase.get(i).size(); j++){
                 String currName = songDatabase.get(i).get(j).getName();
@@ -340,9 +400,13 @@ public class Player {
             if(currentSong.completed) {
                 vibeModePlaylist.add(currentSong);
             }
-            vibeModePlaylist.add(currentSong);
             //}
         }
+    }
+
+
+    public PriorityQueue<Song> getVibeModePlaylist() {
+        return vibeModePlaylist;
     }
 
 

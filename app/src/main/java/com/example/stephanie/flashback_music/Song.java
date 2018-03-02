@@ -8,10 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-/**
- * Created by Stephanie on 2/6/2018.
- */
-
 public class Song {
     //////////// Variables ////////////
     private String songTitle;

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
-    CompoundButton flashbackSwitch;
+    CompoundButton vibeSwitch;
     OnSwipeTouchListener onSwipeTouchListener;
 
     Map<String, Integer> songTitleToResourceId;
@@ -74,11 +74,8 @@ public class MainActivity extends AppCompatActivity {
 
         //BOTTOM BAR SETUP*****
         ImageView statusButton = findViewById(R.id.status);
-
         ImageView playButton = findViewById(R.id.play);
-
         ImageView pauseButton = findViewById(R.id.pause);
-
         ImageView nextButton = findViewById(R.id.next);
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,16 +92,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TextView textView = findViewById(R.id.songInfo);
-                mainActivityPlayerOb.next(MainActivity.this, textView);
+
+                ArrayList<TextView> textViews = new ArrayList<>();
+                textViews.add(textView);
+
+                mainActivityPlayerOb.next(MainActivity.this, textViews);
             }
         });
 
-        final int currentResource;
+        // flashback mode activity switch
+        vibeSwitch = (CompoundButton) findViewById(R.id.vibe_switch);
+
+        vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    mainActivityPlayerOb.switchMode();
+                    mainActivityPlayerOb.stop();
+                    startVibeMode();
+                    vibeSwitch.setChecked(false);
+                }
+            }
+        });
+
+        /*onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
+            @Override
+            public void onSwipeLeft() {
+                startVibeMode();
+            }
+        };*/
 
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
@@ -179,45 +198,13 @@ public class MainActivity extends AppCompatActivity {
                     mainActivityPlayerOb.playAlbum(MainActivity.this, albumOb, textView);
                 }
                 else {
-                    Integer resourceID = songTitleToResourceId.get(songName);
+                    int resourceID = songTitleToResourceId.get(songName);
 
-                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID.intValue(), textView);
+                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID, textView);
                 }
                 return true;
             }
         });
-
-        /*mainPlayer.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-
-            }
-        });*/
-
-        // flashback mode activity switch
-        flashbackSwitch = (CompoundButton) findViewById(R.id.flashback_switch);
-        flashbackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    /*if (mainActivityPlayerOb.getMediaPlayer().isPlaying()) {
-                        mainActivityPlayerOb.getMediaPlayer().pause();
-                        mainActivityPlayerOb.getMediaPlayer().reset();
-                    }*/
-                    // generate priority queue
-
-                    startVibeMode();
-                    flashbackSwitch.setChecked(false);
-                }
-            }
-        });
-
-        onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
-            @Override
-            public void onSwipeLeft() {
-                startVibeMode();
-            }
-        };
     }
 
     public void startVibeMode() {
@@ -225,26 +212,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }
