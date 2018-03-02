@@ -14,20 +14,16 @@ public class Album implements Serializable{
     private String albumArtist;
 
 
-    private ArrayList<Song> songObList;
-    private List<String> songTitleList;
-    private ArrayList<Integer> songIds;
+    private ArrayList<Song> songObList = new ArrayList<>();
+    private List<String> songTitleList = new ArrayList<>();
+    private ArrayList<Integer> songIds = new ArrayList<>();
 
 
     public Album (String title, String artist) {
         albumTitle = title;
         albumArtist = artist;
-        songObList = new ArrayList<>();
-        songTitleList = new ArrayList<>();
-        songIds = new ArrayList<>();
         songTitleList.add("PLAY ALBUM");
     }
-
 
 
     public void addSong (Song song) {
@@ -60,7 +56,6 @@ public class Album implements Serializable{
     }
 
     public String getAlbumTitle() {
-
         return albumTitle;
     }
 
