@@ -17,6 +17,7 @@ public class Song {
     private String songTitle;
     private String songsAlbumTitle;
     private String songsArtistName;
+    private String whoPlayedSong;
     private int resourceId;
 
     private boolean neutral;
@@ -41,7 +42,10 @@ public class Song {
         this.songsAlbumTitle = in_album;
         this.songsArtistName = in_artist;
         this.resourceId = rId;
+
         timeAndDate = null;
+        whoPlayedSong = null;
+
         completed = false;
         fromFlashback = false;
 
@@ -60,6 +64,11 @@ public class Song {
         return songsAlbumTitle;
     }
 
+
+    public String getWhoPlayedSong() {
+        return whoPlayedSong;
+    }
+
     public int getResId () {
         return resourceId;
     }
@@ -68,19 +77,17 @@ public class Song {
         return locations;
     }
 
-    public String getName() {
-        return songTitle;
+
+
+    public String getTimeAndDate () {
+        return timeAndDate;
     }
-
-
-
-    public String getTimeAndDate () { return timeAndDate; }
 
     public void setTimeAndDate () {
         Date date = cal.getTime();
         SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat ft2 = new SimpleDateFormat("HH:mm");
-        timeAndDate = ft.format(date) + " at " + ft2.format(date);
+        timeAndDate = " on " + ft.format(date) + " at " + ft2.format(date);
     }
 
     public Calendar getCalendar () {
@@ -93,6 +100,7 @@ public class Song {
     public int getPoints () {
         return points;
     }
+
     public void setPoints (int in_points) {
         this.points = in_points;
     }
@@ -134,11 +142,13 @@ public class Song {
     }
 
 
-    public void update (Calendar calendar, Location location) {
+    public void update (Calendar calendar, Location location, String whoPlayedSong) {
         locations.add(location);
         completed = true;
         cal = calendar;
         setTimeAndDate();
+
+        this.whoPlayedSong = " by " + whoPlayedSong;
     }
     //////////// Functions ////////////
 }

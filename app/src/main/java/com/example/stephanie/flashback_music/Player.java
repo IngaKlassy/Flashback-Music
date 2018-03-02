@@ -150,7 +150,7 @@ public class Player {
 
                 Song finishedSong = idsToSongs.get(currentResourceId);
 
-                finishedSong.update(Calendar.getInstance(), new Location("La Jolla"));
+                finishedSong.update(Calendar.getInstance(), new Location("La Jolla"), "You");
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
@@ -196,7 +196,7 @@ public class Player {
                 Song finishedSong = idsToSongs.get(currentResourceId);
                 songObjects.add(finishedSong);
 
-                idsToSongs.get(currentResourceId).update(Calendar.getInstance(), new Location("La Jolla"));
+                idsToSongs.get(currentResourceId).update(Calendar.getInstance(), new Location("La Jolla"), "Someone");
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!vibeModePlaylist.isEmpty())
@@ -283,8 +283,27 @@ public class Player {
         }
         String artistNameWhole = "Artist: " + artistName;
 
+        String timeAndDate = song.getTimeAndDate();
+        if(timeAndDate == null){
+            timeAndDate = "";
+        }
 
-        textView.setText(songTitleWhole + "\n" + albumTitleWhole + "\n" + artistNameWhole);
+        String playedByWho = song.getWhoPlayedSong();
+        if(playedByWho == null){
+            playedByWho = "";
+        }
+
+        String lastPlayed = "Last played " + playedByWho + timeAndDate;
+
+        if(timeAndDate == "" && playedByWho == "")
+        {
+            lastPlayed = "This song is Playing for the first time";
+        }
+
+
+
+        textView.setText(songTitleWhole + "\n" + albumTitleWhole + "\n" + artistNameWhole
+        + "\n" + lastPlayed);
     }
 
 

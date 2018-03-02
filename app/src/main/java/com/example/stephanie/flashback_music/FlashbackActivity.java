@@ -14,7 +14,7 @@ import static com.example.stephanie.flashback_music.MainActivity.mainActivityPla
 
 public class FlashbackActivity extends AppCompatActivity {
 
-    CompoundButton flashbackSwitch;git
+    CompoundButton flashbackSwitch;
 
     TextView songName;
     TextView songAlbum;
@@ -103,7 +103,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 return;
             }
 
-            songName.setText(song.getName());
+            songName.setText(song.getSongTitle());
             songAlbum.setText(song.getAlbumTitle());
             songArtist.setText(song.getArtistName());
             lastPlayed.setText("La Jolla");
