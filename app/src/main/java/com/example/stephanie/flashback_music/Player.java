@@ -68,7 +68,7 @@ public class Player {
     }
 
 
-    protected void add(String songTitle, String albumName, String artist, int resId)
+    public void add(String songTitle, String albumName, String artist, int resId)
     {
         Song currSong = new Song(songTitle, albumName, artist, resId);
 

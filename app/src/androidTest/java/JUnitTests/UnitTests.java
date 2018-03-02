@@ -38,7 +38,7 @@ public class UnitTests {
 
     @Test
     public void testSongClass() {
-        String name = song.getName();
+        String name = song.getSongTitle();
         assertEquals(name, "Single Ladies");
         assertEquals(song.getAlbumTitle(), "Formation");
         assertEquals(song.getAlbumTitle(), "Formation");
