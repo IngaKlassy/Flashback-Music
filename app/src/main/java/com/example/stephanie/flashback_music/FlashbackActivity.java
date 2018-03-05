@@ -1,6 +1,7 @@
 package com.example.stephanie.flashback_music;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import static com.example.stephanie.flashback_music.MainActivity.mainActivityPla
 
 public class FlashbackActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 1;
+    private static final int RC_SIGN_IN = 111;
     CompoundButton flashbackSwitch;
 
     ArrayList<TextView> textviews;
@@ -106,6 +108,7 @@ public class FlashbackActivity extends AppCompatActivity {
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.sign_in_button:
+                        signOut();
                         signIn();
                         break;
                     // ...
@@ -140,16 +143,24 @@ public class FlashbackActivity extends AppCompatActivity {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), account.getDisplayName(), Toast.LENGTH_LONG).show();
         }
         else{
             Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
         }
-        //TODO: UPDATEUI
-
-
-
     }
+
+
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    //
+                }
+            });
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -176,6 +187,7 @@ public class FlashbackActivity extends AppCompatActivity {
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             //updateUI(null);
+            e.printStackTrace();
         }
     }
     public void displayNoSongsToPlay(ArrayList<TextView> textviews) {
