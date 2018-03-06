@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ExpandableListAdapter;
@@ -23,6 +24,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -60,21 +65,27 @@ public class MainActivity extends AppCompatActivity {
     // Acquire a reference to the system Location Manager
     LocationManager locationManager;
 
+    static FirebaseDatabase database;
+    static DatabaseReference myRef;
+    static FirebaseOptions options;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        options = new FirebaseOptions.Builder()
+                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
+                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
+        database = FirebaseDatabase.getInstance(
+                FirebaseApp.initializeApp(this, options, "secondary"));
+        myRef = database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
+
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
 
-
-
-
         Uri path;
-
-
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();

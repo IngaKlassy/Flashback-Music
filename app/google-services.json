@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "757111785128",
+    "firebase_url": "https://cse-110-team-project-team-29.firebaseio.com",
+    "project_id": "cse-110-team-project-team-29",
+    "storage_bucket": "cse-110-team-project-team-29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757111785128:android:39aebf8f7043bb7b",
+        "android_client_info": {
+          "package_name": "com.example.stephanie.flashback_music"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757111785128-93ushfrt8kle55ftbf5u1o40cnj2gq5u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stephanie.flashback_music",
+            "certificate_hash": "6a212673d5c61766bc42d4a7b2244a470ba974f2"
+          }
+        },
+        {
+          "client_id": "757111785128-ulopq2nu5b8297qot6hr5mvc5bnrigm5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTP1DZiy8XJllzlTjWAf_Gu-PCJFCMyPQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "757111785128-ulopq2nu5b8297qot6hr5mvc5bnrigm5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

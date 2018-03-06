@@ -2,6 +2,7 @@ package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.TextView;
@@ -158,6 +159,8 @@ public class Player {
                 updateRegModeNoSongDataTextview(textView);
                 mediaPlayer.release();
                 mediaPlayer = null;
+
+                MainActivity.myRef.setValue(finishedSong);
             }
         });
     }
@@ -387,66 +390,40 @@ public class Player {
         }
     }
 
-
     public void prioritizeSongsPlayed () {
+        Song currentSong;
+        Location current;
+
         for(int i = 0; i < songObjects.size(); i++){
-        /*    for(int j = 0; j < songDatabase.get(i).size(); j++){
-                String currName = songDatabase.get(i).get(j).getName();
-                if(playedSongs.contains(currName)){
-                    songDatabase.get(i).get(j).setPoints(songDatabase.get(i).get(j).getPoints() + 1);
-                }*/
-                //vibeModePlaylist.add(songDatabase.get(i).get(j));
-            Song currentSong = songObjects.get(i);
+
+            currentSong = songObjects.get(i);
+
+            currentSong.setPoints(currentSong.getPoints()
+                                  + setLocationPoints(currentSong.getLocations().get(i))
+                                  + setRecentlyPlayedPoints(currentSong.getCalendar())
+                                  + setFriendPlayedPoints(currentSong));
 
             if(currentSong.completed) {
                 vibeModePlaylist.add(currentSong);
             }
-            //}
         }
         System.out.println("Queue Reprioritized");
         Log.w("Reprioritizing in Player: ", "success!" );
     }
 
+    // TODO ugh it deleted everything :((
+    public int setLocationPoints(Location location){
+        return 3;
+    }
+    public int setRecentlyPlayedPoints(Calendar cal) {
+        return 2;
+    }
+    public int setFriendPlayedPoints(Song song) {
+        return 1;
+    }
 
     public PriorityQueue<Song> getVibeModePlaylist() {
         return vibeModePlaylist;
     }
 
-
-    // override using comparator class for priority queue
-
-    boolean shuffle (int points) {
-        // determine, based on points, the probability that this song will be played
-        // true if it will regularModePlay
-        // false if it will not regularModePlay
-        return true;
-    }
-
-
-    //TODO this should happen after savePrevious
-    //TODO this should be able to happen at the same time as the create method
-    void playFlashbackSong() {
-        // update the current values
-        // check if the song is in the binary tree (try to insert)
-        // if insertion succeeded
-        // regularModePlay the song
-        // if insertion failed
-        // remove the song from the list
-        // repeat from start of function
-    }
-
-    //TODO this should happen at the same time as playFlashbackSong/playSong
-    //TODO aka it will happen upon completion of a song and the start of the next song
-    void create () {
-        // create a new song object with the previous values
-        // call insertToDatabase
-    }
-
-    boolean insertToDatabase (String songName) {
-        // add song alphabetically to songDatabase
-        // "duplicate" insertions should go on the same row as one another
-        return true;
-    }
-
-    //////////// Functions ////////////
 }
