@@ -3,6 +3,7 @@ package com.example.stephanie.flashback_music;
 import android.app.Activity;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -402,6 +403,8 @@ public class Player {
             }
             //}
         }
+        System.out.println("Queue Reprioritized");
+        Log.w("Reprioritizing in Player: ", "success!" );
     }
 
 
@@ -411,19 +414,6 @@ public class Player {
 
 
     // override using comparator class for priority queue
-
-    // updates point values for song objects and uses a priority queue to prioritize songs
-    static void prioritizeSongs (String location) {
-        // set point values for song
-
-        // add song to priority queue
-        // repeat until done with all songs from songDatabase
-
-        // use "shuffle" to determine if song at top of queue will be played
-        // if yes, add to flashbackQueue and remove
-        // if no, remove to add back in after you get a yes and move on to next song
-        // repeat until empty priority queue
-    }
 
     boolean shuffle (int points) {
         // determine, based on points, the probability that this song will be played

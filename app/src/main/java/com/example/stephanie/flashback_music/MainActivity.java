@@ -1,10 +1,13 @@
 package com.example.stephanie.flashback_music;
-
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -13,6 +16,12 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+
 
 
 import java.lang.reflect.Field;
@@ -48,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     TreeMap<String, List<String>> AlbumToTrackListMap;
 
-    Uri path;
+    // Acquire a reference to the system Location Manager
+    LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
+
+
+
+
+        Uri path;
+
 
 
         //INITIALIZING VARIABLES*****
@@ -205,6 +221,43 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                Toast.makeText(getApplicationContext(), location.toString(), Toast.LENGTH_LONG).show();
+                mainActivityPlayerOb.prioritizeSongsPlayed();
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+        /**
+         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+         requestPermissions(
+         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+         100);
+         Log.d("main activity location","ins");
+         return;
+         }*/
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+
+// Register the listener with the Location Manager to receive location updates
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        locationManager.requestLocationUpdates(locationProvider, 0, 31, locationListener);
     }
 
     public void startVibeMode() {
