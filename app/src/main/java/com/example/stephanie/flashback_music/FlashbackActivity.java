@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
 
 public class FlashbackActivity extends AppCompatActivity {
+    private static final String TAG = "FLASHBACK";
 
     private static final int RC_SIGN_IN = 111;
     CompoundButton flashbackSwitch;
@@ -113,6 +114,7 @@ public class FlashbackActivity extends AppCompatActivity {
                         break;
                     // ...
                 }
+
             }
         });
 
@@ -136,6 +138,7 @@ public class FlashbackActivity extends AppCompatActivity {
     private void signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
     @Override
@@ -143,7 +146,7 @@ public class FlashbackActivity extends AppCompatActivity {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            Toast.makeText(getApplicationContext(), account.getDisplayName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "hello "+account.getDisplayName(), Toast.LENGTH_LONG).show();
         }
         else{
             Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
@@ -179,13 +182,15 @@ public class FlashbackActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             myAccount = account;
+            Toast.makeText(getApplicationContext(), account.getDisplayName(), Toast.LENGTH_LONG).show();
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
         } catch (ApiException e) {
+            Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             //updateUI(null);
             e.printStackTrace();
         }
