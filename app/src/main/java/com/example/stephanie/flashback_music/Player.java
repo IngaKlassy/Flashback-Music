@@ -2,7 +2,6 @@ package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
 import android.location.Location;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.TextView;
@@ -202,7 +201,7 @@ public class Player {
                     vibeModePlay(activity, textViews);
                 }
 
-                prioritizeSongsPlayed();
+                prioritizeSongs();
                 vibeModePlay(activity, textViews);
             }
         });
@@ -259,7 +258,7 @@ public class Player {
             }
             else
             {
-                prioritizeSongsPlayed();
+                prioritizeSongs();
                 vibeModePlay(activity, textViews);
             }
         }
@@ -390,7 +389,7 @@ public class Player {
         }
     }
 
-    public void prioritizeSongsPlayed () {
+    public void prioritizeSongs() {
         Song currentSong;
         Location current;
 
@@ -398,18 +397,23 @@ public class Player {
 
             currentSong = songObjects.get(i);
 
-            currentSong.setPoints(currentSong.getPoints()
-                                  + setLocationPoints(currentSong.getLocations().get(i))
-                                  + setRecentlyPlayedPoints(currentSong.getCalendar())
-                                  + setFriendPlayedPoints(currentSong));
+            if(currentSong.getLocations().size() != 0) {
+                currentSong.setPoints(currentSong.getPoints()
+                        + setLocationPoints(currentSong.getLocations().get(i))
+                        + setRecentlyPlayedPoints(currentSong.getCalendar())
+                        + setFriendPlayedPoints(currentSong));
 
-            if(currentSong.completed) {
                 vibeModePlaylist.add(currentSong);
             }
+
+            /*if(currentSong.completed) {
+                vibeModePlaylist.add(currentSong);
+            }*/
         }
         System.out.println("Queue Reprioritized");
         Log.w("Reprioritizing in Player: ", "success!" );
     }
+
 
     // TODO ugh it deleted everything :((
     public int setLocationPoints(Location location){

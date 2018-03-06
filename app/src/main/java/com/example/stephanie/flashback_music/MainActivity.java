@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ExpandableListAdapter;
@@ -21,7 +20,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 
 
 import com.google.firebase.FirebaseApp;
@@ -239,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 Toast.makeText(getApplicationContext(), location.toString(), Toast.LENGTH_LONG).show();
-                mainActivityPlayerOb.prioritizeSongsPlayed();
+                mainActivityPlayerOb.prioritizeSongs();
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}

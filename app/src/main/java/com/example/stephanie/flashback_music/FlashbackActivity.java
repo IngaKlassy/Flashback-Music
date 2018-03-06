@@ -64,7 +64,7 @@ public class FlashbackActivity extends AppCompatActivity {
         textviews.add(songArtist);
         textviews.add(lastPlayed);
 
-        mainActivityPlayerOb.prioritizeSongsPlayed();
+        mainActivityPlayerOb.prioritizeSongs();
 
         if(mainActivityPlayerOb.getVibeModePlaylist().isEmpty())
         {
