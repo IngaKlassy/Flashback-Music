@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+
 import java.util.ArrayList;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
@@ -50,7 +51,6 @@ public class FlashbackActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
 
 
         songName = (TextView) findViewById(R.id.song_title);

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,12 +28,18 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
+import static android.os.Environment.getDataDirectory;
+import static android.os.Environment.getDownloadCacheDirectory;
+import static android.os.Environment.getRootDirectory;
 
 
 /*
@@ -42,6 +49,10 @@ import java.util.TreeMap;
 public class MainActivity extends AppCompatActivity {
     //VARIABLE DECLARATIONS*****
     static Player mainActivityPlayerOb;
+
+    static FirebaseDatabase database;
+    static DatabaseReference myRef;
+    static FirebaseOptions options;
 
     MediaMetadataRetriever metaRetriever;
 
@@ -62,21 +73,21 @@ public class MainActivity extends AppCompatActivity {
 
     // Acquire a reference to the system Location Manager
     LocationManager locationManager;
-
-    static FirebaseDatabase database;
-    static DatabaseReference myRef;
-    static FirebaseOptions options;
+    Location l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //DATABASE SETUP*****
         options = new FirebaseOptions.Builder()
                 .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
                 .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
+
         database = FirebaseDatabase.getInstance(
                 FirebaseApp.initializeApp(this, options, "secondary"));
+
         myRef = database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
 
         //ACTION BAR SETUP*****
@@ -84,6 +95,38 @@ public class MainActivity extends AppCompatActivity {
         setActionBar(toolbar);
 
         Uri path;
+
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        File downloadsDirectory = getExternalFilesDir(DIRECTORY_DOWNLOADS).getAbsoluteFile();
+        Toast.makeText(getBaseContext(), downloadsDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        File[] temp = downloadsDirectory.listFiles();
+        //File[] downloadedFiles = downloadsDirectory.listFiles();
+
+        if(temp.length == 0) {
+            Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_LONG).show();
+        }
+        else {
+            for(File f: temp){
+                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                File[] temp2 = f.listFiles();
+                if(temp2 == null || temp2.length == 0) {
+                    Toast.makeText(getBaseContext(), f.getName() + "List is empty" ,Toast.LENGTH_LONG).show();
+                }
+                else {
+                    for(File f2:temp2) {
+                        Toast.makeText(getBaseContext(), "File found: " + f2.getName() + " in " + f.getName(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }*/
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
@@ -236,7 +279,10 @@ public class MainActivity extends AppCompatActivity {
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                Toast.makeText(getApplicationContext(), location.toString(), Toast.LENGTH_LONG).show();
+                l = location;
+                Toast.makeText(getApplicationContext(), "(" + location.getLongitude()
+                        + ", " + location.getLatitude() + ")", Toast.LENGTH_LONG).show();
+
                 mainActivityPlayerOb.prioritizeSongs();
             }
 
@@ -263,8 +309,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
-// Register the listener with the Location Manager to receive location updates
+        // Register the listener with the Location Manager to receive location updates
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 31, locationListener);
     }
