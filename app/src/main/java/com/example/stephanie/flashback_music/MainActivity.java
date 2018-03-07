@@ -194,6 +194,40 @@ public class MainActivity extends AppCompatActivity {
             }
         };*/
 
+/*
+//gets filepath to downloads folder
+        File dl_path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        dl_path.setReadable(true);
+        dl_path.setWritable(true);
+        Toast.makeText(getBaseContext(), dl_path.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        //File dl_path = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        File[] songs = dl_path.listFiles();
+
+        if (songs.length == 0) {
+            Toast.makeText(getBaseContext(), "Length is 0", Toast.LENGTH_LONG).show();
+        }
+        else {
+            //TODO: Add type check for .mp3, .wav, etc.
+            for (File f : songs) {
+                String ext = android.webkit.MimeTypeMap.getFileExtensionFromUrl(f.getName());
+                if (ext.equals(MP3)) {
+                    Toast.makeText(getBaseContext(), "File " + f.getName() + " is an MP3", Toast.LENGTH_LONG).show();
+
+                    metaRetriever.setDataSource(f.getPath());
+
+                    String songTitle = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                    String songAlbum = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                    String songArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+
+                    mainActivityPlayerOb.add(songTitle, songAlbum, songArtist);
+                } else {
+                    Toast.makeText(getBaseContext(), "File " + f.getName() + " is not MP3", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+*/
+
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
         Field[] fields = R.raw.class.getFields();
