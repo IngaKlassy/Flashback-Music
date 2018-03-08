@@ -36,11 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
-import static android.os.Environment.getDataDirectory;
-import static android.os.Environment.getDownloadCacheDirectory;
-import static android.os.Environment.getRootDirectory;
-
 
 /*
  * Main Activity:
@@ -96,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         Uri path;
 
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        //Pulling Downloads From phone
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -105,28 +101,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        File downloadsDirectory = getExternalFilesDir(DIRECTORY_DOWNLOADS).getAbsoluteFile();
-        Toast.makeText(getBaseContext(), downloadsDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
-        File[] temp = downloadsDirectory.listFiles();
-        //File[] downloadedFiles = downloadsDirectory.listFiles();
-
-        if(temp.length == 0) {
-            Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_LONG).show();
-        }
-        else {
-            for(File f: temp){
-                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
-                File[] temp2 = f.listFiles();
-                if(temp2 == null || temp2.length == 0) {
-                    Toast.makeText(getBaseContext(), f.getName() + "List is empty" ,Toast.LENGTH_LONG).show();
-                }
-                else {
-                    for(File f2:temp2) {
-                        Toast.makeText(getBaseContext(), "File found: " + f2.getName() + " in " + f.getName(), Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        }*/
+        ArrayList<File> downloads = getDownloadedSongs();
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
@@ -353,4 +328,36 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    public ArrayList<File> getDownloadedSongs() {
+        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/");
+
+        File[] downloads = downloadsDirectory.listFiles();
+
+        ArrayList<File> mp3Downloads = new ArrayList<>();
+
+        for(File f: downloads) {
+            String filename = f.getName();
+            //Toast.makeText(getBaseContext(), "Filename " + filename, Toast.LENGTH_LONG).show();
+            int lastPeriodIndex = filename.lastIndexOf(".");
+            int filenameLength = filename.length();
+            String extension = filename.substring(lastPeriodIndex, filenameLength);
+            //Toast.makeText(getBaseContext(), "Extension " + extension, Toast.LENGTH_LONG).show();
+
+            if(extension.equals(".mp3")) {
+                mp3Downloads.add(f);
+            }
+        }
+
+        if(mp3Downloads.size() == 0) {
+            Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_LONG).show();
+        }
+        else {
+            for(File f: mp3Downloads){
+                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        return mp3Downloads;
+    }
 }
