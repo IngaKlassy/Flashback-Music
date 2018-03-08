@@ -22,10 +22,6 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
@@ -52,16 +48,9 @@ public class FlashbackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flashback);
 
 
-        String serverClientId = "26543021740-u2nssmjrfnclhomv2mthnk6u7c513i63.apps.googleusercontent.com";
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
-                .requestServerAuthCode(serverClientId)
                 .requestEmail()
                 .build();
-
-        /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();*/
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
