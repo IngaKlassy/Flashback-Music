@@ -1,4 +1,6 @@
 package com.example.stephanie.flashback_music;
+
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -10,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ExpandableListAdapter;
@@ -30,6 +33,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,34 +81,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //DATABASE SETUP*****
-        options = new FirebaseOptions.Builder()
-                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
-                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
-
-        database = FirebaseDatabase.getInstance(
-                FirebaseApp.initializeApp(this, options, "secondary"));
-
-        myRef = database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
-
-        //ACTION BAR SETUP*****
-        Toolbar toolbar = findViewById(R.id.my_toolbar);
-        setActionBar(toolbar);
-
-        Uri path;
-
-        //Pulling Downloads From phone
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    100);
-            Log.d("test1","ins");
-            return;
-        }
-
-        ArrayList<File> downloads = getDownloadedSongs();
-
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
         metaRetriever = new MediaMetadataRetriever();
@@ -147,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final Button downloadButton = (Button) findViewById(R.id.DownloadButton);
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                downloadButton.setVisibility(View.INVISIBLE);
+            }
+        });
+
         // flashback mode activity switch
         vibeSwitch = (CompoundButton) findViewById(R.id.vibe_switch);
 
@@ -162,46 +148,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //DATABASE SETUP*****
+        options = new FirebaseOptions.Builder()
+                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
+                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
+
+        database = FirebaseDatabase.getInstance(
+                FirebaseApp.initializeApp(this, options, "secondary"));
+
+        myRef = database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
+
+        //ACTION BAR SETUP*****
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setActionBar(toolbar);
+
+        Uri path;
+
+        //Pulling Downloads From phone
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        ArrayList<File> downloads = getDownloadedSongs(this);
+
         /*onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
             public void onSwipeLeft() {
                 startVibeMode();
             }
         };*/
-
-/*
-//gets filepath to downloads folder
-        File dl_path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        dl_path.setReadable(true);
-        dl_path.setWritable(true);
-        Toast.makeText(getBaseContext(), dl_path.getAbsolutePath(), Toast.LENGTH_LONG).show();
-        //File dl_path = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-        File[] songs = dl_path.listFiles();
-
-        if (songs.length == 0) {
-            Toast.makeText(getBaseContext(), "Length is 0", Toast.LENGTH_LONG).show();
-        }
-        else {
-            //TODO: Add type check for .mp3, .wav, etc.
-            for (File f : songs) {
-                String ext = android.webkit.MimeTypeMap.getFileExtensionFromUrl(f.getName());
-                if (ext.equals(MP3)) {
-                    Toast.makeText(getBaseContext(), "File " + f.getName() + " is an MP3", Toast.LENGTH_LONG).show();
-
-                    metaRetriever.setDataSource(f.getPath());
-
-                    String songTitle = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                    String songAlbum = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                    String songArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-
-                    mainActivityPlayerOb.add(songTitle, songAlbum, songArtist);
-                } else {
-                    Toast.makeText(getBaseContext(), "File " + f.getName() + " is not MP3", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
-*/
 
 
         //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
@@ -329,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public ArrayList<File> getDownloadedSongs() {
+    public ArrayList<File> getDownloadedSongs(Context c) {
         File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/");
 
         File[] downloads = downloadsDirectory.listFiles();
@@ -338,11 +319,9 @@ public class MainActivity extends AppCompatActivity {
 
         for(File f: downloads) {
             String filename = f.getName();
-            //Toast.makeText(getBaseContext(), "Filename " + filename, Toast.LENGTH_LONG).show();
             int lastPeriodIndex = filename.lastIndexOf(".");
             int filenameLength = filename.length();
             String extension = filename.substring(lastPeriodIndex, filenameLength);
-            //Toast.makeText(getBaseContext(), "Extension " + extension, Toast.LENGTH_LONG).show();
 
             if(extension.equals(".mp3")) {
                 mp3Downloads.add(f);
@@ -354,7 +333,30 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             for(File f: mp3Downloads){
-                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                URI uri = f.toURI();
+                URL url = null;
+
+                try {
+                    /*MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
+                    metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
+
+                    String songTitle = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                    String songAlbum = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                    String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+
+                    Toast.makeText(getBaseContext(), songTitle, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), songAlbum, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), songArtist, Toast.LENGTH_LONG).show();*/
+
+                    url = uri.toURL();
+                }
+                catch(MalformedURLException m){
+                    m.printStackTrace();
+                }
+
+                //Toast.makeText(getBaseContext(), "From: " + uri.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), "From: " + url.toString(), Toast.LENGTH_LONG).show();
             }
         }
 

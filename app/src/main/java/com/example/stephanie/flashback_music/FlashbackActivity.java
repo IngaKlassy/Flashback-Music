@@ -1,5 +1,6 @@
 package com.example.stephanie.flashback_music;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
@@ -30,6 +34,10 @@ public class FlashbackActivity extends AppCompatActivity {
     private static final String TAG = "FLASHBACK";
 
     private static final int RC_SIGN_IN = 111;
+
+    static String getResult;
+    static Context mainContext;
+
     CompoundButton flashbackSwitch;
 
     ArrayList<TextView> textviews;
@@ -49,11 +57,15 @@ public class FlashbackActivity extends AppCompatActivity {
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.PROFILE), new Scope("https://www.googleapis.com/auth/contacts.readonly"))
+                .requestScopes(new Scope(Scopes.PROFILE), new Scope("https://plus.google.com/u/0/circles"))//"https://www.googleapis.com/auth/contacts.readonly"))
                 .requestEmail()
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+
+
+        mainContext = getApplicationContext();
 
 
         songName = (TextView) findViewById(R.id.song_title);
@@ -150,6 +162,9 @@ public class FlashbackActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
             Toast.makeText(getApplicationContext(), "hello "+account.getDisplayName(), Toast.LENGTH_LONG).show();
+
+            GetUrlContentTask result = new GetUrlContentTask();
+            result.execute("https://people.googleapis.com/v1/{resourceName=people/me}/connections");
         }
         else{
             Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
@@ -185,6 +200,10 @@ public class FlashbackActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             myAccount = account;
+
+            GetUrlContentTask result = new GetUrlContentTask();
+            result.execute("https://people.googleapis.com/v1/{resourceName=people/me}/connections");
+            
             Toast.makeText(getApplicationContext(), account.getDisplayName(), Toast.LENGTH_LONG).show();
 
             // Signed in successfully, show authenticated UI.
@@ -198,6 +217,8 @@ public class FlashbackActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
     public void displayNoSongsToPlay(ArrayList<TextView> textviews) {
         textviews.get(0).setText("No songs played");
 

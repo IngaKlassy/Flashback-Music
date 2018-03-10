@@ -159,7 +159,7 @@ public class Player {
                 mediaPlayer.release();
                 mediaPlayer = null;
 
-                MainActivity.myRef.setValue(finishedSong);
+                //MainActivity.myRef.setValue(finishedSong);
             }
         });
     }
@@ -397,18 +397,18 @@ public class Player {
 
             currentSong = songObjects.get(i);
 
-            if(currentSong.getLocations().size() != 0) {
+            /*if(currentSong.getLocations().size() != 0) {
                 currentSong.setPoints(currentSong.getPoints()
-                        + setLocationPoints(currentSong.getLocations().get(i))
+                        + setLocationPoints(currentSong.getLocations().get(0))
                         + setRecentlyPlayedPoints(currentSong.getCalendar())
                         + setFriendPlayedPoints(currentSong));
 
                 vibeModePlaylist.add(currentSong);
-            }
-
-            /*if(currentSong.completed) {
-                vibeModePlaylist.add(currentSong);
             }*/
+
+            if(currentSong.completed) {
+                vibeModePlaylist.add(currentSong);
+            }
         }
         System.out.println("Queue Reprioritized");
         Log.w("Reprioritizing in Player: ", "success!" );
