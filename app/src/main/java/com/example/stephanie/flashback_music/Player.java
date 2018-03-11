@@ -304,7 +304,7 @@ public class Player {
             timeAndDate = "";
         }
 
-        String playedByWho = song.getWhoPlayedSong();
+        String playedByWho = song.getWhoPlayedSongLast();
         if(playedByWho == null){
             playedByWho = "";
         }
@@ -360,7 +360,7 @@ public class Player {
             timeAndDate = "";
         }
 
-        String playedByWho = song.getWhoPlayedSong();
+        String playedByWho = song.getWhoPlayedSongLast();
         if(playedByWho == null){
             playedByWho = "";
         }

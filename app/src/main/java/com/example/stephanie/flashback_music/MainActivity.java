@@ -2,6 +2,7 @@ package com.example.stephanie.flashback_music;
 
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.Intent;
@@ -12,11 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -76,8 +80,14 @@ public class MainActivity extends AppCompatActivity {
     LocationManager locationManager;
     Location l;
 
+    DownloadManager downloadManager;
+    DownloadEngine downloadEngine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        downloadManager = (DownloadManager) this.getSystemService(DOWNLOAD_SERVICE);
+        downloadEngine = new DownloadEngine(downloadManager);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -91,6 +101,86 @@ public class MainActivity extends AppCompatActivity {
         songTitleToArtistName = new TreeMap<>();
 
         expandableListView = findViewById(R.id.songlist);
+
+
+        //DOWNLOAD OPTIONS SETUP
+        final LinearLayout urlEnterLayout = (LinearLayout) findViewById(R.id.url_download_1);
+        urlEnterLayout.setVisibility(View.INVISIBLE);
+        urlEnterLayout.setEnabled(false);
+
+        final ViewGroup.LayoutParams params1 = urlEnterLayout.getLayoutParams();
+        params1.height = 0;
+        urlEnterLayout.setLayoutParams(params1);
+
+        final LinearLayout downloadBtnLayout = (LinearLayout) findViewById(R.id.url_download_btn);
+        downloadBtnLayout.setVisibility(View.VISIBLE);
+
+        final ViewGroup.LayoutParams params2 = downloadBtnLayout.getLayoutParams();
+        params2.height = 80;
+        downloadBtnLayout.setLayoutParams(params2);
+
+
+        final Button downloadButton = (Button) findViewById(R.id.download_Button);
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                downloadBtnLayout.setVisibility(View.INVISIBLE);
+                downloadButton.setEnabled(false);
+
+                params2.height = 0;
+                downloadBtnLayout.setLayoutParams(params2);
+
+                urlEnterLayout.setVisibility(View.VISIBLE);
+                urlEnterLayout.setEnabled(true);
+                params1.height = 200;
+                urlEnterLayout.setLayoutParams(params1);
+            }
+        });
+
+        final Button enterButton = (Button) findViewById(R.id.enter_button);
+        enterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText urlBox = (EditText) findViewById(R.id.enter_url);
+                String enteredURL = urlBox.getText().toString();
+
+                downloadEngine.tryToDownload(getApplicationContext(), enteredURL);
+            }
+        });
+
+        final Button doneButton = (Button) findViewById(R.id.done_button);
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                urlEnterLayout.setVisibility(View.INVISIBLE);
+                urlEnterLayout.setEnabled(false);
+                params1.height = 0;
+                urlEnterLayout.setLayoutParams(params1);
+
+                downloadBtnLayout.setVisibility(View.VISIBLE);
+                downloadButton.setEnabled(true);
+
+                params2.height = 80;
+                downloadBtnLayout.setLayoutParams(params2);
+            }
+        });
+
+
+        // VIBE SWITCH SETUP
+        vibeSwitch = (CompoundButton) findViewById(R.id.vibe_switch);
+
+        vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    mainActivityPlayerOb.switchMode();
+                    mainActivityPlayerOb.stop();
+                    startVibeMode();
+                    vibeSwitch.setChecked(false);
+                }
+            }
+        });
+
 
 
         //BOTTOM BAR SETUP*****
@@ -125,28 +215,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button downloadButton = (Button) findViewById(R.id.DownloadButton);
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                downloadButton.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        // flashback mode activity switch
-        vibeSwitch = (CompoundButton) findViewById(R.id.vibe_switch);
-
-        vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    mainActivityPlayerOb.switchMode();
-                    mainActivityPlayerOb.stop();
-                    startVibeMode();
-                    vibeSwitch.setChecked(false);
-                }
-            }
-        });
 
 
         //DATABASE SETUP*****
@@ -311,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public ArrayList<File> getDownloadedSongs(Context c) {
-        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/");
+        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/VibeMusic/");
 
         File[] downloads = downloadsDirectory.listFiles();
 
