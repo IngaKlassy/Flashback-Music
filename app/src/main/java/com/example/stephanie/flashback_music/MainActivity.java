@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     TreeMap<String, List<String>> AlbumToTrackListMap;
 
     // Acquire a reference to the system Location Manager
-    LocationManager locationManager;
+    static LocationManager locationManager;
     Location l;
 
     @Override

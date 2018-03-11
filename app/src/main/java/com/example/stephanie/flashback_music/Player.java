@@ -2,6 +2,7 @@ package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.TextView;
@@ -397,14 +398,14 @@ public class Player {
 
             currentSong = songObjects.get(i);
 
-            /*if(currentSong.getLocations().size() != 0) {
+            if(currentSong.getLocations().size() != 0) {
                 currentSong.setPoints(currentSong.getPoints()
-                        + setLocationPoints(currentSong.getLocations().get(0))
-                        + setRecentlyPlayedPoints(currentSong.getCalendar())
+                        + setLocationPoints(currentSong)
+                        + setRecentlyPlayedPoints(currentSong)
                         + setFriendPlayedPoints(currentSong));
 
                 vibeModePlaylist.add(currentSong);
-            }*/
+            }
 
             if(currentSong.completed) {
                 vibeModePlaylist.add(currentSong);
@@ -414,13 +415,29 @@ public class Player {
         Log.w("Reprioritizing in Player: ", "success!" );
     }
 
-
-    // TODO ugh it deleted everything :((
-    public int setLocationPoints(Location location){
-        return 3;
+    public int setLocationPoints(Song song){
+        Location currentLocation = null;
+        try {
+            currentLocation = MainActivity.locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(currentLocation == null){
+                currentLocation = MainActivity.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+        }
+        catch(SecurityException e){
+        }
+        if(currentLocation != null ) {
+            for (int i = 0; i < song.getLocations().size(); i++) {
+                if (song.getLocations().get(i).distanceTo(currentLocation) < 100)
+                    return 3;
+            }
+        }
+        return 0;
     }
-    public int setRecentlyPlayedPoints(Calendar cal) {
-        return 2;
+
+    public int setRecentlyPlayedPoints(Song song) {
+        if(song.getCalendar())
+            return 2;
+        return 0;
     }
     public int setFriendPlayedPoints(Song song) {
         return 1;
