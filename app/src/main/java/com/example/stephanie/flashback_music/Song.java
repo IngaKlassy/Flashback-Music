@@ -13,7 +13,7 @@ public class Song {
     private String songTitle;
     private String songsAlbumTitle;
     private String songsArtistName;
-    private String whoPlayedSong;
+    private String whoPlayedSongLast;
     private int resourceId;
 
     private boolean neutral;
@@ -29,6 +29,7 @@ public class Song {
 
 
     private ArrayList<Location> locations = new ArrayList<>();
+    private ArrayList<String> whoHasPlayed = new ArrayList<>();
     //////////// Variables ////////////
 
 
@@ -40,7 +41,7 @@ public class Song {
         this.resourceId = rId;
 
         timeAndDate = null;
-        whoPlayedSong = null;
+        whoPlayedSongLast = null;
 
         completed = false;
         fromFlashback = false;
@@ -60,9 +61,11 @@ public class Song {
         return songsAlbumTitle;
     }
 
-    public String getWhoPlayedSong() {
-        return whoPlayedSong;
+    public String getWhoPlayedSongLast() {
+        return whoPlayedSongLast;
     }
+
+    public ArrayList<String> getWhoHasPlayedSong() { return whoHasPlayed; }
 
     public int getResId () {
         return resourceId;
@@ -141,11 +144,13 @@ public class Song {
 
     public void update (Calendar calendar, Location location, String whoPlayedSong) {
         locations.add(location);
+        whoHasPlayed.add(whoPlayedSong);
+
         completed = true;
         cal = calendar;
         setTimeAndDate();
 
-        this.whoPlayedSong = " by " + whoPlayedSong;
+        this.whoPlayedSongLast = " by " + whoPlayedSong;
     }
     //////////// Functions ////////////
 }

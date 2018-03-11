@@ -73,7 +73,16 @@ public class Player {
     public void add(String songTitle, String albumName, String artist, int resId)
     {
         Song currSong = new Song(songTitle, albumName, artist, resId);
-
+        boolean exists = false;
+        for (int i = 0; i < songObjects.size(); i++) {
+            if (songObjects.get(i).getSongTitle() == currSong.getSongTitle()) {
+                exists = true;
+            }
+        }
+        if (!exists) {
+            songObjects.add(currSong);
+            idsToSongs.put(resId, currSong);
+        }
         songObjects.add(currSong);
         idsToSongs.put(resId, currSong);
 
@@ -305,7 +314,7 @@ public class Player {
             timeAndDate = "";
         }
 
-        String playedByWho = song.getWhoPlayedSong();
+        String playedByWho = song.getWhoPlayedSongLast();
         if(playedByWho == null){
             playedByWho = "";
         }
@@ -361,7 +370,7 @@ public class Player {
             timeAndDate = "";
         }
 
-        String playedByWho = song.getWhoPlayedSong();
+        String playedByWho = song.getWhoPlayedSongLast();
         if(playedByWho == null){
             playedByWho = "";
         }
