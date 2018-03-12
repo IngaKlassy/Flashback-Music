@@ -82,6 +82,7 @@ public class Player {
             songObjects.add(currSong);
             idsToSongs.put(resId, currSong);
         }
+
         songObjects.add(currSong);
         idsToSongs.put(resId, currSong);
 

@@ -4,12 +4,8 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.view.View;
 import android.widget.Toast;
 
-import java.io.File;
-
-import static android.content.Context.DOWNLOAD_SERVICE;
 
 /**
  * Created by looki on 3/11/2018.
@@ -19,40 +15,59 @@ public class DownloadEngine {
     DownloadManager downloadManager;
 
     public DownloadEngine(DownloadManager dm) {
-        String folder_main = "VibeMusic";
-
-        File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "Download/", folder_main);
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-
         downloadManager = dm;
     }
 
-    public void tryToDownload(Context context, String enteredURI) {
-        if(enteredURI.equals("")) {
+
+    public void tryToDownload(Context context, String enteredURL) {
+        if(enteredURL.equals("")) {
             Toast.makeText(context, "Nothing entered", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Uri urlToUri = Uri.parse(enteredURI);
+        Uri urlToUri = Uri.parse(enteredURL);
+
+        String uriAsString = urlToUri.toString();
+        int indexOfHTTP = uriAsString.indexOf("//");
+
+        if(indexOfHTTP == -1) {
+            Toast.makeText(context, "Invalid entry", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String urlName = uriAsString.substring(0, indexOfHTTP);
+        if(!urlName.equals("http:")) {
+            Toast.makeText(context, "Invalid entry, URL must contain http://", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         DownloadData(context, urlToUri);
     }
 
+
     private long DownloadData (Context context, Uri uri) {
 
+        long downloadReference;
+
+        String uriAsString = uri.toString();
+        int lastSlashIndex = uriAsString.lastIndexOf("/");
+        int filenameLength = uriAsString.length();
+        String filename = uriAsString.substring(lastSlashIndex + 1, filenameLength);
 
         DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-        request.setAllowedOverRoaming(false);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/Download/VibeMusic/");
 
-        long refid = downloadManager.enqueue(request);
+        //Setting title of request
+        request.setTitle(filename);
 
-        Toast.makeText(context, "No Errors", Toast.LENGTH_SHORT).show();
+        //Setting description of request
+        request.setDescription("Mp3 download using DownloadManager");
 
+        //Set the local destination for the downloaded file to a path within the application's external files directory
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/Download/");
 
+        //Enqueue download and save into referenceId
+        downloadReference = downloadManager.enqueue(request);
 
-        return refid;
+        return downloadReference;
     }
 }

@@ -37,9 +37,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -104,20 +101,30 @@ public class MainActivity extends AppCompatActivity {
 
 
         //DOWNLOAD OPTIONS SETUP
+
+        //SONGINFO LAYOUT
+        final LinearLayout songInfoLayout = (LinearLayout) findViewById(R.id.songInfo_layout);
+        songInfoLayout.setVisibility(View.VISIBLE);
+        songInfoLayout.setEnabled(true);
+
+        final ViewGroup.LayoutParams songInfoParams = songInfoLayout.getLayoutParams();
+
+        //ENTER URL LAYOUT
         final LinearLayout urlEnterLayout = (LinearLayout) findViewById(R.id.url_download_1);
         urlEnterLayout.setVisibility(View.INVISIBLE);
         urlEnterLayout.setEnabled(false);
 
-        final ViewGroup.LayoutParams params1 = urlEnterLayout.getLayoutParams();
-        params1.height = 0;
-        urlEnterLayout.setLayoutParams(params1);
+        final ViewGroup.LayoutParams dwnldButtonParams = urlEnterLayout.getLayoutParams();
+        dwnldButtonParams.height = 0;
+        urlEnterLayout.setLayoutParams(dwnldButtonParams);
 
+        //DOWNLOAD SONGS BUTTON LAYOUT
         final LinearLayout downloadBtnLayout = (LinearLayout) findViewById(R.id.url_download_btn);
         downloadBtnLayout.setVisibility(View.VISIBLE);
 
-        final ViewGroup.LayoutParams params2 = downloadBtnLayout.getLayoutParams();
-        params2.height = 80;
-        downloadBtnLayout.setLayoutParams(params2);
+        final ViewGroup.LayoutParams enterUrlParams = downloadBtnLayout.getLayoutParams();
+        enterUrlParams.height = 80;
+        downloadBtnLayout.setLayoutParams(enterUrlParams);
 
 
         final Button downloadButton = (Button) findViewById(R.id.download_Button);
@@ -127,13 +134,16 @@ public class MainActivity extends AppCompatActivity {
                 downloadBtnLayout.setVisibility(View.INVISIBLE);
                 downloadButton.setEnabled(false);
 
-                params2.height = 0;
-                downloadBtnLayout.setLayoutParams(params2);
+                enterUrlParams.height = 0;
+                downloadBtnLayout.setLayoutParams(enterUrlParams);
 
                 urlEnterLayout.setVisibility(View.VISIBLE);
                 urlEnterLayout.setEnabled(true);
-                params1.height = 200;
-                urlEnterLayout.setLayoutParams(params1);
+                dwnldButtonParams.height = 200;
+                urlEnterLayout.setLayoutParams(dwnldButtonParams);
+
+                songInfoParams.height = 0;
+                songInfoLayout.setLayoutParams(songInfoParams);
             }
         });
 
@@ -143,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText urlBox = (EditText) findViewById(R.id.enter_url);
                 String enteredURL = urlBox.getText().toString();
+                urlBox.setText("");
 
                 downloadEngine.tryToDownload(getApplicationContext(), enteredURL);
             }
@@ -154,14 +165,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 urlEnterLayout.setVisibility(View.INVISIBLE);
                 urlEnterLayout.setEnabled(false);
-                params1.height = 0;
-                urlEnterLayout.setLayoutParams(params1);
+                dwnldButtonParams.height = 0;
+                urlEnterLayout.setLayoutParams(dwnldButtonParams);
 
                 downloadBtnLayout.setVisibility(View.VISIBLE);
                 downloadButton.setEnabled(true);
 
-                params2.height = 80;
-                downloadBtnLayout.setLayoutParams(params2);
+                enterUrlParams.height = 80;
+                downloadBtnLayout.setLayoutParams(enterUrlParams);
+
+                songInfoParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                songInfoLayout.setLayoutParams(songInfoParams);
             }
         });
 
@@ -379,21 +393,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     public ArrayList<File> getDownloadedSongs(Context c) {
-        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/VibeMusic/");
+        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download");
 
         File[] downloads = downloadsDirectory.listFiles();
 
         ArrayList<File> mp3Downloads = new ArrayList<>();
 
         for(File f: downloads) {
-            String filename = f.getName();
+            /*String filename = f.getName();
             int lastPeriodIndex = filename.lastIndexOf(".");
             int filenameLength = filename.length();
             String extension = filename.substring(lastPeriodIndex, filenameLength);
 
-            if(extension.equals(".mp3")) {
+            if(extension.equals(".mp3")) {*/
                 mp3Downloads.add(f);
-            }
+            //}
         }
 
         if(mp3Downloads.size() == 0) {
@@ -401,12 +415,12 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             for(File f: mp3Downloads){
-                //Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
-                URI uri = f.toURI();
-                URL url = null;
+                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                //URI uri = f.toURI();
+                //URL url = null;
 
-                try {
-                    /*MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
+               /* try {
+                    MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
                     metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
 
                     String songTitle = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
@@ -415,13 +429,13 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(getBaseContext(), songTitle, Toast.LENGTH_LONG).show();
                     Toast.makeText(getBaseContext(), songAlbum, Toast.LENGTH_LONG).show();
-                    Toast.makeText(getBaseContext(), songArtist, Toast.LENGTH_LONG).show();*/
+                    Toast.makeText(getBaseContext(), songArtist, Toast.LENGTH_LONG).show();
 
                     url = uri.toURL();
                 }
                 catch(MalformedURLException m){
                     m.printStackTrace();
-                }
+                }*/
 
                 //Toast.makeText(getBaseContext(), "From: " + uri.toString(), Toast.LENGTH_LONG).show();
                 //Toast.makeText(getBaseContext(), "From: " + url.toString(), Toast.LENGTH_LONG).show();
