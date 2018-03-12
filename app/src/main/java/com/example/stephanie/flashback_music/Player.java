@@ -78,7 +78,7 @@ public class Player {
                 exists = true;
             }
         }
-        if (exists) {
+        if (!exists) {
             songObjects.add(currSong);
             idsToSongs.put(resId, currSong);
         }
