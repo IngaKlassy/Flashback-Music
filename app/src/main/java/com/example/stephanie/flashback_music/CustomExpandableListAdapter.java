@@ -103,4 +103,10 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter{
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
     }
+
+    public void updateSongsList(TreeMap<String, List<String>> newlist) {
+        expandableListDetail.clear();
+        expandableListDetail = newlist;
+        this.notifyDataSetChanged();
+    }
 }

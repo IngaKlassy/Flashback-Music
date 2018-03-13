@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -38,11 +39,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,17 +58,21 @@ public class MainActivity extends AppCompatActivity {
     static DatabaseReference myRef;
     static FirebaseOptions options;
 
+    static double currentLatitude;
+    static double currentLongitude;
+    static String currentLocation;
+
     MediaMetadataRetriever metaRetriever;
 
     ExpandableListView expandableListView;
-    ExpandableListAdapter expandableListAdapter;
+    CustomExpandableListAdapter expandableListAdapter;
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
     CompoundButton vibeSwitch;
     OnSwipeTouchListener onSwipeTouchListener;
 
-    Map<String, Uri> songTitleToURI;
+    static Map<String, Uri> songTitleToURI;
     Map<String, Album> albumTitleToAlbumOb;
     Map<String, String> songTitleToAlbumName;
     Map<String, String> songTitleToArtistName;
@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Acquire a reference to the system Location Manager
     static LocationManager locationManager;
-    Location l;
 
     DownloadManager downloadManager;
     DownloadEngine downloadEngine;
@@ -268,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
 
-        Uri path;
 
         //Pulling Downloads From phone
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -288,30 +286,6 @@ public class MainActivity extends AppCompatActivity {
                 startVibeMode();
             }
         };*/
-
-
-        /*//CREATING SONG OBJECTS AND ALBUM OBJECTS*****
-        Field[] fields = R.raw.class.getFields();
-        for(Field field : fields)
-        {
-            String nameOfResourceItem = field.getName();
-
-            int resID = getResources().getIdentifier(nameOfResourceItem, "raw", getPackageName());
-
-            path = Uri.parse("android.resource://" + getPackageName() + "/" + resID);
-            metaRetriever.setDataSource(this, path);
-
-            String songTitle = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String songAlbum = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            String songArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-
-            mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, resID);
-
-            songTitleToResourceId.put(songTitle, resID);
-            songTitleToAlbumName.put(songTitle, songAlbum);
-            songTitleToArtistName.put(songTitle, songArtist);
-        }*/
-
 
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
 
@@ -373,10 +347,13 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
 
-        // Define a listener that responds to location updates
+        //DEFINE LOCATION LISTENER THAT RESPONDS TO LOCATION CHANGES
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                l = location;
+
+                currentLatitude = location.getLatitude();
+                currentLongitude = location.getLongitude();
+
                 Toast.makeText(getApplicationContext(), "(" + location.getLongitude()
                         + ", " + location.getLatitude() + ")", Toast.LENGTH_LONG).show();
 
@@ -389,6 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onProviderDisabled(String provider) {}
         };
+
         /**
          if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
          requestPermissions(
@@ -397,7 +375,8 @@ public class MainActivity extends AppCompatActivity {
          Log.d("main activity location","ins");
          return;
          }*/
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -441,21 +420,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /*MediaPlayer mp = new MediaPlayer();
-        Uri uri = Uri.parse(mp3Downloads.get(0).getAbsolutePath());
-        mp = MediaPlayer.create(MainActivity.this, uri);
-        mp.start();*/
 
         if(mp3Downloads.size() == 0) {
             Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_SHORT).show();
         }
         else {
             for(File f: mp3Downloads){
-                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
-                Toast.makeText(getBaseContext(), "File path: " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), "File path: " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
 
                 MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
+                //Toast.makeText(getBaseContext(), "File path = " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
                 metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
 
                 String songTitle = f.getName();//metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
@@ -464,10 +440,36 @@ public class MainActivity extends AppCompatActivity {
 
                 Uri uri = Uri.parse(f.toString());
                 mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, "", uri);
+
                 songTitleToURI.put(songTitle, uri);
                 songTitleToAlbumName.put(songTitle, songAlbum);
                 songTitleToArtistName.put(songTitle, songArtist);
             }
         }
+    }
+
+
+    public void updateExpandableList() {
+        ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
+
+        Map<String, Album> newAlbumTitleToAlbumOb = new LinkedHashMap<>();
+        Map<String, List<String>> newAlbumToTrackListMap = new TreeMap<>();
+
+
+        for(int i = 0; i < albums.size(); i++)
+        {
+            Album currentAlbum = albums.get(i);
+            String albumTitle = currentAlbum.getAlbumTitle();
+
+            newAlbumTitleToAlbumOb.put(albumTitle, currentAlbum);
+            newAlbumToTrackListMap.put(albumTitle, currentAlbum.returnSongTitles());
+        }
+
+        if(expandableListAdapter == null) {
+            //Toast.makeText(getBaseContext(), "adapter is null" , Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        expandableListAdapter.updateSongsList(AlbumToTrackListMap);
     }
 }

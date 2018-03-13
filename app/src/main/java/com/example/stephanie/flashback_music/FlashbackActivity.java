@@ -142,6 +142,8 @@ public class FlashbackActivity extends AppCompatActivity {
                 mainActivityPlayerOb.switchMode();
                 if (b) {
                     mainActivityPlayerOb.stop();
+                    MainActivity mActivity = new MainActivity();
+                    mActivity.updateExpandableList();
                     finish();
                 }
             }
