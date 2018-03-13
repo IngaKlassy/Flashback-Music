@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.stephanie.flashback_music.FlashbackActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/overall_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:context=".FlashbackActivity"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="42dp">
+
+
+        <android.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="0dp"
+            android:background="#618670"
+            android:elevation="4dp"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/title_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                tools:context=".MainActivity">
+
+                <TextView
+                    android:id="@+id/toolbar_Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/my_toolbar" />
+
+                <TextView
+                    android:id="@+id/toolbar_Mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vibe_mode"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/toolbar_Title" />
+
+                <TextView
+                    android:id="@+id/toolbar_Instructions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vibe_message"
+                    app:layout_constraintLeft_toLeftOf="parent"
+
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/toolbar_Mode" />
+
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Switch
+                    android:id="@+id/flashback_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:checked="false"
+                    android:text="Switch to Regular mode "
+                    android:textSize="15dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+        </android.widget.Toolbar>
+
+
+        <TextView
+            android:id="@+id/song_title"
+            android:layout_width="384dp"
+            android:layout_height="65dp"
+            android:background="#6dbf7c"
+            android:gravity="center"
+            android:text="Current Song: "
+            android:textSize="18dp"
+            app:layout_constraintBottom_toTopOf="@id/song_album"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar"
+            app:layout_constraintVertical_bias="0.302" />
+
+        <TextView
+            android:id="@+id/song_album"
+            android:layout_width="384dp"
+            android:layout_height="65dp"
+            android:background="#6dbf7c"
+            android:gravity="center"
+            android:text="From Album: "
+            android:textSize="18dp"
+            app:layout_constraintBottom_toTopOf="@id/song_artist"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/song_title"
+            app:layout_constraintVertical_bias="0.388" />
+
+        <TextView
+            android:id="@+id/song_artist"
+            android:layout_width="384dp"
+            android:layout_height="65dp"
+            android:background="#6dbf7c"
+            android:gravity="center"
+            android:text="By Artist: "
+            android:textSize="18dp"
+            app:layout_constraintBottom_toTopOf="@id/last_played"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/song_album"
+            app:layout_constraintVertical_bias="0.484" />
+
+        <TextView
+            android:id="@+id/last_played"
+            android:layout_width="384dp"
+            android:layout_height="140dp"
+            android:background="#10afb2"
+            android:gravity="center"
+            android:text="Last played: "
+            android:textSize="18dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/song_artist" />
+
+        <android.widget.Toolbar
+            android:id="@+id/bottomToolbar"
+            style="?android:buttonBarStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="85dp"
+            android:layout_marginBottom="0dp"
+            android:background="#618670"
+            android:minHeight="?attr/actionBarSize"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+
+            <LinearLayout
+                android:id="@+id/toolbarmenucontainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <ImageView
+                    android:id="@+id/status"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/plus" />
+
+                <ImageView
+                    android:id="@+id/play"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/play" />
+
+                <ImageView
+                    android:id="@+id/pause"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/pause_green" />
+
+                <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/skip" />
+
+            </LinearLayout>
+        </android.widget.Toolbar>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

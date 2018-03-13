@@ -5,6 +5,7 @@ package com.example.stephanie.flashback_music;
  * don't touch
  */
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -17,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomExpandableListAdapter extends BaseExpandableListAdapter{
 
     private Context context;
     private List<String> expandableListTitle;

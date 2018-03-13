@@ -1,3 +1,67 @@
+package com.example.stephanie.flashback_music;
+
+import android.app.Application;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+
+/**
+ * Created by looki on 3/9/2018.
+ */
+
+public class GetUrlContentTask extends AsyncTask<String, Integer, String> {
+    protected String doInBackground(String... urls){
+        String content = "", line;
+
+        try {
+            URL url = new URL(urls[0]);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setDoOutput(true);
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.connect();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            while ((line = rd.readLine()) != null) {
+                content += line + "\n";
+            }
+            Log.w("BackgroundTask", "url: "+ url +" content: "+ content);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        FlashbackActivity.getResult = content;
+
+
+        return content;
+    }
+
+    protected void onProgressUpdate(Integer... progress) {
+    }
+
+    protected void onPostExecute(String result) {
+        // update your UI here
+        Toast.makeText(FlashbackActivity.mainContext, result, Toast.LENGTH_LONG).show();
+    }
+}
+
+
+
+
+
+/*
+
+
+
+
+
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +89,7 @@
         android:background="#618670"
         android:elevation="4dp"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" >
 
         <LinearLayout
             android:id="@+id/title_layout"
@@ -64,60 +128,27 @@
                 android:layout_height="wrap_content"
                 android:text="@string/regular_message"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_Mode"
+
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
 
-        <LinearLayout
-            android:id="@+id/songInfo_layout"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_margin="0dp"
-            tools:context=".MainActivity">
-
             <TextView
                 android:id="@+id/songInfo"
-                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_Instructions"
-                app:layout_constraintBottom_toBottomOf="@+id/url_download_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
+                app:layout_constraintRight_toRightOf="parent"
+                android:text="" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/url_download_btn"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_margin="0dp"
-            tools:context=".MainActivity">
-
-            <Button
-                android:id="@+id/download_Button"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                app:layout_constraintTop_toBottomOf="@+id/songInfo"
-                app:layout_constraintBottom_toBottomOf="@+id/vibe_switch"
-                android:text="DOWNLOAD SONGS"
-                />
-
-        </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/url_download_1"
+                android:id="@+id/url_download"
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="70dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_margin="0dp"
@@ -130,7 +161,9 @@
                     android:text="Enter a songs download URL and then hit ENTER"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@id/songInfo" />
+                    app:layout_constraintTop_toBottomOf="@id/songInfo"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
 
                 <LinearLayout
                     android:id="@+id/url_download_2"
@@ -145,7 +178,7 @@
 
                     <EditText
                         android:id="@+id/enter_url"
-                        android:layout_width="250dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:background="@android:color/white"
                         app:layout_constraintRight_toLeftOf="@+id/enter_button"
@@ -157,21 +190,26 @@
                         android:text="ENTER"
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintLeft_toRightOf="@+id/enter_url"
+                        app:layout_constraintLeftt_toRighttOf="@+id/enter_url"
                         app:layout_constraintTop_toBottomOf="@+id/download_instructions"
                         app:layout_constraintBottom_toTopOf="@+id/vibe_switch" />
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/done_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="DONE" />
-
-
             </LinearLayout>
 
+
+
+
+
+            <Button
+                android:id="@+id/DownloadButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/songInfo"
+                app:layout_constraintBottom_toBottomOf="@+id/vibe_switch"
+                android:text="DOWNLOAD SONGS"
+                />
 
             <Switch
                 android:id="@+id/vibe_switch"
@@ -248,3 +286,5 @@
 </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
+
+ */

@@ -1,121 +1,146 @@
 package com.example.stephanie.flashback_music;
 
 import android.location.Location;
-import android.widget.Toast;
+import android.net.Uri;
 
-import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-import static com.example.stephanie.flashback_music.Player.WEEK;
-
-/**
- * Created by Stephanie on 2/6/2018.
- */
 
 public class Song {
     //////////// Variables ////////////
-    private int time;   // HHMM
-    //private int place;
-    private int date;   // MMDDYYYY
-    //private int day;
-    private int resId;
-    private String name;
-    private int points;
+    private String songTitle;
+    private String songsAlbumTitle;
+    private String songsArtistName;
+    private String whoPlayedSongLast;
+    private String url;
+    private Uri uri;
 
     private boolean neutral;
     private boolean favorite;
     private boolean dislike;
 
-    private String album;
-    private String artistName;
+    public boolean completed;
+    public boolean fromFlashback;
 
-    private ArrayList<Location> locations;
-    private ArrayList<Integer> weekDays;
-    private ArrayList<String> timeOfDay;
+    private int points;
+    String timeAndDate;
+    Calendar cal;
+
+
+    private ArrayList<Location> locations = new ArrayList<>();
+    private ArrayList<String> whoHasPlayed = new ArrayList<>();
     //////////// Variables ////////////
 
 
     //////////// Functions ////////////
-    public Song (String in_name, String in_album, String in_artist, int rId) {
-        this.setName(in_name);
-        this.setAlbum(in_album);
-        this.setArtistName(in_artist);
+    public Song (String in_name, String in_album, String in_artist, String url, Uri uri) {
+        if(in_name == null) { this.songTitle = "Unknown Title"; }
+        else { this.songTitle = in_name; }
+
+        if(in_album == null) { this.songsAlbumTitle = "Unknown Album"; }
+        else { this.songsAlbumTitle = in_album; }
+
+        if(in_artist == null) { this.songsArtistName = "Unknown Artist"; }
+        else { this.songsArtistName = in_artist; }
+
+        //this.songTitle = in_name;
+        //this.songsAlbumTitle = in_album;
+        //this.songsArtistName = in_artist;
+
+        this.url = url;
+        this.uri = uri;
+
+        timeAndDate = null;
+        whoPlayedSongLast = null;
+
+        completed = false;
+        fromFlashback = false;
+
         this.setNeutralTrue();
-        this.resId = rId;
     }
 
-    int getResId () {
-        return resId;
+    public String getSongTitle () {
+        return songTitle;
     }
 
-    /* GETTER/SETTER for "time" */
-    int getTime () {
-        return time;
-    }
-    boolean setTime (int in_time) {
-
-        if (in_time >=0 && in_time < 2400) {
-
-            this.time = in_time;
-            return true;
-        }
-
-        // invalid input
-        return false;
+    public String getArtistName () {
+        return songsArtistName;
     }
 
-
-    /* GETTER/SETTER for "date" */
-    int getDate () {
-        return date;
+    public String getAlbumTitle () {
+        return songsAlbumTitle;
     }
-    boolean setDate (int in_date) {
-        // make sure input was 8 digits of less
-        int check = in_date;
-        int i;
 
-        for(i = 0 ; i < 8; i++) {
-            check = check/10;
-            if (check == 0)
-                break;
-        }
-        // invalid input
-        if (i != 7)
-            return false;
-        else {
-            this.date = in_date;
-            return true;
-        }
+    public String getWhoPlayedSongLast() {
+        return whoPlayedSongLast;
+    }
+
+    public ArrayList<String> getWhoHasPlayedSong() { return whoHasPlayed; }
+
+    public String getURL () {
+        return url;
+    }
+
+    public Uri getURI () {
+        return uri;
+    }
+
+    public ArrayList<Location> getLocations () {
+        return locations;
+    }
+
+    public String getMostRecentLocation(){
+        Location lastPlayedLocation = locations.get(locations.size() - 1);
+        return lastPlayedLocation.getProvider();
+    }
+
+    public String getTimeAndDate () {
+        return timeAndDate;
+    }
+
+    public void setTimeAndDate () {
+        Date date = cal.getTime();
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat ft2 = new SimpleDateFormat("HH:mm");
+        timeAndDate = " on " + ft.format(date) + " at " + ft2.format(date);
+    }
+
+    public Calendar getCalendar () {
+        return cal;
     }
 
 
     /* GETTER/SETTER for "points" */
-    int getPoints () {
+    public int getPoints () {
         return points;
     }
-    void setPoints (int in_points) {
+
+    public void setPoints (int in_points) {
         this.points = in_points;
     }
 
+
     /* GETTER/SETTER for "neutral" */
-    boolean getNeutralStatus () {
+    public boolean getNeutralStatus () {
         return neutral;
     }
-    void setNeutralTrue () {
+
+    public void setNeutralTrue () {
         this.neutral = true;
         this.favorite = false;
         this.dislike = false;
-
     }
+
 
     /* GETTER/SETTER for "favorite" */
-    boolean getFavoriteStatus () {
+    public boolean getFavoriteStatus () {
         return favorite;
     }
-    void setFavoriteTrue () {
+
+    public void setFavoriteTrue () {
         this.favorite = true;
         this.dislike = false;
         this.neutral = false;
@@ -123,105 +148,27 @@ public class Song {
 
 
     /* GETTER/SETTER for "dislike" */
-    boolean getDislikeStatus () {
+    public boolean getDislikeStatus () {
         return dislike;
     }
-    void setDislikeTrue () {
+
+    public void setDislikeTrue () {
         this.dislike = true;
         this.neutral = false;
         this.favorite = false;
     }
 
-    /* GETTER/SETTER for "name" */
-    String getName () {
-        return name;
-    }
 
-    void setArtistName (String in_name) {
-        this.artistName = in_name;
-    }
+    public void update (Calendar calendar, Location location, String whoPlayedSong) {
+        locations.add(location);
+        whoHasPlayed.add(whoPlayedSong);
 
+        completed = true;
+        cal = calendar;
+        setTimeAndDate();
 
-    /* GETTER/SETTER for "artist" */
-    String getartistName () {
-        return artistName;
-    }
-
-    void setName (String in_name) {
-        this.name = in_name;
-    }
-
-
-    /* GETTER/SETTER for "album" */
-    String getAlbum () {
-        return album;
-    }
-    void setAlbum (String in_album) {
-        this.album = in_album;
-    }
-
-    void update (Calendar c, Location l) {
-
-
+        this.whoPlayedSongLast = " by " + whoPlayedSong;
     }
     //////////// Functions ////////////
 }
 
-
-
-
-/* ALL original code from Stephanie and Mathias
-
-ORGINAL CONSTRUCTOR
-public Song (String in_name, String in_album, String in_artist, int in_time, int in_place, int in_date, int in_day) {
-        this.setName(in_name);
-        this.setAlbum(in_album);
-        this.setArtistName(in_artist);
-        this.setTime(in_time);
-        this.setPlace(in_place);
-        this.setDate(in_date);
-        this.setNeutralTrue();
-
-        this.day = in_day;
-        for(int i = 0; 0 < WEEK; i++) {
-            this.day[i] = in_day[i];
-        }
-
-
-
-Original Setters/Getters for changed variables
-
-
-
-/* GETTER/SETTER for "place"
-int getPlace () {
-    return place;
-}
-    void setPlace (int in_place) {
-        //TODO some sort of check for whatever place will look like to ensure valid input
-        this.place = in_place;
-    }
-
-
-
-    /* GETTER/SETTER for "day"
-int getDay () {
-        for(int i = 0; i < WEEK; i++) {
-            if (song.day[i] == 1)
-                return i;
-        }
-        return -1;
-    return this.day;
-}
-
-
-    void setDay (int in_day) {
-        for(int i = 0; i < WEEK; i++) {
-            if (i == in_day)
-                this.day[in_day] = 1;
-            else
-                this.day[i] = 0;
-        }
-        this.day = in_day;
-    }
-*/
