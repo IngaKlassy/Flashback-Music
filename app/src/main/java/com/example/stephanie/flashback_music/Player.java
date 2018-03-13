@@ -401,7 +401,6 @@ public class Player {
 
     public void prioritizeSongs() {
         Song currentSong;
-        Location current;
 
         for(int i = 0; i < songObjects.size(); i++){
 
@@ -444,9 +443,31 @@ public class Player {
     }
 
     public int setRecentlyPlayedPoints(Song song) {
-        if(song.getCalendar())
+        Calendar now = Calendar.getInstance();
+        boolean decJan = false;
+
+        // check year
+        if((song.getCalendar().get(Calendar.YEAR) - now.get(Calendar.YEAR)) == 1) {
+            // check month (only possible would be Dec. and Jan.)
+            if (song.getCalendar().get(Calendar.MONTH) != Calendar.DECEMBER)
+                return 0;
+            else if (now.get(Calendar.MONTH) != Calendar.JANUARY)
+                return 0;
+            else
+                decJan = true;
+        }
+
+        // check week day
+        if((song.getCalendar().getWeekYear() - now.getWeekYear()) == 1 || decJan == true) {
+            if (song.getCalendar().get(Calendar.DAY_OF_WEEK) >
+                    now.get(Calendar.DAY_OF_WEEK))
+                return 2;
+        }
+        else if((song.getCalendar().getWeekYear() - now.getWeekYear()) == 0)
             return 2;
+
         return 0;
+
     }
     public int setFriendPlayedPoints(Song song) {
         return 1;
