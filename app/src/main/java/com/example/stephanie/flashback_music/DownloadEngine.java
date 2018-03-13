@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
@@ -12,8 +13,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
 
 
 /**
@@ -22,6 +21,7 @@ import java.util.TreeMap;
 
 public class DownloadEngine {
     DownloadManager downloadManager;
+
     String currentURL;
     Context activityContext;
 
@@ -32,9 +32,37 @@ public class DownloadEngine {
 
     BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "Download Successful", Toast.LENGTH_SHORT).show();
 
-            addNewDownload();
+            DownloadManager.Query query = new DownloadManager.Query();
+            if (query != null) {
+                query.setFilterByStatus(DownloadManager.STATUS_FAILED | DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_SUCCESSFUL |
+                        DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_PENDING);
+            } else {
+                return;
+            }
+
+            Cursor c = downloadManager.query(query);
+
+            if (c.moveToFirst()) {
+                int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                switch (status) {
+                    case DownloadManager.STATUS_PAUSED:
+                        break;
+                    case DownloadManager.STATUS_PENDING:
+                        break;
+                    case DownloadManager.STATUS_RUNNING:
+                        break;
+                    case DownloadManager.STATUS_SUCCESSFUL:
+                        Toast.makeText(context, "Download Successful", Toast.LENGTH_SHORT).show();
+                        addNewDownload();
+                        MainActivity mActivity = new MainActivity();
+                        mActivity.updateExpandableList();
+                        break;
+                    case DownloadManager.STATUS_FAILED:
+                        Toast.makeText(context, "Download Failed", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
         }
     };
 
@@ -140,14 +168,16 @@ public class DownloadEngine {
         MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
         metaRetriever2.setDataSource(match.getAbsolutePath());
 
-        String songTitle = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        String songTitle = filenameX;//metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         String songAlbum = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
-        Uri uri = Uri.parse(match.getAbsolutePath());
+        Uri uri = Uri.parse(match.toString());
 
-        MainActivity.mainActivityPlayerOb.add(filenameX, songAlbum, songArtist, currentURL, uri);
+        MainActivity.mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currentURL, uri);
         Toast.makeText(activityContext, "New song created", Toast.LENGTH_SHORT).show();
+
+        MainActivity.songTitleToURI.put(match.getName(), uri);
 
         return;
     }
