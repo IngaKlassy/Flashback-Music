@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter implements Serializable{
+public class CustomExpandableListAdapter extends BaseExpandableListAdapter{
 
     private Context context;
     private List<String> expandableListTitle;

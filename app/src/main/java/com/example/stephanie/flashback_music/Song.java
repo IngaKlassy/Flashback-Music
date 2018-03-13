@@ -1,6 +1,7 @@
 package com.example.stephanie.flashback_music;
 
 import android.location.Location;
+import android.net.Uri;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class Song {
     private String songsAlbumTitle;
     private String songsArtistName;
     private String whoPlayedSongLast;
-    private int resourceId;
+    private String url;
+    private Uri uri;
 
     private boolean neutral;
     private boolean favorite;
@@ -34,11 +36,22 @@ public class Song {
 
 
     //////////// Functions ////////////
-    public Song (String in_name, String in_album, String in_artist, int rId) {
-        this.songTitle = in_name;
-        this.songsAlbumTitle = in_album;
-        this.songsArtistName = in_artist;
-        this.resourceId = rId;
+    public Song (String in_name, String in_album, String in_artist, String url, Uri uri) {
+        if(in_name == null) { this.songTitle = "Unknown Title"; }
+        else { this.songTitle = in_name; }
+
+        if(in_album == null) { this.songsAlbumTitle = "Unknown Album"; }
+        else { this.songsAlbumTitle = in_album; }
+
+        if(in_artist == null) { this.songsArtistName = "Unknown Artist"; }
+        else { this.songsArtistName = in_artist; }
+
+        //this.songTitle = in_name;
+        //this.songsAlbumTitle = in_album;
+        //this.songsArtistName = in_artist;
+
+        this.url = url;
+        this.uri = uri;
 
         timeAndDate = null;
         whoPlayedSongLast = null;
@@ -67,8 +80,12 @@ public class Song {
 
     public ArrayList<String> getWhoHasPlayedSong() { return whoHasPlayed; }
 
-    public int getResId () {
-        return resourceId;
+    public String getURL () {
+        return url;
+    }
+
+    public Uri getURI () {
+        return uri;
     }
 
     public ArrayList<Location> getLocations () {

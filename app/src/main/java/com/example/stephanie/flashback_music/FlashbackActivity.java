@@ -64,7 +64,6 @@ public class FlashbackActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
-
         mainContext = getApplicationContext();
 
 

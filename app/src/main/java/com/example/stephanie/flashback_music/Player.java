@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +19,7 @@ public class Player {
 
     //////////// Variables ////////////
     static boolean inRegularMode;
-    static boolean inFlashbackMode;
+    static boolean inVibeMode;
 
 
     private MediaPlayer mediaPlayer;
@@ -26,12 +27,13 @@ public class Player {
     public ArrayList<Album> albumObjects;
     private ArrayList<Song> songObjects;
 
-    private Map<Integer, Song> idsToSongs;
+    private Map<Uri, Song> urisToSongs;
+    private Map<String, Song> urlsToSongs;
 
     //SortedSet<String> playedSongs;
     //playedSongs = new TreeSet<>();
 
-    private LinkedList<Integer> regularModePlaylist;
+    private LinkedList<Uri> regularModePlaylist;
     protected PriorityQueue<Song> vibeModePlaylist;
 
 
@@ -43,14 +45,16 @@ public class Player {
 
         Comparator<Song> comp = new SongPointsComparator();
 
-        idsToSongs = new LinkedHashMap<>();
+        urisToSongs = new LinkedHashMap<>();
+        urlsToSongs = new LinkedHashMap<>();
 
         inRegularMode = true;
-        inFlashbackMode = false;
+        inVibeMode = false;
 
         regularModePlaylist =  new LinkedList<>();
         vibeModePlaylist = new PriorityQueue<>(comp);
     }
+
 
     public ArrayList<Album> getListOfAlbumObs() {
         return albumObjects;
@@ -61,58 +65,62 @@ public class Player {
     {
         if(inRegularMode) {
             inRegularMode = false;
-            inFlashbackMode = true;
+            inVibeMode = true;
             return;
         }
 
         inRegularMode = true;
-        inFlashbackMode = false;
+        inVibeMode = false;
     }
 
 
-    public void add(String songTitle, String albumName, String artist, int resId)
+    public void add(String songTitle, String albumName, String artist, String url, Uri uri)
     {
-        Song currSong = new Song(songTitle, albumName, artist, resId);
+        Song newSong = new Song(songTitle, albumName, artist, url, uri);
         boolean exists = false;
         for (int i = 0; i < songObjects.size(); i++) {
-            if (songObjects.get(i).getSongTitle() == currSong.getSongTitle()) {
+            if (songObjects.get(i).getSongTitle().equals(newSong.getSongTitle())) {
                 exists = true;
             }
         }
+
         if (!exists) {
-            songObjects.add(currSong);
-            idsToSongs.put(resId, currSong);
+            songObjects.add(newSong);
+            urisToSongs.put(uri, newSong);
+            urlsToSongs.put(url, newSong);
         }
-        songObjects.add(currSong);
-        idsToSongs.put(resId, currSong);
 
         if(albumObjects.size() == 0)
         {
             albumObjects.add(new Album(albumName, artist));
-            albumObjects.get(0).addSong(currSong);
+            albumObjects.get(0).addSong(newSong);
             return;
         }
 
         for(int i = 0; i < albumObjects.size(); i++) {
             if(albumObjects.get(i).getAlbumTitle().equals(albumName))
             {
-                albumObjects.get(i).addSong(currSong);
+                albumObjects.get(i).addSong(newSong);
+                return;
+            }
+            else if(albumName == null && albumObjects.get(i).getAlbumTitle().equals("Unknown Album")) {
+                albumObjects.get(i).addSong(newSong);
                 return;
             }
         }
 
         albumObjects.add(new Album(albumName, artist));
-        albumObjects.get(albumObjects.size() - 1).addSong(currSong);
+        albumObjects.get(albumObjects.size() - 1).addSong(newSong);
     }
 
 
-    protected void playSong(Activity activity, final int resID, TextView textView) {
+    protected void playSong(Activity activity, final Uri uri, TextView textView) {
         if(!regularModePlaylist.isEmpty())
         {
             regularModePlaylist.clear();
         }
 
-        regularModePlaylist.add(resID);
+        regularModePlaylist.add(uri);
 
         regularModePlay(activity, textView);
     }
@@ -125,7 +133,7 @@ public class Player {
             regularModePlaylist.clear();
         }
 
-        regularModePlaylist.addAll(album.getSongIds());
+        regularModePlaylist.addAll(album.getSongURIs());
 
         regularModePlay(activity, textView);
     }
@@ -143,10 +151,10 @@ public class Player {
             mediaPlayer = null;
         }
 
-        final int currentResourceId = regularModePlaylist.poll();
-        Song currentPlayingSong = idsToSongs.get(currentResourceId);
+        final Uri currentURI = regularModePlaylist.poll();
+        Song currentPlayingSong = urisToSongs.get(currentURI);
 
-        mediaPlayer = MediaPlayer.create(activity, currentResourceId);
+        mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateRegModeSongDataTextview(textView, currentPlayingSong);
         mediaPlayer.start();
 
@@ -155,7 +163,7 @@ public class Player {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
-                Song finishedSong = idsToSongs.get(currentResourceId);
+                Song finishedSong = urisToSongs.get(currentURI);
 
                 finishedSong.update(Calendar.getInstance(), new Location("La Jolla"), "You");
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
@@ -192,9 +200,9 @@ public class Player {
         }
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
-        final int currentResourceId = currentSongInPlaylist.getResId();
+        final Uri currentURI = currentSongInPlaylist.getURI();
 
-        mediaPlayer = MediaPlayer.create(activity, currentResourceId);
+        mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
         mediaPlayer.start();
 
@@ -203,7 +211,7 @@ public class Player {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
-                Song finishedSong = idsToSongs.get(currentResourceId);
+                Song finishedSong = urisToSongs.get(currentURI);
                 songObjects.add(finishedSong);
 
                 if(!vibeModePlaylist.isEmpty())

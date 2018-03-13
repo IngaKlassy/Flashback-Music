@@ -4,6 +4,8 @@
 
 package com.example.stephanie.flashback_music;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +18,19 @@ public class Album {
 
     private ArrayList<Song> songObList = new ArrayList<>();
     private List<String> songTitleList = new ArrayList<>();
-    private ArrayList<Integer> songIds = new ArrayList<>();
+    private ArrayList<Uri> songURIs = new ArrayList<>();
 
 
     public Album (String title, String artist) {
-        albumTitle = title;
-        albumArtist = artist;
+        if(title == null) { albumTitle = "Unknown Album"; }
+        else { albumTitle = title; }
+
+        if(artist == null) { albumArtist = "Unknown Artist"; }
+        else { albumArtist = title; }
 
         songObList = new ArrayList<>();
         songTitleList = new ArrayList<>();
-        songIds = new ArrayList<>();
+        songURIs = new ArrayList<>();
 
         songTitleList.add("PLAY ALBUM");
     }
@@ -44,7 +49,7 @@ public class Album {
 
         songObList.add(song);
         songTitleList.add(inSong);
-        songIds.add((song.getResId()));
+        songURIs.add(song.getURI());
     }
 
 
@@ -52,8 +57,8 @@ public class Album {
         return songObList;
     }
 
-    public ArrayList<Integer> getSongIds() {
-        return songIds;
+    public ArrayList<Uri> getSongURIs() {
+        return songURIs;
     }
 
     public List<String> returnSongTitles()

@@ -4,9 +4,11 @@ package com.example.stephanie.flashback_music;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     CompoundButton vibeSwitch;
     OnSwipeTouchListener onSwipeTouchListener;
 
-    Map<String, Integer> songTitleToResourceId;
+    Map<String, Uri> songTitleToURI;
     Map<String, Album> albumTitleToAlbumOb;
     Map<String, String> songTitleToAlbumName;
     Map<String, String> songTitleToArtistName;
@@ -85,39 +88,76 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        downloadManager = (DownloadManager) this.getSystemService(DOWNLOAD_SERVICE);
-        downloadEngine = new DownloadEngine(downloadManager);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
         metaRetriever = new MediaMetadataRetriever();
-        songTitleToResourceId = new LinkedHashMap<>();
+        songTitleToURI = new LinkedHashMap<>();
         albumTitleToAlbumOb = new LinkedHashMap<>();
         AlbumToTrackListMap = new TreeMap<>();
         songTitleToAlbumName = new TreeMap<>();
         songTitleToArtistName = new TreeMap<>();
 
-        expandableListView = findViewById(R.id.songlist);
+        expandableListView = (ExpandableListView) findViewById(R.id.songlist);
+
+
+        //DATABASE SETUP*****
+        options = new FirebaseOptions.Builder()
+                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
+                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
+
+        database = FirebaseDatabase.getInstance(
+                FirebaseApp.initializeApp(this, options, "secondary"));
+
+        myRef = database.getReference();//database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
+        myRef.child("12345").setValue("Hey Inga");
+
+        String key = myRef.child("12345").push().getKey();
+
+        Map<String, Object> test = new TreeMap<>();
+        test.put("Amanda", new Integer(28));
+        test.put("Inga", new Integer(29));
+
+        Map<String, Object> test2 = new TreeMap<>();
+        test2.put("12345", test);
+
+        myRef.updateChildren(test2);
+
+        Intent output = new Intent();
+        setResult(RESULT_OK, output);
+
+
+        downloadManager = (DownloadManager) this.getSystemService(DOWNLOAD_SERVICE);
+        downloadEngine = new DownloadEngine(downloadManager);
 
 
         //DOWNLOAD OPTIONS SETUP
+
+        //SONGINFO LAYOUT
+        final LinearLayout songInfoLayout = (LinearLayout) findViewById(R.id.songInfo_layout);
+        songInfoLayout.setVisibility(View.VISIBLE);
+        songInfoLayout.setEnabled(true);
+
+        final ViewGroup.LayoutParams songInfoParams = songInfoLayout.getLayoutParams();
+
+        //ENTER URL LAYOUT
         final LinearLayout urlEnterLayout = (LinearLayout) findViewById(R.id.url_download_1);
         urlEnterLayout.setVisibility(View.INVISIBLE);
         urlEnterLayout.setEnabled(false);
 
-        final ViewGroup.LayoutParams params1 = urlEnterLayout.getLayoutParams();
-        params1.height = 0;
-        urlEnterLayout.setLayoutParams(params1);
+        final ViewGroup.LayoutParams dwnldButtonParams = urlEnterLayout.getLayoutParams();
+        dwnldButtonParams.height = 0;
+        urlEnterLayout.setLayoutParams(dwnldButtonParams);
 
+        //DOWNLOAD SONGS BUTTON LAYOUT
         final LinearLayout downloadBtnLayout = (LinearLayout) findViewById(R.id.url_download_btn);
         downloadBtnLayout.setVisibility(View.VISIBLE);
 
-        final ViewGroup.LayoutParams params2 = downloadBtnLayout.getLayoutParams();
-        params2.height = 80;
-        downloadBtnLayout.setLayoutParams(params2);
+        final ViewGroup.LayoutParams enterUrlParams = downloadBtnLayout.getLayoutParams();
+        enterUrlParams.height = 80;
+        downloadBtnLayout.setLayoutParams(enterUrlParams);
 
 
         final Button downloadButton = (Button) findViewById(R.id.download_Button);
@@ -127,13 +167,16 @@ public class MainActivity extends AppCompatActivity {
                 downloadBtnLayout.setVisibility(View.INVISIBLE);
                 downloadButton.setEnabled(false);
 
-                params2.height = 0;
-                downloadBtnLayout.setLayoutParams(params2);
+                enterUrlParams.height = 0;
+                downloadBtnLayout.setLayoutParams(enterUrlParams);
 
                 urlEnterLayout.setVisibility(View.VISIBLE);
                 urlEnterLayout.setEnabled(true);
-                params1.height = 200;
-                urlEnterLayout.setLayoutParams(params1);
+                dwnldButtonParams.height = 200;
+                urlEnterLayout.setLayoutParams(dwnldButtonParams);
+
+                songInfoParams.height = 0;
+                songInfoLayout.setLayoutParams(songInfoParams);
             }
         });
 
@@ -143,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText urlBox = (EditText) findViewById(R.id.enter_url);
                 String enteredURL = urlBox.getText().toString();
+                //urlBox.setText("");
 
                 downloadEngine.tryToDownload(getApplicationContext(), enteredURL);
             }
@@ -154,14 +198,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 urlEnterLayout.setVisibility(View.INVISIBLE);
                 urlEnterLayout.setEnabled(false);
-                params1.height = 0;
-                urlEnterLayout.setLayoutParams(params1);
+                dwnldButtonParams.height = 0;
+                urlEnterLayout.setLayoutParams(dwnldButtonParams);
 
                 downloadBtnLayout.setVisibility(View.VISIBLE);
                 downloadButton.setEnabled(true);
 
-                params2.height = 80;
-                downloadBtnLayout.setLayoutParams(params2);
+                enterUrlParams.height = 80;
+                downloadBtnLayout.setLayoutParams(enterUrlParams);
+
+                songInfoParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                songInfoLayout.setLayoutParams(songInfoParams);
             }
         });
 
@@ -217,16 +264,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //DATABASE SETUP*****
-        options = new FirebaseOptions.Builder()
-                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
-                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
-
-        database = FirebaseDatabase.getInstance(
-                FirebaseApp.initializeApp(this, options, "secondary"));
-
-        myRef = database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
-
         //ACTION BAR SETUP*****
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setActionBar(toolbar);
@@ -243,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        ArrayList<File> downloads = getDownloadedSongs(this);
+        addDownloadedSongs(this);
 
         /*onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
@@ -253,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         };*/
 
 
-        //CREATING SONG OBJECTS AND ALBUM OBJECTS*****
+        /*//CREATING SONG OBJECTS AND ALBUM OBJECTS*****
         Field[] fields = R.raw.class.getFields();
         for(Field field : fields)
         {
@@ -273,10 +310,11 @@ public class MainActivity extends AppCompatActivity {
             songTitleToResourceId.put(songTitle, resID);
             songTitleToAlbumName.put(songTitle, songAlbum);
             songTitleToArtistName.put(songTitle, songArtist);
-        }
+        }*/
 
 
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
+
         for(int i = 0; i < albums.size(); i++)
         {
             Album currentAlbum = albums.get(i);
@@ -287,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //EXPANDABLE LIST SETUP*****
         expandableListDetail = AlbumToTrackListMap;
         expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
@@ -324,15 +361,17 @@ public class MainActivity extends AppCompatActivity {
                     mainActivityPlayerOb.playAlbum(MainActivity.this, albumOb, textView);
                 }
                 else {
-                    int resourceID = songTitleToResourceId.get(songName);
+                    Uri uri = songTitleToURI.get(songName);
 
-                    mainActivityPlayerOb.playSong(MainActivity.this, resourceID, textView);
+                    mainActivityPlayerOb.playSong(MainActivity.this, uri, textView);
                 }
                 return true;
             }
         });
 
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
 
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
@@ -372,14 +411,15 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(locationProvider, 0, 31, locationListener);
     }
 
+
     public void startVibeMode() {
         Intent intent = new Intent(this, FlashbackActivity.class);
         startActivity(intent);
     }
 
 
-    public ArrayList<File> getDownloadedSongs(Context c) {
-        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/VibeMusic/");
+    public void addDownloadedSongs(Context c) {
+        File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download");
 
         File[] downloads = downloadsDirectory.listFiles();
 
@@ -388,6 +428,11 @@ public class MainActivity extends AppCompatActivity {
         for(File f: downloads) {
             String filename = f.getName();
             int lastPeriodIndex = filename.lastIndexOf(".");
+
+            if(lastPeriodIndex == -1) {
+                break;
+            }
+
             int filenameLength = filename.length();
             String extension = filename.substring(lastPeriodIndex, filenameLength);
 
@@ -396,38 +441,33 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /*MediaPlayer mp = new MediaPlayer();
+        Uri uri = Uri.parse(mp3Downloads.get(0).getAbsolutePath());
+        mp = MediaPlayer.create(MainActivity.this, uri);
+        mp.start();*/
+
         if(mp3Downloads.size() == 0) {
-            Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_SHORT).show();
         }
         else {
             for(File f: mp3Downloads){
-                //Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
-                URI uri = f.toURI();
-                URL url = null;
+                Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "File path: " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
-                try {
-                    /*MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
-                    metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
 
-                    String songTitle = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                    String songAlbum = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                    String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
+                metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
 
-                    Toast.makeText(getBaseContext(), songTitle, Toast.LENGTH_LONG).show();
-                    Toast.makeText(getBaseContext(), songAlbum, Toast.LENGTH_LONG).show();
-                    Toast.makeText(getBaseContext(), songArtist, Toast.LENGTH_LONG).show();*/
+                String songTitle = f.getName();//metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                String songAlbum = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
-                    url = uri.toURL();
-                }
-                catch(MalformedURLException m){
-                    m.printStackTrace();
-                }
-
-                //Toast.makeText(getBaseContext(), "From: " + uri.toString(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(getBaseContext(), "From: " + url.toString(), Toast.LENGTH_LONG).show();
+                Uri uri = Uri.parse(f.toString());
+                mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, "", uri);
+                songTitleToURI.put(songTitle, uri);
+                songTitleToAlbumName.put(songTitle, songAlbum);
+                songTitleToArtistName.put(songTitle, songArtist);
             }
         }
-
-        return mp3Downloads;
     }
 }
