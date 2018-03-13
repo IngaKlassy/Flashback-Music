@@ -1,12 +1,17 @@
 package com.example.stephanie.flashback_music;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +30,8 @@ import java.util.ArrayList;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
 
+
+
 public class FlashbackActivity extends AppCompatActivity {
     private static final String TAG = "FLASHBACK";
 
@@ -36,6 +43,8 @@ public class FlashbackActivity extends AppCompatActivity {
     CompoundButton flashbackSwitch;
 
     ArrayList<TextView> textviews;
+
+    QueueDialogFragment qdf;
 
     TextView songName;
     TextView songAlbum;
@@ -73,6 +82,8 @@ public class FlashbackActivity extends AppCompatActivity {
         textviews.add(lastPlayed);
 
         mainActivityPlayerOb.prioritizeSongs();
+
+        qdf = new QueueDialogFragment();
 
         if(mainActivityPlayerOb.getVibeModePlaylist().isEmpty())
         {
@@ -123,6 +134,14 @@ public class FlashbackActivity extends AppCompatActivity {
                     // ...
                 }
 
+            }
+        });
+
+        Button queueButton = findViewById(R.id.showQueue);
+        queueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qdf.show(getFragmentManager(),"NoticeDialogFrag");
             }
         });
 
@@ -217,6 +236,30 @@ public class FlashbackActivity extends AppCompatActivity {
 
         for(int i = 1; i < textviews.size(); i++) {
          textviews.get(i).setText("");
+        }
+    }
+
+    public static class QueueDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            String[] k = new String[25];
+            for (int ctr =0; ctr<25; ctr++){
+                k[ctr]= "Song "+(ctr+1);
+            }
+
+            builder.setTitle("Coming up next")
+                    .setItems(k, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // The 'which' argument contains the index position
+                            // of the selected item
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 }
