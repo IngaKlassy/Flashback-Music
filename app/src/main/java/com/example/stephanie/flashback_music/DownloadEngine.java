@@ -173,6 +173,7 @@ public class DownloadEngine {
         String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
         Uri uri = Uri.parse(match.toString());
+        MainActivity.uriToUrl.put(uri.toString(), currentURL);
 
         MainActivity.mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currentURL, uri);
         Toast.makeText(activityContext, "New song created", Toast.LENGTH_SHORT).show();
