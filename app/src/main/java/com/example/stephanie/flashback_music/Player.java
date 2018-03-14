@@ -1,6 +1,7 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -190,7 +192,12 @@ public class Player {
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
+<<<<<<< HEAD
                 finishedSong.update(Calendar.getInstance(), currentLocation, MainActivity.userName);
+=======
+                Calendar currCalendar = Calendar.getInstance();
+                finishedSong.update(currCalendar, currentLocation, "You");
+>>>>>>> 7f22def1f54d095c974298f8822fd8bd45268154
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
@@ -201,6 +208,35 @@ public class Player {
                 updateRegModeNoSongDataTextview(textView);
                 mediaPlayer.release();
                 mediaPlayer = null;
+                String key1 = MainActivity.myRef.push().getKey();
+                MainActivity.myRef.child(key1);
+
+                //String key = MainActivity.myRef.child("12345").push().getKey();
+
+                Map<String, Object> test = new TreeMap<>();
+                test.put("Song Name", finishedSong.getSongTitle());
+                test.put("Song Album", (finishedSong.getAlbumTitle()));
+                test.put("Song Artist", (finishedSong.getArtistName()));
+                test.put("URL", (finishedSong.getURL()));
+                test.put("Played by", (MainActivity.userName));
+                test.put("City", (currentLocation.getProvider()));
+                test.put("Latitude", (currentLocation.getLatitude()));
+                test.put("Longitude", (currentLocation.getLongitude()));
+                test.put("Month", (currCalendar.get(Calendar.MONTH)));
+                test.put("Day of Month", (currCalendar.get(Calendar.DAY_OF_MONTH)));
+                test.put("Hour of day", (currCalendar.get(Calendar.HOUR_OF_DAY)));
+                test.put("Minute", (currCalendar.get(Calendar.MINUTE)));
+                test.put("Second", (currCalendar.get(Calendar.SECOND)));
+
+
+
+                Map<String, Object> test2 = new TreeMap<>();
+                test2.put(key1, test);
+
+                MainActivity.myRef.updateChildren(test2);
+
+                //Intent output = new Intent();
+                //setResult(RESULT_OK, output);
 
                 //MainActivity.myRef.setValue(finishedSong);
             }
