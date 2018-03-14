@@ -182,7 +182,7 @@ public class Player {
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
-                finishedSong.update(Calendar.getInstance(), currentLocation, "You");
+                finishedSong.update(Calendar.getInstance(), currentLocation, MainActivity.userName);
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
