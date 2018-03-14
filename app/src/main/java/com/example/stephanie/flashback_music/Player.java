@@ -36,7 +36,7 @@ public class Player {
     private LinkedList<Uri> regularModePlaylist;
     protected PriorityQueue<Song> vibeModePlaylist;
 
-
+    private String currentSongName;
 
     //////////// Functions ////////////
     public Player() {
@@ -55,6 +55,13 @@ public class Player {
         vibeModePlaylist = new PriorityQueue<>(comp);
     }
 
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public String getCurrentSongName() {
+        return currentSongName;
+    }
 
     public ArrayList<Album> getListOfAlbumObs() {
         return albumObjects;
@@ -153,6 +160,7 @@ public class Player {
 
         final Uri currentURI = regularModePlaylist.poll();
         Song currentPlayingSong = urisToSongs.get(currentURI);
+        currentSongName = currentPlayingSong.getSongTitle();
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateRegModeSongDataTextview(textView, currentPlayingSong);

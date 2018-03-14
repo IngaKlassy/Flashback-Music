@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.Geocoder;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,7 +36,12 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -82,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
     DownloadManager downloadManager;
     DownloadEngine downloadEngine;
 
+    private String saveFileName = "saveState";
+    static boolean inMain = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
 
+        readData();
 
         //DATABASE SETUP*****
         options = new FirebaseOptions.Builder()
@@ -394,6 +404,67 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Save data inside of
+    public void onDestroy(){
+        saveState();
+        super.onDestroy();
+    }
+
+    public void saveState(){
+        FileOutputStream s;
+
+        File file = new File(this.getFilesDir(), saveFileName);
+
+        try {
+            if(file == null || !file.exists()){
+                file.createNewFile();
+            }
+
+            s = new FileOutputStream(file);
+
+            String state = "m";
+            String newLine = "\n";
+
+            s.write(state.getBytes());
+            s.write(newLine.getBytes());
+
+            MediaPlayer mp = mainActivityPlayerOb.getMediaPlayer();
+
+            if (mp.isPlaying()) {
+                String currentPos = "" + mp.getCurrentPosition();
+                String currentSongName = mainActivityPlayerOb.getCurrentSongName();
+
+                s.write(currentPos.getBytes());
+                s.write(newLine.getBytes());
+                s.write(currentSongName.getBytes());
+            }
+
+            s.flush();
+            s.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void readData(){
+        try{
+            FileInputStream s = openFileInput(saveFileName);
+            InputStreamReader r = new InputStreamReader(s);
+            BufferedReader p = new BufferedReader(r);
+
+            String line;
+
+            //TODO: read in text file and set state, return to correct song time, etc.
+            while((line = p.readLine()) != null){
+
+            }
+            p.close();
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 
     public void addDownloadedSongs(Context c) {
         File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download");
