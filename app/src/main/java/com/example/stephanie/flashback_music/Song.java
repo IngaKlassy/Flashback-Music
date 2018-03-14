@@ -36,7 +36,7 @@ public class Song {
 
 
     //////////// Functions ////////////
-    public Song (String in_name, String in_album, String in_artist, String url, Uri uri) {
+    public Song (String in_name, String in_album, String in_artist, String url) {
         if(in_name == null) { this.songTitle = "Unknown Title"; }
         else { this.songTitle = in_name; }
 
@@ -46,12 +46,8 @@ public class Song {
         if(in_artist == null) { this.songsArtistName = "Unknown Artist"; }
         else { this.songsArtistName = in_artist; }
 
-        //this.songTitle = in_name;
-        //this.songsAlbumTitle = in_album;
-        //this.songsArtistName = in_artist;
-
         this.url = url;
-        this.uri = uri;
+        this.uri = null;
 
         timeAndDate = null;
         whoPlayedSongLast = null;
@@ -66,12 +62,12 @@ public class Song {
         return songTitle;
     }
 
-    public String getArtistName () {
-        return songsArtistName;
-    }
-
     public String getAlbumTitle () {
         return songsAlbumTitle;
+    }
+
+    public String getArtistName () {
+        return songsArtistName;
     }
 
     public String getWhoPlayedSongLast() {
@@ -83,6 +79,8 @@ public class Song {
     public String getURL () {
         return url;
     }
+
+    public void setUri(Uri uri) { this.uri = uri; }
 
     public Uri getURI () {
         return uri;
@@ -101,8 +99,8 @@ public class Song {
         return timeAndDate;
     }
 
-    public void setTimeAndDate () {
-        Date date = cal.getTime();
+    public void setTimeAndDate (Calendar calender) {
+        Date date = calender.getTime();
         SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat ft2 = new SimpleDateFormat("HH:mm");
         timeAndDate = " on " + ft.format(date) + " at " + ft2.format(date);
@@ -165,7 +163,7 @@ public class Song {
 
         completed = true;
         cal = calendar;
-        setTimeAndDate();
+        setTimeAndDate(calendar);
 
         this.whoPlayedSongLast = " by " + whoPlayedSong;
     }

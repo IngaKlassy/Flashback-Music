@@ -36,6 +36,8 @@ public class Player {
     private LinkedList<Uri> regularModePlaylist;
     protected PriorityQueue<Song> vibeModePlaylist;
 
+    ArrayList<String> friends;
+
 
 
     //////////// Functions ////////////
@@ -53,6 +55,15 @@ public class Player {
 
         regularModePlaylist =  new LinkedList<>();
         vibeModePlaylist = new PriorityQueue<>(comp);
+
+        friends = new ArrayList<String>() {{
+            add("Amanda Moffitt");
+            add("Joel Loo");
+            add("Muyao Wu");
+            add("Inga Klassy");
+            add("Mathias Smyrl");
+            add("Stephanie Mitchener");
+        }};
     }
 
 
@@ -76,15 +87,17 @@ public class Player {
 
     public void add(String songTitle, String albumName, String artist, String url, Uri uri)
     {
-        Song newSong = new Song(songTitle, albumName, artist, url, uri);
+        Song newSong = new Song(songTitle, albumName, artist, url);
         boolean exists = false;
         for (int i = 0; i < songObjects.size(); i++) {
             if (songObjects.get(i).getSongTitle().equals(newSong.getSongTitle())) {
                 exists = true;
+                songObjects.get(i).setUri(uri);
             }
         }
 
         if (!exists) {
+            newSong.setUri(uri);
             songObjects.add(newSong);
             urisToSongs.put(uri, newSong);
             urlsToSongs.put(url, newSong);
@@ -165,7 +178,11 @@ public class Player {
 
                 Song finishedSong = urisToSongs.get(currentURI);
 
-                finishedSong.update(Calendar.getInstance(), new Location("La Jolla"), "You");
+                Location currentLocation = new Location("La Jolla");
+                currentLocation.setLongitude(MainActivity.currentLongitude);
+                currentLocation.setLatitude(MainActivity.currentLatitude);
+
+                finishedSong.update(Calendar.getInstance(), currentLocation, "You");
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
@@ -211,8 +228,8 @@ public class Player {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
-                Song finishedSong = urisToSongs.get(currentURI);
-                songObjects.add(finishedSong);
+                //Song finishedSong = urisToSongs.get(currentURI);
+                //songObjects.add(finishedSong);
 
                 if(!vibeModePlaylist.isEmpty())
                 {
