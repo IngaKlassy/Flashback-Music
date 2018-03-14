@@ -232,6 +232,10 @@ public class FlashbackActivity extends AppCompatActivity {
         }
     }
 
+    public void toggleCurrentSongStatus(){
+
+    }
+
 
     public void displayNoSongsToPlay(ArrayList<TextView> textviews) {
         textviews.get(0).setText("No songs played");
