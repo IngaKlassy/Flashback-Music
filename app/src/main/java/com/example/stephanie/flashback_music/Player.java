@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -213,17 +214,15 @@ public class Player {
                 test.put("Song Album", (finishedSong.getAlbumTitle()));
                 test.put("Song Artist", (finishedSong.getArtistName()));
                 test.put("URL", (finishedSong.getURL()));
-                test.put("Played by", (finishedSong.getWhoPlayedSongLast()));
+                test.put("Played by", (MainActivity.userName));
                 test.put("City", (currentLocation.getProvider()));
                 test.put("Latitude", (currentLocation.getLatitude()));
                 test.put("Longitude", (currentLocation.getLongitude()));
-                //test.put("Calendar", (currCalendar));
-                //test.put("Year", (currCalendar.yea);
-                test.put("Month", new Integer(2222));
-                test.put("Date", new Integer(28));
-                test.put("Hour of day", new Integer(29));
-                test.put("Minute", new Integer(2222));
-                test.put("Second", new Integer(28));
+                test.put("Month", (currCalendar.get(Calendar.MONTH)));
+                test.put("Day of Month", (currCalendar.get(Calendar.DAY_OF_MONTH)));
+                test.put("Hour of day", (currCalendar.get(Calendar.HOUR_OF_DAY)));
+                test.put("Minute", (currCalendar.get(Calendar.MINUTE)));
+                test.put("Second", (currCalendar.get(Calendar.SECOND)));
 
 
 
