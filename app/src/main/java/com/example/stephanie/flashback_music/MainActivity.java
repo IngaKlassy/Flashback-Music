@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.Geocoder;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,6 +47,9 @@ import java.util.TreeMap;
  */
 public class MainActivity extends AppCompatActivity {
     //VARIABLE DECLARATIONS*****
+
+    private static final String TAG = "MAIN";
+
     static Player mainActivityPlayerOb;
 
     static FirebaseDatabase database;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     DownloadManager downloadManager;
     DownloadEngine downloadEngine;
+    ImageView statusButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         AlbumToTrackListMap = new TreeMap<>();
         songTitleToAlbumName = new TreeMap<>();
         songTitleToArtistName = new TreeMap<>();
+
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
 
@@ -227,10 +230,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         //BOTTOM BAR SETUP*****
-        ImageView statusButton = findViewById(R.id.status);
+        statusButton = findViewById(R.id.status);
         ImageView playButton = findViewById(R.id.play);
         ImageView pauseButton = findViewById(R.id.pause);
         ImageView nextButton = findViewById(R.id.next);
+
+
 
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -256,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 textViews.add(textView);
 
                 mainActivityPlayerOb.next(MainActivity.this, textViews);
+                resetStatusButton();
             }
         });
 
@@ -386,6 +392,67 @@ public class MainActivity extends AppCompatActivity {
         // Register the listener with the Location Manager to receive location updates
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 31, locationListener);
+
+        resetStatusButton();
+
+
+        statusButton.setOnClickListener(new View.OnClickListener() {
+            Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
+
+
+            @Override
+            public void onClick(View view) {
+                if (!currentExists){
+                    statusButton.setImageResource(R.drawable.check);
+                    Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
+
+                if (status){
+                    mainActivityPlayerOb.getCurrentSongObject().setDislikeTrue();
+                    TextView textView = findViewById(R.id.songInfo);
+
+                    ArrayList<TextView> textViews = new ArrayList<>();
+                    textViews.add(textView);
+
+                    mainActivityPlayerOb.next(MainActivity.this, textViews);
+
+
+                    resetStatusButton();
+
+
+                }
+                else{
+                    mainActivityPlayerOb.getCurrentSongObject().setFavoriteTrue();
+                    resetStatusButton();
+                }
+
+            }
+        });
+    }
+
+    private void resetStatusButton(){
+
+        Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
+
+        if (!currentExists){
+            statusButton.setImageResource(R.drawable.plus);
+            Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
+
+        if (status){
+            statusButton.setImageResource(R.drawable.check);
+        }
+        else{
+            statusButton.setImageResource(R.drawable.plus);
+        }
+
+
+
     }
 
 

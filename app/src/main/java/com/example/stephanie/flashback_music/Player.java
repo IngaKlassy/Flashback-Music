@@ -183,6 +183,14 @@ public class Player {
     }
 
 
+    public Song getCurrentSongObject(){
+        if (inVibeMode){
+        return vibeModePlaylist.peek();
+        }
+        Song currentPlayingSong = urisToSongs.get(regularModePlaylist.peek());
+        return currentPlayingSong;
+
+    }
     protected void vibeModePlay(final Activity activity, final ArrayList<TextView> textViews)
     {
         if(mediaPlayer != null)

@@ -50,6 +50,7 @@ public class FlashbackActivity extends AppCompatActivity {
     TextView songAlbum;
     TextView songArtist;
     TextView lastPlayed;
+    ImageView statusButton;
 
     GoogleSignInClient mGoogleSignInClient;
     GoogleSignInAccount myAccount;
@@ -93,10 +94,40 @@ public class FlashbackActivity extends AppCompatActivity {
             mainActivityPlayerOb.vibeModePlay(FlashbackActivity.this, textviews);
 
             //BOTTOM BAR SETUP*****
-            ImageView statusButton = findViewById(R.id.status);
+            statusButton = findViewById(R.id.status);
             ImageView playButton = findViewById(R.id.play);
             ImageView pauseButton = findViewById(R.id.pause);
             ImageView nextButton = findViewById(R.id.next);
+
+            resetStatusButton();
+
+            statusButton.setOnClickListener(new View.OnClickListener() {
+                Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
+
+
+                @Override
+                public void onClick(View view) {
+                    if (!currentExists){
+                        statusButton.setImageResource(R.drawable.check);
+                        Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
+                    Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
+                    if (status){
+                        mainActivityPlayerOb.getCurrentSongObject().setDislikeTrue();
+                        mainActivityPlayerOb.next(FlashbackActivity.this, textviews);
+                        resetStatusButton();
+
+                    }
+                    else{
+                        mainActivityPlayerOb.getCurrentSongObject().setFavoriteTrue();
+                        resetStatusButton();
+                    }
+
+                }
+            });
 
             pauseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,6 +147,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     mainActivityPlayerOb.next(FlashbackActivity.this, textviews);
+                    resetStatusButton();
                 }
             });
         }
@@ -133,7 +165,6 @@ public class FlashbackActivity extends AppCompatActivity {
                         break;
                     // ...
                 }
-
             }
         });
 
@@ -167,6 +198,26 @@ public class FlashbackActivity extends AppCompatActivity {
     private void signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
+    }
+    private void resetStatusButton(){
+
+        Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
+
+        if (!currentExists){
+            statusButton.setImageResource(R.drawable.plus);
+            Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
+        if (status){
+            statusButton.setImageResource(R.drawable.check);
+        }
+        else{
+            statusButton.setImageResource(R.drawable.plus);
+        }
+
 
     }
 
@@ -232,9 +283,6 @@ public class FlashbackActivity extends AppCompatActivity {
         }
     }
 
-    public void toggleCurrentSongStatus(){
-
-    }
 
 
     public void displayNoSongsToPlay(ArrayList<TextView> textviews) {
