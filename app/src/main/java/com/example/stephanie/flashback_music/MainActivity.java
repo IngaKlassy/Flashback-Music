@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,8 @@ import java.util.TreeMap;
 public class MainActivity extends AppCompatActivity {
     //VARIABLE DECLARATIONS*****
     static Player mainActivityPlayerOb;
+
+    static HashMap<String, String> uriToUrl;
 
     static FirebaseDatabase database;
     static DatabaseReference myRef;
@@ -103,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         AlbumToTrackListMap = new TreeMap<>();
         songTitleToAlbumName = new TreeMap<>();
         songTitleToArtistName = new TreeMap<>();
+        uriToUrl = new HashMap<>();
 
         userName = "Unknown User";
 
@@ -509,7 +513,8 @@ public class MainActivity extends AppCompatActivity {
                 String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
                 Uri uri = Uri.parse(f.toString());
-                mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, "", uri);
+                String currUrl = uriToUrl.get(uri.toString());
+                mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currUrl, uri);
 
                 songTitleToURI.put(songTitle, uri);
                 songTitleToAlbumName.put(songTitle, songAlbum);
