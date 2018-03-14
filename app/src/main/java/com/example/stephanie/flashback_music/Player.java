@@ -1,6 +1,7 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -190,7 +191,8 @@ public class Player {
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
-                finishedSong.update(Calendar.getInstance(), currentLocation, "You");
+                Calendar currCalendar = Calendar.getInstance();
+                finishedSong.update(currCalendar, currentLocation, "You");
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
@@ -201,6 +203,37 @@ public class Player {
                 updateRegModeNoSongDataTextview(textView);
                 mediaPlayer.release();
                 mediaPlayer = null;
+                String key1 = MainActivity.myRef.push().getKey();
+                MainActivity.myRef.child(key1);
+
+                //String key = MainActivity.myRef.child("12345").push().getKey();
+
+                Map<String, Object> test = new TreeMap<>();
+                test.put("Song Name", finishedSong.getSongTitle());
+                test.put("Song Album", (finishedSong.getAlbumTitle()));
+                test.put("Song Artist", (finishedSong.getArtistName()));
+                test.put("URL", (finishedSong.getURL()));
+                test.put("Played by", (finishedSong.getWhoPlayedSongLast()));
+                test.put("City", (currentLocation.getProvider()));
+                test.put("Latitude", (currentLocation.getLatitude()));
+                test.put("Longitude", (currentLocation.getLongitude()));
+                //test.put("Calendar", (currCalendar));
+                //test.put("Year", (currCalendar.yea);
+                test.put("Month", new Integer(2222));
+                test.put("Date", new Integer(28));
+                test.put("Hour of day", new Integer(29));
+                test.put("Minute", new Integer(2222));
+                test.put("Second", new Integer(28));
+
+
+
+                Map<String, Object> test2 = new TreeMap<>();
+                test2.put(key1, test);
+
+                MainActivity.myRef.updateChildren(test2);
+
+                //Intent output = new Intent();
+                //setResult(RESULT_OK, output);
 
                 //MainActivity.myRef.setValue(finishedSong);
             }

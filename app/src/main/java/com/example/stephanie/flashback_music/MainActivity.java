@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseApp.initializeApp(this, options, "secondary"));
 
         myRef = database.getReference();//database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
-        myRef.child("12345").setValue("Hey Inga");
+        /*myRef.child("12345").setValue("Hey Inga");
 
         String key = myRef.child("12345").push().getKey();
 
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         test2.put("12345", test);
 
         myRef.updateChildren(test2);
+        */
 
         Intent output = new Intent();
         setResult(RESULT_OK, output);
