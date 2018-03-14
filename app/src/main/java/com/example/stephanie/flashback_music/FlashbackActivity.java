@@ -175,10 +175,8 @@ public class FlashbackActivity extends AppCompatActivity {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            Toast.makeText(getApplicationContext(), "hello "+account.getDisplayName(), Toast.LENGTH_LONG).show();
-
-            GetUrlContentTask result = new GetUrlContentTask();
-            result.execute("https://people.googleapis.com/v1/{resourceName=people/me}/connections");
+            Toast.makeText(getApplicationContext(), "hello " + account.getDisplayName(), Toast.LENGTH_LONG).show();
+            MainActivity.userName = account.getDisplayName();
         }
         else{
             Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
@@ -214,15 +212,11 @@ public class FlashbackActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             myAccount = account;
-
-            GetUrlContentTask result = new GetUrlContentTask();
-            result.execute("https://people.googleapis.com/v1/{resourceName=people/me}/connections");
+            MainActivity.userName = account.getDisplayName();
             
             Toast.makeText(getApplicationContext(), account.getDisplayName(), Toast.LENGTH_LONG).show();
-
-            // Signed in successfully, show authenticated UI.
-            //updateUI(account);
-        } catch (ApiException e) {
+        }
+        catch (ApiException e) {
             Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_LONG).show();
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

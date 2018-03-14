@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
     static double currentLatitude;
     static double currentLongitude;
-    static String currentLocation;
 
     MediaMetadataRetriever metaRetriever;
 
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     DownloadEngine downloadEngine;
 
     private String saveFileName = "saveState";
-    static boolean inMain = true;
+    static String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         AlbumToTrackListMap = new TreeMap<>();
         songTitleToAlbumName = new TreeMap<>();
         songTitleToArtistName = new TreeMap<>();
+
+        userName = "Unknown User";
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
 
