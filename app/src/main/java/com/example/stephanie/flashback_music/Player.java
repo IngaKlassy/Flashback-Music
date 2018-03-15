@@ -195,7 +195,6 @@ public class Player {
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
                 Calendar currCalendar = Calendar.getInstance();
-                finishedSong.update(currCalendar, currentLocation, "You");
 
                 finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
 
@@ -209,10 +208,10 @@ public class Player {
                 updateRegModeNoSongDataTextview(textView);
                 mediaPlayer.release();
                 mediaPlayer = null;
+
+
                 String key1 = MainActivity.myRef.push().getKey();
                 MainActivity.myRef.child(key1);
-
-                //String key = MainActivity.myRef.child("12345").push().getKey();
 
                 Map<String, Object> test = new TreeMap<>();
                 test.put("Song Name", finishedSong.getSongTitle());
@@ -229,8 +228,6 @@ public class Player {
                 test.put("Minute", (currCalendar.get(Calendar.MINUTE)));
                 test.put("Second", (currCalendar.get(Calendar.SECOND)));
 
-
-
                 Map<String, Object> test2 = new TreeMap<>();
                 test2.put(key1, test);
 
@@ -238,8 +235,6 @@ public class Player {
 
                 //Intent output = new Intent();
                 //setResult(RESULT_OK, output);
-
-                //MainActivity.myRef.setValue(finishedSong);
             }
         });
     }
