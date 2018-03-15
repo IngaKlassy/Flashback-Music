@@ -191,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
 
                 songInfoParams.height = 0;
                 songInfoLayout.setLayoutParams(songInfoParams);
+
+
             }
         });
 
@@ -358,6 +360,9 @@ public class MainActivity extends AppCompatActivity {
 
                     mainActivityPlayerOb.playSong(MainActivity.this, uri, textView);
                 }
+
+
+                resetStatusButton();
                 return true;
             }
         });
@@ -432,10 +437,7 @@ public class MainActivity extends AppCompatActivity {
                     textViews.add(textView);
 
                     mainActivityPlayerOb.next(MainActivity.this, textViews);
-
-
                     resetStatusButton();
-
 
                 }
                 else{
