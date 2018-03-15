@@ -6,6 +6,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     static double currentLatitude;
     static double currentLongitude;
-
+    static String currentCityAndState;
 
     MediaMetadataRetriever metaRetriever;
 
@@ -370,7 +372,24 @@ public class MainActivity extends AppCompatActivity {
                 currentLatitude = location.getLatitude();
                 currentLongitude = location.getLongitude();
 
-                Toast.makeText(getApplicationContext(), "(" + location.getLongitude()
+                Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+                List<Address> addresses = null;
+                try {
+                    addresses = gcd.getFromLocation(currentLatitude, currentLongitude, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (addresses.size() > 0) {
+                    currentCityAndState = addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea();
+                    Toast.makeText(getApplicationContext(), "City and State: " + currentCityAndState , Toast.LENGTH_LONG).show();
+                }
+                else {
+                    currentCityAndState = "Unknown Location";
+                    Toast.makeText(getApplicationContext(), "No city found ", Toast.LENGTH_LONG).show();
+
+                }
+
+                Toast.makeText(getApplicationContext(), "Coordinates: (" + location.getLongitude()
                         + ", " + location.getLatitude() + ")", Toast.LENGTH_LONG).show();
 
                 mainActivityPlayerOb.prioritizeSongs();
