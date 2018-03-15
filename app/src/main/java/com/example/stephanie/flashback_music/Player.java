@@ -562,8 +562,15 @@ public class Player {
         return 0;
 
     }
+
     public int setFriendPlayedPoints(Song song) {
-        return 1;
+        for (int i = 0; i < song.getWhoHasPlayedSong().size(); i++) {
+            for (int j = 0; j < friends.size(); j++) {
+                if (song.getWhoHasPlayedSong().get(i).equals(friends.get(j)))
+                    return 1;
+            }
+        }
+        return 0;
     }
 
     public PriorityQueue<Song> getVibeModePlaylist() {
