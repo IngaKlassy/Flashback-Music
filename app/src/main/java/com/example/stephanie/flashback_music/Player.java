@@ -275,11 +275,18 @@ public class Player {
             return;
         }
 
+        if(vibeModePlaylist.isEmpty()) {
+            return;
+        }
+
         Song currentSongInPlaylist = vibeModePlaylist.poll();
 
 
         final Uri currentURI = currentSongInPlaylist.getURI();
 
+        if(mediaPlayer == null) {
+            return;
+        }
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
         mediaPlayer.start();
