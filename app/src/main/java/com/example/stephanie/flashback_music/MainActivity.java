@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         uriToUrl = new HashMap<>();
 
         userName = "Unknown User";
+        currentCityAndState = "Unknown Location";
 
 
         expandableListView = (ExpandableListView) findViewById(R.id.songlist);
@@ -134,19 +135,18 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance(
                 FirebaseApp.initializeApp(this, options, "secondary"));
 
-        myRef = database.getReference();//database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
+        myRef = database.getReference();
         myRef.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key3 = dataSnapshot.getKey();
-               // int hour = dataSnapshot.child("Hour of day");
+
                 DatabaseReference currRef = myRef.child(key3);
-                //DatabaseReference newRef = currRef.child("City");
-                //String  city = dataSnapshot.getChildren().;
+
                 currRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        //addDatabaseEntries(dataSnapshot);
+                        addDatabaseEntries(dataSnapshot);
                     }
 
                     @Override
@@ -444,7 +444,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "City and State: " + currentCityAndState , Toast.LENGTH_LONG).show();
                 }
                 else {
-                    currentCityAndState = "Unknown Location";
                     Toast.makeText(getApplicationContext(), "No city found ", Toast.LENGTH_LONG).show();
 
                 }
@@ -684,7 +683,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(expandableListAdapter == null) {
-            //Toast.makeText(getBaseContext(), "adapter is null" , Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -703,51 +701,55 @@ public class MainActivity extends AppCompatActivity {
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             switch (i) {
                 case 0:
-                    dayOfMonth = (int) ds.getValue();
+                    city = ds.getValue().toString();
                     i++;
                     break;
                 case 1:
-                    hour = (int) ds.getValue();
+                    dayOfMonth = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 2:
-                    lat = (double) ds.getValue();
+                    hour = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 3:
-                    longt = (double) ds.getValue();
+                    lat = Double.parseDouble(ds.getValue().toString());//(double) ds.getValue();
                     i++;
                     break;
                 case 4:
-                    min = (int) ds.getValue();
+                    longt = Double.parseDouble(ds.getValue().toString());
                     i++;
                     break;
                 case 5:
-                    month = (int) ds.getValue();
+                    min = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 6:
-                    playedBy = (String) ds.getValue();
+                    month = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 7:
-                    album = (String) ds.getValue();
+                    playedBy = ds.getValue().toString();
                     i++;
                     break;
                 case 8:
-                    artist = (String) ds.getValue();
+                    album = ds.getValue().toString();
                     i++;
                     break;
                 case 9:
-                    songName = (String ) ds.getValue();
+                    artist = ds.getValue().toString();
                     i++;
                     break;
                 case 10:
-                    url1 = (String) ds.getValue();
+                    songName = ds.getValue().toString();
                     i++;
                     break;
                 case 11:
-                    year = (int) ds.getValue();
+                    url1 = ds.getValue().toString();
+                    i++;
+                    break;
+                case 12:
+                    year = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
             }
@@ -762,15 +764,11 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Song> songObjects = mainActivityPlayerOb.getSongObjects();
 
             for (int j = 0; j < songObjects.size(); j++) {
-                if (songObjects.get(i).getSongTitle().equals(songName)) {
-                    songObjects.get(i).update(currCal, currLoc, playedBy);
+                if (songObjects.get(j).getSongTitle().equals(songName)) {
+                    songObjects.get(j).update(currCal, currLoc, playedBy);
                 }
             }
-
-
-
         }
         Toast.makeText(getApplicationContext(), "Added entries! " , Toast.LENGTH_LONG).show();
-        //for (int i = 0; )
     }
 }

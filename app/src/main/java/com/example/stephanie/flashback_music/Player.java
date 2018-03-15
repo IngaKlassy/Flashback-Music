@@ -227,7 +227,6 @@ public class Player {
                 test.put("Song Name", finishedSong.getSongTitle());
                 test.put("Song Album", (finishedSong.getAlbumTitle()));
                 test.put("Song Artist", (finishedSong.getArtistName()));
-                //test.put("URL", 222);
                 test.put("URL", (finishedSong.getURL()));
                 test.put("Played by", (MainActivity.userName));
                 test.put("City", (currentLocation.getProvider()));
