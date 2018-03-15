@@ -73,6 +73,10 @@ public class Player {
         }};
     }
 
+    public ArrayList<Song> getSongObjects() {
+        return songObjects;
+    }
+
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
@@ -84,6 +88,8 @@ public class Player {
     public ArrayList<Album> getListOfAlbumObs() {
         return albumObjects;
     }
+
+    public ArrayList<Song> getQueue() { return new ArrayList<Song>(vibeModePlaylist); }
 
 
     protected void switchMode()
@@ -138,6 +144,7 @@ public class Player {
 
         albumObjects.add(new Album(albumName, artist));
         albumObjects.get(albumObjects.size() - 1).addSong(newSong);
+
     }
 
 
@@ -198,6 +205,7 @@ public class Player {
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
                 Calendar currCalendar = Calendar.getInstance();
+
                 finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
 
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
@@ -210,15 +218,16 @@ public class Player {
                 updateRegModeNoSongDataTextview(textView);
                 mediaPlayer.release();
                 mediaPlayer = null;
+
+
                 String key1 = MainActivity.myRef.push().getKey();
                 MainActivity.myRef.child(key1);
-
-                //String key = MainActivity.myRef.child("12345").push().getKey();
 
                 Map<String, Object> test = new TreeMap<>();
                 test.put("Song Name", finishedSong.getSongTitle());
                 test.put("Song Album", (finishedSong.getAlbumTitle()));
                 test.put("Song Artist", (finishedSong.getArtistName()));
+                //test.put("URL", 222);
                 test.put("URL", (finishedSong.getURL()));
                 test.put("Played by", (MainActivity.userName));
                 test.put("City", (currentLocation.getProvider()));
@@ -228,9 +237,8 @@ public class Player {
                 test.put("Day of Month", (currCalendar.get(Calendar.DAY_OF_MONTH)));
                 test.put("Hour of day", (currCalendar.get(Calendar.HOUR_OF_DAY)));
                 test.put("Minute", (currCalendar.get(Calendar.MINUTE)));
-                test.put("Second", (currCalendar.get(Calendar.SECOND)));
-
-
+                test.put("Year", (currCalendar.get(Calendar.YEAR)));
+                //test.put("Second", (currCalendar.get(Calendar.SECOND)));
 
                 Map<String, Object> test2 = new TreeMap<>();
                 test2.put(key1, test);
@@ -239,8 +247,6 @@ public class Player {
 
                 //Intent output = new Intent();
                 //setResult(RESULT_OK, output);
-
-                //MainActivity.myRef.setValue(finishedSong);
             }
         });
     }
@@ -271,6 +277,8 @@ public class Player {
         }
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
+
+
         final Uri currentURI = currentSongInPlaylist.getURI();
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);

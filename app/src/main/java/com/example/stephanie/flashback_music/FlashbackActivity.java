@@ -37,6 +37,8 @@ public class FlashbackActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 111;
 
+    private final static int MAX_QUEUE_DISPLAY = 25;
+
     static String getResult;
     static Context mainContext;
 
@@ -109,7 +111,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (!currentExists){
                         statusButton.setImageResource(R.drawable.check);
-                        Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -244,7 +246,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 }
             });
     }
-
+    
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -293,13 +295,34 @@ public class FlashbackActivity extends AppCompatActivity {
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            String[] k = new String[25];
-            for (int ctr =0; ctr<25; ctr++){
-                k[ctr]= "Song "+(ctr+1);
+            ArrayList<Song> queue = mainActivityPlayerOb.getQueue();
+            ArrayList<String> k = new ArrayList<String>(); //fix
+
+            if (queue.size() > 0) {
+                for (int ctr =0; ctr< queue.size(); ctr++){
+                    k.add(queue.get(ctr).getSongTitle());
+                }
+            }
+            else {
+                    k.add("Queue is empty");
+            }
+
+            String [] newK;
+            if (k.size() > MAX_QUEUE_DISPLAY) {
+                newK = new String[MAX_QUEUE_DISPLAY];
+            }
+            else {
+                newK = new String[k.size()];
+            }
+
+            for (int i = 0; i < MAX_QUEUE_DISPLAY; i++) { //MAX_QUEUE_DISPLAY is max # of songs shown in queue
+                if (i < k.size()) {
+                    newK[i] = k.get(i).toString();
+                }
             }
 
             builder.setTitle("Coming up next")
-                    .setItems(k, new DialogInterface.OnClickListener() {
+                    .setItems(newK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             // The 'which' argument contains the index position
                             // of the selected item
