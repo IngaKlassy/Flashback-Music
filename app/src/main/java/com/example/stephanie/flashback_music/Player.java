@@ -1,7 +1,6 @@
 package com.example.stephanie.flashback_music;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -10,8 +9,14 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 /**
  * Created by Stephanie on 2/6/2018.
