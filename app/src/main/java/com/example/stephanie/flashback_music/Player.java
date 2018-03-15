@@ -188,16 +188,13 @@ public class Player {
 
                 Song finishedSong = urisToSongs.get(currentURI);
 
-                Location currentLocation = new Location("La Jolla");
+                Location currentLocation = new Location(MainActivity.currentCityAndState);
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
-<<<<<<< HEAD
-                finishedSong.update(Calendar.getInstance(), currentLocation, MainActivity.userName);
-=======
                 Calendar currCalendar = Calendar.getInstance();
-                finishedSong.update(currCalendar, currentLocation, "You");
->>>>>>> 7f22def1f54d095c974298f8822fd8bd45268154
+                finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
+
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
