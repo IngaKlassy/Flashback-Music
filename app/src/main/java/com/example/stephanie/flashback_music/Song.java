@@ -80,7 +80,11 @@ public class Song {
         return url;
     }
 
-    public void setUri(Uri uri) { this.uri = uri; }
+    public void setUri(Uri uri) {
+        if(this.uri == null) {
+            this.uri = uri;
+        }
+    }
 
     public Uri getURI () {
         return uri;
