@@ -80,6 +80,8 @@ public class Player {
         return albumObjects;
     }
 
+    public ArrayList<Song> getQueue() { return new ArrayList<Song>(vibeModePlaylist); }
+
 
     protected void switchMode()
     {
@@ -192,12 +194,9 @@ public class Player {
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
-<<<<<<< HEAD
-                finishedSong.update(Calendar.getInstance(), currentLocation, MainActivity.userName);
-=======
                 Calendar currCalendar = Calendar.getInstance();
                 finishedSong.update(currCalendar, currentLocation, "You");
->>>>>>> 7f22def1f54d095c974298f8822fd8bd45268154
+
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
                 if(!regularModePlaylist.isEmpty())
@@ -261,6 +260,8 @@ public class Player {
         }
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
+
+
         final Uri currentURI = currentSongInPlaylist.getURI();
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);
