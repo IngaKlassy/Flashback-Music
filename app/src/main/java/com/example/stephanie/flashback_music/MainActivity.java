@@ -34,8 +34,13 @@ import android.widget.Toolbar;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +50,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -127,6 +134,50 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseApp.initializeApp(this, options, "secondary"));
 
         myRef = database.getReference();//database.getReferenceFromUrl("https://cse-110-team-project-team-29.firebaseio.com/");
+        myRef.orderByKey().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String key3 = dataSnapshot.getKey();
+               // int hour = dataSnapshot.child("Hour of day");
+                DatabaseReference currRef = myRef.child(key3);
+                //DatabaseReference newRef = currRef.child("City");
+                //String  city = dataSnapshot.getChildren().;
+                currRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //addDatabaseEntries(dataSnapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         /*myRef.child("12345").setValue("Hey Inga");
 
         String key = myRef.child("12345").push().getKey();
@@ -536,6 +587,9 @@ public class MainActivity extends AppCompatActivity {
 
                 Uri uri = Uri.parse(f.toString());
                 String currUrl = uriToUrl.get(uri.toString());
+                if (currUrl == null) {
+                    currUrl = "";
+                }
                 mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currUrl, uri);
 
                 songTitleToURI.put(songTitle, uri);
@@ -568,5 +622,88 @@ public class MainActivity extends AppCompatActivity {
         }
 
         expandableListAdapter.updateSongsList(AlbumToTrackListMap);
+    }
+
+    public void readFromDatabase() {
+
+    }
+
+    public void addDatabaseEntries(DataSnapshot dataSnapshot) {
+        String songName = "", artist = "", album = "", url1 = "", city = "", playedBy = "";
+        int sec = 0, hour = 0, month = 0, year = 0, dayOfMonth = 0, min = 0;
+        double lat = 0.0, longt = 0.0;
+        int i = 0;
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            switch (i) {
+                case 0:
+                    dayOfMonth = (int) ds.getValue();
+                    i++;
+                    break;
+                case 1:
+                    hour = (int) ds.getValue();
+                    i++;
+                    break;
+                case 2:
+                    lat = (double) ds.getValue();
+                    i++;
+                    break;
+                case 3:
+                    longt = (double) ds.getValue();
+                    i++;
+                    break;
+                case 4:
+                    min = (int) ds.getValue();
+                    i++;
+                    break;
+                case 5:
+                    month = (int) ds.getValue();
+                    i++;
+                    break;
+                case 6:
+                    playedBy = (String) ds.getValue();
+                    i++;
+                    break;
+                case 7:
+                    album = (String) ds.getValue();
+                    i++;
+                    break;
+                case 8:
+                    artist = (String) ds.getValue();
+                    i++;
+                    break;
+                case 9:
+                    songName = (String ) ds.getValue();
+                    i++;
+                    break;
+                case 10:
+                    url1 = (String) ds.getValue();
+                    i++;
+                    break;
+                case 11:
+                    year = (int) ds.getValue();
+                    i++;
+                    break;
+            }
+
+
+            mainActivityPlayerOb.add(songName, album, artist, url1, null);
+            Calendar currCal = Calendar.getInstance();
+            currCal.set(year, month, dayOfMonth, hour, min, sec);
+            Location currLoc = new Location(city);
+            currLoc.setLatitude(lat);
+            currLoc.setLongitude(longt);
+            ArrayList<Song> songObjects = mainActivityPlayerOb.getSongObjects();
+
+            for (int j = 0; j < songObjects.size(); j++) {
+                if (songObjects.get(i).getSongTitle().equals(songName)) {
+                    songObjects.get(i).update(currCal, currLoc, playedBy);
+                }
+            }
+
+
+
+        }
+        Toast.makeText(getApplicationContext(), "Added entries! " , Toast.LENGTH_LONG).show();
+        //for (int i = 0; )
     }
 }
