@@ -102,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
     private String saveFileName = "saveState";
     static String userName;
 
+    private int dayMock = 0, monthMock = 0, yearMock = 0, hourMock = 0, minuteMock = 0, secondMock = 0;
+    boolean useMockTime;
+    static Calendar mockCalendar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         AlbumTitleToTrackList = new TreeMap<>();
         songTitleToURI = new LinkedHashMap<>();
         uriToUrl = new LinkedHashMap<>();
+        useMockTime = false;
+        mockCalendar = Calendar.getInstance();
 
         userName = "Unknown User";
         currentCityAndState = "Unknown Location";
@@ -262,6 +268,49 @@ public class MainActivity extends AppCompatActivity {
                     startVibeMode();
                     vibeSwitch.setChecked(false);
                 }
+            }
+        });
+
+
+        //mock time setup
+        final EditText dayText = (EditText) findViewById(R.id.enterDay);
+        final EditText monthText = (EditText) findViewById(R.id.enterMonth);
+        final EditText yearText = (EditText) findViewById(R.id.enterYear);
+        final EditText hourText = (EditText) findViewById(R.id.enterHour);
+        final EditText minuteText = (EditText) findViewById(R.id.enterMinute);
+        final EditText secondText = (EditText) findViewById(R.id.enterSecond);
+        final Button mockTimeButton = (Button) findViewById(R.id.setMockTimeButton);
+        final Button realTimeButton = (Button) findViewById(R.id.useRealTimeButton);
+
+
+        mockTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                useMockTime = true;
+                dayMock = Integer.parseInt(dayText.getText().toString());
+                monthMock = Integer.parseInt(monthText.getText().toString());
+                yearMock = Integer.parseInt(yearText.getText().toString());
+                hourMock = Integer.parseInt(hourText.getText().toString());
+                minuteMock = Integer.parseInt(minuteText.getText().toString());
+                secondMock = Integer.parseInt(secondText.getText().toString());
+                dayText.setText("");
+                monthText.setText("");
+                yearText.setText("");
+                hourText.setText("");
+                minuteText.setText("");
+                secondText.setText("");
+
+                mockCalendar.set(yearMock, monthMock, dayMock, hourMock, minuteMock, secondMock);
+                Toast.makeText(getBaseContext(), " Using Mock Time! ", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        realTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                useMockTime = false;
+                Toast.makeText(getBaseContext(), " Using Real Time! ", Toast.LENGTH_LONG).show();
             }
         });
 
