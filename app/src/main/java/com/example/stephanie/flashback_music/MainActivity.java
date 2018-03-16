@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 
@@ -83,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
     TreeMap<String, List<String>> expandableListDetail;
 
     CompoundButton vibeSwitch;
-    //OnSwipeTouchListener onSwipeTouchListener;
 
     Map<String, Album> albumTitleToAlbumOb;
     TreeMap<String, List<String>> AlbumTitleToTrackList;
@@ -335,6 +335,19 @@ public class MainActivity extends AppCompatActivity {
             }
         };*/
 
+
+        //Pulling Downloads From phone
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        addDownloadedSongs(this);
+
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
 
         for(int i = 0; i < albums.size(); i++)
@@ -492,14 +505,14 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        /**
+        /*
          if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
          requestPermissions(
          new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
          100);
          Log.d("main activity location","ins");
          return;
-         }*/
+         }  *///TODO
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -631,6 +644,23 @@ public class MainActivity extends AppCompatActivity {
                 s.write(newLine.getBytes());
                 s.write(currentSongName.getBytes());
             }
+            // write an "n" on the next two lines to show that no song was playing
+            else {
+                String notPlaying = "n\nn\n";
+                s.write(notPlaying.getBytes());
+            }
+
+            // TODO write the uriToUrl map to the file
+            Object[] uriAndUrlStuff = uriToUrl.keySet().toArray();
+            int i = 0;
+            // while there are still keys to be written in uriToUrl
+            while(i < uriAndUrlStuff.length) {
+                // write the string and a new line
+                s.write(uriAndUrlStuff[i].toString().getBytes());
+                s.write(newLine.getBytes());
+                // go to the next line
+                i++;
+            }
 
             s.flush();
             s.close();
@@ -648,11 +678,48 @@ public class MainActivity extends AppCompatActivity {
 
             String line;
 
-            //TODO: read in text file and set state, return to correct song time, etc.
-            while((line = p.readLine()) != null){
+            boolean mainActivity = false;
+
+            // determine if in flashback or main activity
+            line = p.readLine();
+            if (line.equals("m"))
+                mainActivity = true;
+
+            // get the song name if applicable
+            line = p.readLine();
+            if(line.equals("n")) {
+                line = p.readLine();
+            }
+            else {
+                String song = line;
+
+                line = p.readLine();
+                int start = Integer.parseInt(line);
+
+                //TODO play "song" at "start" time
+            }
+
+            String key;
+            String value;
+
+            uriToUrl.clear();
+
+            while ((line = p.readLine()) != null) {
+                // get the key and the value
+                key = line;
+                value = p.readLine();
+
+                // add the key/value to the hash map
+                if (value != null) {
+                    uriToUrl.put(key, value);
+                }
 
             }
             p.close();
+
+            if (mainActivity == false) {
+                //TODO change activities
+            }
 
         }catch(IOException e){
             e.printStackTrace();
