@@ -298,6 +298,7 @@ public class FlashbackActivity extends AppCompatActivity {
             ArrayList<String> k = new ArrayList<String>(); //fix
 
             if (queue.size() > 0) {
+                k.add(mainActivityPlayerOb.getCurrentSongName());
                 for (int ctr =0; ctr< queue.size(); ctr++){
                     k.add(queue.get(ctr).getSongTitle());
                 }
