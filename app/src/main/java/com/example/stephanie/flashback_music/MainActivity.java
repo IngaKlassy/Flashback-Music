@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     static LocationManager locationManager;
 
     DownloadManager downloadManager;
-    DownloadEngine downloadEngine;
+    static DownloadEngine downloadEngine;
 
     ImageView statusButton;
 
@@ -120,6 +120,18 @@ public class MainActivity extends AppCompatActivity {
         currentCityAndState = "Unknown Location";
 
         expandableListView = findViewById(R.id.songlist);
+
+        //PULLING DOWNLOADS FROM PHONE
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        addDownloadedSongs(this);
 
         //DATABASE SETUP*****
         options = new FirebaseOptions.Builder()
@@ -310,18 +322,6 @@ public class MainActivity extends AppCompatActivity {
         setActionBar(toolbar);
 
 
-        //Pulling Downloads From phone
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    100);
-            Log.d("test1","ins");
-            return;
-        }
-
-        addDownloadedSongs(this);
-
         /*onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
             @Override
             public void onSwipeLeft() {
@@ -400,7 +400,8 @@ public class MainActivity extends AppCompatActivity {
                 currentLongitude = location.getLongitude();
 
                 Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
-                List<Address> addresses = null;
+                List<Address> addresses = new ArrayList<>();
+
                 try {
                     addresses = gcd.getFromLocation(currentLatitude, currentLongitude, 1);
                 } catch (IOException e) {
@@ -454,16 +455,37 @@ public class MainActivity extends AppCompatActivity {
 
 
         statusButton.setOnClickListener(new View.OnClickListener() {
-            Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
+            Song currentSong = mainActivityPlayerOb.getCurrentSongObject();
+            Boolean currentExists = currentSong != null;
 
             @Override
             public void onClick(View view) {
-                if (!currentExists){
-                    statusButton.setImageResource(R.drawable.check);
-                    //Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
-                    return;
+                if (currentExists){
+                    Boolean status = currentSong.getNeutralStatus();
+
+                    if(status){
+                      statusButton.setImageResource(R.drawable.check);
+                      currentSong.setFavoriteTrue();
+                      Toast.makeText(getBaseContext(), "Liked", Toast.LENGTH_SHORT).show();
+                      return;
+                    }
+                    else{
+                        currentSong.setDislikeTrue();
+                        Toast.makeText(getBaseContext(), "DisLiked", Toast.LENGTH_SHORT).show();
+                        TextView textView = findViewById(R.id.songInfo);
+
+                        ArrayList<TextView> textViews = new ArrayList<>();
+                        textViews.add(textView);
+
+                        mainActivityPlayerOb.next(MainActivity.this, textViews);
+                        resetStatusButton();
+                    }
                 }
-                Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
+                else {
+                    Toast.makeText(getBaseContext(), "Doesn't Exist", Toast.LENGTH_SHORT).show();
+                }
+
+                /*Boolean status = mainActivityPlayerOb.getCurrentSongObject().getFavoriteStatus();
 
                 if (status){
                     mainActivityPlayerOb.getCurrentSongObject().setDislikeTrue();
@@ -478,8 +500,7 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     mainActivityPlayerOb.getCurrentSongObject().setFavoriteTrue();
                     resetStatusButton();
-                }
-
+                }*/
             }
         });
 
@@ -491,8 +512,8 @@ public class MainActivity extends AppCompatActivity {
         Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
 
         if (!currentExists){
-            //statusButton.setImageResource(R.drawable.plus);
-            //Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+            statusButton.setImageResource(R.drawable.plus);
+            Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -697,22 +718,26 @@ public class MainActivity extends AppCompatActivity {
                     i++;
                     break;
                 case 8:
-                    album = ds.getValue().toString();
+                    second = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 9:
-                    artist = ds.getValue().toString();
+                    album = ds.getValue().toString();
                     i++;
                     break;
                 case 10:
-                    songName = ds.getValue().toString();
+                    artist = ds.getValue().toString();
                     i++;
                     break;
                 case 11:
-                    url1 = ds.getValue().toString();
+                    songName = ds.getValue().toString();
                     i++;
                     break;
                 case 12:
+                    url1 = ds.getValue().toString();
+                    i++;
+                    break;
+                case 13:
                     year = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;

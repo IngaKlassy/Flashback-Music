@@ -42,6 +42,7 @@ public class Player {
     protected PriorityQueue<Song> vibeModePlaylist;
 
     private String currentSongName;
+    private Song currentSongObject;
     ArrayList<String> friends;
 
 
@@ -112,14 +113,18 @@ public class Player {
                 //Toast.makeText(MainActivity.mainContext, songTitle + " already an object", Toast.LENGTH_SHORT).show();
                 exists = true;
                 songObjects.get(i).setUri(uri);
+                if(uri != null && urisToSongs.containsKey(uri)) {
+                    urisToSongs.put(uri, newSong);
+                }
             }
         }
 
         if (!exists) {
-            //Toast.makeText(MainActivity.mainContext, songTitle + " now a new object", Toast.LENGTH_SHORT).show();
             newSong.setUri(uri);
             songObjects.add(newSong);
-            urisToSongs.put(uri, newSong);
+            if(uri != null) {
+                urisToSongs.put(uri, newSong);
+            }
             urlsToSongs.put(url, newSong);
         }
 
@@ -151,6 +156,16 @@ public class Player {
         if(!regularModePlaylist.isEmpty())
         {
             regularModePlaylist.clear();
+        }
+
+        for(int i = 0; i < songObjects.size(); i++) {
+            Song match = songObjects.get(i);
+            if((match.getURI().toString()).equals(uri.toString())) {
+                if(match.getDislikeStatus()) {
+                    match.setNeutralTrue();
+                }
+                break;
+            }
         }
 
         regularModePlaylist.add(uri);
@@ -186,7 +201,19 @@ public class Player {
 
         final Uri currentURI = regularModePlaylist.poll();
         Song currentPlayingSong = urisToSongs.get(currentURI);
+
+        if(urisToSongs.get(currentURI) == null) {
+            Toast.makeText(MainActivity.mainContext, "Couldnt find in map", Toast.LENGTH_SHORT).show();
+        }
+
+        if(currentPlayingSong.getDislikeStatus()) {
+            ArrayList<TextView> temp = new ArrayList<TextView>();
+            temp.add(textView);
+            next(activity, temp);
+        }
+
         currentSongName = currentPlayingSong.getSongTitle();
+        currentSongObject = currentPlayingSong;
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateRegModeSongDataTextview(textView, currentPlayingSong);
@@ -202,6 +229,14 @@ public class Player {
                 Location currentLocation = new Location(MainActivity.currentCityAndState);
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
+
+                /*if(someVaraible) {
+                    finishedSong.update(MainActivity.setCalendar, currentLocation, MainActivity.userName);
+                }
+                else {
+                    Calendar currCalendar = Calendar.getInstance();
+                    finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
+                }*/
 
                 Calendar currCalendar = Calendar.getInstance();
 
@@ -236,26 +271,19 @@ public class Player {
                 test.put("Hour of day", (currCalendar.get(Calendar.HOUR_OF_DAY)));
                 test.put("Minute", (currCalendar.get(Calendar.MINUTE)));
                 test.put("Year", (currCalendar.get(Calendar.YEAR)));
-                //test.put("Second", (currCalendar.get(Calendar.SECOND)));
+                test.put("Second", (currCalendar.get(Calendar.SECOND)));
 
                 Map<String, Object> test2 = new TreeMap<>();
                 test2.put(key1, test);
 
                 MainActivity.myRef.updateChildren(test2);
-
-                //Intent output = new Intent();
-                //setResult(RESULT_OK, output);
             }
         });
     }
 
 
     public Song getCurrentSongObject(){
-        if (inVibeMode){
-        return vibeModePlaylist.peek();
-        }
-        Song currentPlayingSong = urisToSongs.get(regularModePlaylist.peek());
-        return currentPlayingSong;
+        return currentSongObject;
     }
 
 
@@ -280,6 +308,8 @@ public class Player {
         }
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
+        currentSongName = currentSongInPlaylist.getSongTitle();
+        currentSongObject = currentSongInPlaylist;
         final Uri currentURI = currentSongInPlaylist.getURI();
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);

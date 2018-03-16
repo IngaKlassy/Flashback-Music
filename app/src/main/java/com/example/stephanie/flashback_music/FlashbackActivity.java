@@ -121,7 +121,6 @@ public class FlashbackActivity extends AppCompatActivity {
                         mainActivityPlayerOb.getCurrentSongObject().setDislikeTrue();
                         mainActivityPlayerOb.next(FlashbackActivity.this, textviews);
                         resetStatusButton();
-
                     }
                     else{
                         mainActivityPlayerOb.getCurrentSongObject().setFavoriteTrue();

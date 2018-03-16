@@ -23,7 +23,6 @@ public class DownloadEngine {
     DownloadManager downloadManager;
 
     String currentURL;
-    Context activityContext;
 
     public DownloadEngine(DownloadManager dm) {
         downloadManager = dm;
@@ -68,7 +67,6 @@ public class DownloadEngine {
 
 
     public void tryToDownload(Context context, String enteredURL) {
-        activityContext = context;
         currentURL = enteredURL;
 
         context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
@@ -176,7 +174,7 @@ public class DownloadEngine {
         MainActivity.uriToUrl.put(uri.toString(), currentURL);
 
         MainActivity.mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currentURL, uri);
-        Toast.makeText(activityContext, "New song created", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.mainContext, "New song created", Toast.LENGTH_SHORT).show();
 
         MainActivity.songTitleToURI.put(match.getName(), uri);
 
