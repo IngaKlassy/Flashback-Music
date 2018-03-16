@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     TreeMap<String, List<String>> expandableListDetail;
 
     CompoundButton vibeSwitch;
-    OnSwipeTouchListener onSwipeTouchListener;
 
     static Map<String, Uri> songTitleToURI;
     Map<String, Album> albumTitleToAlbumOb;
@@ -355,13 +354,6 @@ public class MainActivity extends AppCompatActivity {
 
         addDownloadedSongs(this);
 
-        /*onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
-            @Override
-            public void onSwipeLeft() {
-                startVibeMode();
-            }
-        };*/
-
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
 
         for(int i = 0; i < albums.size(); i++)
@@ -582,6 +574,18 @@ public class MainActivity extends AppCompatActivity {
                 s.write(newLine.getBytes());
                 s.write(currentSongName.getBytes());
             }
+            // write an "n" on the next two lines to show that no song was playing
+            else {
+                String notPlaying = "n\nn\n";
+                s.write(notPlaying.getBytes());
+            }
+
+            // TODO write the uriToUrl map to the file
+            // while there are still keys to be written in uriToUrl
+                // write the first string
+                // write a new line
+                // write the second string
+                // write a new line
 
             s.flush();
             s.close();
@@ -592,22 +596,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void readData(){
-        try{
+        /*try{
             FileInputStream s = openFileInput(saveFileName);
             InputStreamReader r = new InputStreamReader(s);
             BufferedReader p = new BufferedReader(r);
 
             String line;
 
-            //TODO: read in text file and set state, return to correct song time, etc.
-            while((line = p.readLine()) != null){
+            boolean mainActivity = false;
 
+            // determine if in flashback or main activity
+            line = p.readLine();
+            if (line.equals("m"))
+                mainActivity = true;
+
+            // get the song name if applicable
+            line = p.readLine();
+            if(line.equals("n")) {
+                line = p.readLine();
+            }
+            else {
+                String song = line;
+
+                line = p.readLine();
+                int start = Integer.parseInt(line);
+
+                //TODO play "song" at "start" time
+            }
+
+            while ((line = p.readLine()) != null) {
+                // add the songs back to the uriToUrl map
             }
             p.close();
 
+            if (mainActivity == false) {
+                //TODO change activities
+            }
+
         }catch(IOException e){
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void addDownloadedSongs(Context c) {
