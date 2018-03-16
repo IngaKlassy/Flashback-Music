@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 //gotta get that SRPness
 public class Song {
@@ -95,8 +96,10 @@ public class Song {
     }
 
     public String getMostRecentLocation(){
-        Location lastPlayedLocation = locations.get(locations.size() - 1);
-        return lastPlayedLocation.getProvider();
+        int sizeOfLocationList = locations.size();
+        if(sizeOfLocationList == 0) { return null; }
+
+        return locations.get(sizeOfLocationList - 1).getProvider();
     }
 
     public String getTimeAndDate () {
@@ -163,10 +166,23 @@ public class Song {
 
     public void update (Calendar calendar, Location location, String whoPlayedSong) {
         locations.add(location);
-        whoHasPlayed.add(whoPlayedSong);
+
+        boolean addPerson = true;
+        for(int i = 0; i < whoHasPlayed.size(); i++) {
+            if(whoHasPlayed.get(i).equals(whoPlayedSong)) {
+                addPerson = false;
+            }
+        }
+        if(addPerson) {
+            whoHasPlayed.add(whoPlayedSong);
+        }
+
 
         completed = true;
-        cal = calendar;
+        if(cal == null || cal.compareTo(calendar) >= 0) {
+            cal = calendar;
+        }
+
         setTimeAndDate(calendar);
 
         this.whoPlayedSongLast = " by " + whoPlayedSong;

@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 /**
@@ -36,9 +37,6 @@ public class Player {
 
     private Map<Uri, Song> urisToSongs;
     private Map<String, Song> urlsToSongs;
-
-    //SortedSet<String> playedSongs;
-    //playedSongs = new TreeSet<>();
 
     private LinkedList<Uri> regularModePlaylist;
     protected PriorityQueue<Song> vibeModePlaylist;
@@ -110,13 +108,15 @@ public class Player {
         Song newSong = new Song(songTitle, albumName, artist, url);
         boolean exists = false;
         for (int i = 0; i < songObjects.size(); i++) {
-            if (songObjects.get(i).getSongTitle().equals(newSong.getSongTitle())) {
+            if (songObjects.get(i).getSongTitle().equals(songTitle)) {
+                //Toast.makeText(MainActivity.mainContext, songTitle + " already an object", Toast.LENGTH_SHORT).show();
                 exists = true;
                 songObjects.get(i).setUri(uri);
             }
         }
 
         if (!exists) {
+            //Toast.makeText(MainActivity.mainContext, songTitle + " now a new object", Toast.LENGTH_SHORT).show();
             newSong.setUri(uri);
             songObjects.add(newSong);
             urisToSongs.put(uri, newSong);
@@ -144,7 +144,6 @@ public class Player {
 
         albumObjects.add(new Album(albumName, artist));
         albumObjects.get(albumObjects.size() - 1).addSong(newSong);
-
     }
 
 
@@ -257,8 +256,9 @@ public class Player {
         }
         Song currentPlayingSong = urisToSongs.get(regularModePlaylist.peek());
         return currentPlayingSong;
-
     }
+
+
     protected void vibeModePlay(final Activity activity, final ArrayList<TextView> textViews)
     {
         if(mediaPlayer != null)
@@ -280,13 +280,8 @@ public class Player {
         }
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
-
-
         final Uri currentURI = currentSongInPlaylist.getURI();
 
-        if(mediaPlayer == null) {
-            return;
-        }
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
         mediaPlayer.start();
@@ -412,7 +407,12 @@ public class Player {
             playedByWho = "";
         }
 
-        String lastPlayed = "Last played " + playedByWho + timeAndDate;
+        String location = song.getMostRecentLocation();
+        if(location == null){
+            location = "";
+        }
+
+        String lastPlayed = "Last played " + playedByWho + timeAndDate + "\n in " + location;
 
         if(timeAndDate == "" && playedByWho == "")
         {
@@ -468,7 +468,12 @@ public class Player {
             playedByWho = "";
         }
 
-        String lastPlayed = "Last played " + playedByWho + "\n" + timeAndDate;
+        String location = song.getMostRecentLocation();
+        if(location == null){
+            location = "";
+        }
+
+        String lastPlayed = "Last played " + playedByWho + "\n" + timeAndDate + "\n in " + location;
 
         if(timeAndDate == "" && playedByWho == "")
         {
@@ -507,10 +512,6 @@ public class Player {
 
                 vibeModePlaylist.add(currentSong);
             }
-
-            if(currentSong.completed) {
-                vibeModePlaylist.add(currentSong);
-            }
         }
         System.out.println("Queue Reprioritized");
         Log.w("Reprioritizing in Player: ", "success!" );
@@ -534,6 +535,7 @@ public class Player {
         }
         return 0;
     }
+
 
     public int setRecentlyPlayedPoints(Song song) {
         Calendar now = Calendar.getInstance();
