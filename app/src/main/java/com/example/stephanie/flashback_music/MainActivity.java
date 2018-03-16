@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 
@@ -369,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         addDownloadedSongs(this);
-
+// TODO ------ CRASHING SOMEWHERE AFTER THIS POINT
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
 
         for(int i = 0; i < albums.size(); i++)
@@ -469,14 +470,14 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        /**
+        /*
          if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
          requestPermissions(
          new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
          100);
          Log.d("main activity location","ins");
          return;
-         }*/
+         }  *///TODO
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -595,11 +596,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // TODO write the uriToUrl map to the file
+            Object[] uriAndUrlStuff = uriToUrl.keySet().toArray();
+            int i = 0;
             // while there are still keys to be written in uriToUrl
-                // write the first string
-                // write a new line
-                // write the second string
-                // write a new line
+            while(i < uriAndUrlStuff.length) {
+                // write the string and a new line
+                s.write(uriAndUrlStuff[i].toString().getBytes());
+                s.write(newLine.getBytes());
+                // go to the next line
+                i++;
+            }
 
             s.flush();
             s.close();
@@ -610,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void readData(){
-        /*try{
+        try{
             FileInputStream s = openFileInput(saveFileName);
             InputStreamReader r = new InputStreamReader(s);
             BufferedReader p = new BufferedReader(r);
@@ -638,8 +644,21 @@ public class MainActivity extends AppCompatActivity {
                 //TODO play "song" at "start" time
             }
 
+            String key;
+            String value;
+
+            uriToUrl.clear();
+
             while ((line = p.readLine()) != null) {
-                // add the songs back to the uriToUrl map
+                // get the key and the value
+                key = line;
+                value = p.readLine();
+
+                // add the key/value to the hash map
+                if (value != null) {
+                    uriToUrl.put(key, value);
+                }
+
             }
             p.close();
 
@@ -649,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
 
         }catch(IOException e){
             e.printStackTrace();
-        }*/
+        }
     }
 
 
