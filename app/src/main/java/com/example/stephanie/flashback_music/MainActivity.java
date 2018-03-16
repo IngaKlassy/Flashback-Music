@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -66,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MAIN";
 
     static Player mainActivityPlayerOb;
-
-    static HashMap<String, String> uriToUrl;
+    static Context mainContext;
 
     static FirebaseDatabase database;
     static DatabaseReference myRef;
@@ -86,22 +84,26 @@ public class MainActivity extends AppCompatActivity {
 
     CompoundButton vibeSwitch;
 
-    static Map<String, Uri> songTitleToURI;
     Map<String, Album> albumTitleToAlbumOb;
-    Map<String, String> songTitleToAlbumName;
-    Map<String, String> songTitleToArtistName;
+    TreeMap<String, List<String>> AlbumTitleToTrackList;
+    static Map<String, Uri> songTitleToURI;
+    static Map<String, String> uriToUrl;
 
-    TreeMap<String, List<String>> AlbumToTrackListMap;
 
     // Acquire a reference to the system Location Manager
     static LocationManager locationManager;
 
     DownloadManager downloadManager;
     DownloadEngine downloadEngine;
+
     ImageView statusButton;
 
     private String saveFileName = "saveState";
     static String userName;
+
+    private int dayMock = 0, monthMock = 0, yearMock = 0, hourMock = 0, minuteMock = 0, secondMock = 0;
+    boolean useMockTime;
+    static Calendar mockCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,21 +112,19 @@ public class MainActivity extends AppCompatActivity {
 
         //INITIALIZING VARIABLES*****
         mainActivityPlayerOb = new Player();
+        mainContext = getApplicationContext();
         metaRetriever = new MediaMetadataRetriever();
-        songTitleToURI = new LinkedHashMap<>();
         albumTitleToAlbumOb = new LinkedHashMap<>();
-        AlbumToTrackListMap = new TreeMap<>();
-        songTitleToAlbumName = new TreeMap<>();
-        songTitleToArtistName = new TreeMap<>();
-        uriToUrl = new HashMap<>();
+        AlbumTitleToTrackList = new TreeMap<>();
+        songTitleToURI = new LinkedHashMap<>();
+        uriToUrl = new LinkedHashMap<>();
+        useMockTime = false;
+        mockCalendar = Calendar.getInstance();
 
         userName = "Unknown User";
         currentCityAndState = "Unknown Location";
 
-
-        expandableListView = (ExpandableListView) findViewById(R.id.songlist);
-
-        readData();
+        expandableListView = findViewById(R.id.songlist);
 
         //DATABASE SETUP*****
         options = new FirebaseOptions.Builder()
@@ -138,9 +138,9 @@ public class MainActivity extends AppCompatActivity {
         myRef.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String key3 = dataSnapshot.getKey();
+                String uniqueKey = dataSnapshot.getKey();
 
-                DatabaseReference currRef = myRef.child(key3);
+                DatabaseReference currRef = myRef.child(uniqueKey);
 
                 currRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -149,52 +149,25 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 });
-
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
-
-
-        /*myRef.child("12345").setValue("Hey Inga");
-
-        String key = myRef.child("12345").push().getKey();
-
-        Map<String, Object> test = new TreeMap<>();
-        test.put("Amanda", new Integer(28));
-        test.put("Inga", new Integer(29));
-
-        Map<String, Object> test2 = new TreeMap<>();
-        test2.put("12345", test);
-
-        myRef.updateChildren(test2);
-        */
 
         Intent output = new Intent();
         setResult(RESULT_OK, output);
-
 
         downloadManager = (DownloadManager) this.getSystemService(DOWNLOAD_SERVICE);
         downloadEngine = new DownloadEngine(downloadManager);
@@ -298,6 +271,49 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        //mock time setup
+        final EditText dayText = (EditText) findViewById(R.id.enterDay);
+        final EditText monthText = (EditText) findViewById(R.id.enterMonth);
+        final EditText yearText = (EditText) findViewById(R.id.enterYear);
+        final EditText hourText = (EditText) findViewById(R.id.enterHour);
+        final EditText minuteText = (EditText) findViewById(R.id.enterMinute);
+        final EditText secondText = (EditText) findViewById(R.id.enterSecond);
+        final Button mockTimeButton = (Button) findViewById(R.id.setMockTimeButton);
+        final Button realTimeButton = (Button) findViewById(R.id.useRealTimeButton);
+
+
+        mockTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                useMockTime = true;
+                dayMock = Integer.parseInt(dayText.getText().toString());
+                monthMock = Integer.parseInt(monthText.getText().toString());
+                yearMock = Integer.parseInt(yearText.getText().toString());
+                hourMock = Integer.parseInt(hourText.getText().toString());
+                minuteMock = Integer.parseInt(minuteText.getText().toString());
+                secondMock = Integer.parseInt(secondText.getText().toString());
+                dayText.setText("");
+                monthText.setText("");
+                yearText.setText("");
+                hourText.setText("");
+                minuteText.setText("");
+                secondText.setText("");
+
+                mockCalendar.set(yearMock, monthMock, dayMock, hourMock, minuteMock, secondMock);
+                Toast.makeText(getBaseContext(), " Using Mock Time! ", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        realTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                useMockTime = false;
+                Toast.makeText(getBaseContext(), " Using Real Time! ", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
 
         //BOTTOM BAR SETUP*****
         statusButton = findViewById(R.id.status);
@@ -362,11 +378,11 @@ public class MainActivity extends AppCompatActivity {
             String albumTitle = currentAlbum.getAlbumTitle();
 
             albumTitleToAlbumOb.put(albumTitle, currentAlbum);
-            AlbumToTrackListMap.put(albumTitle, currentAlbum.returnSongTitles());
+            AlbumTitleToTrackList.put(albumTitle, currentAlbum.returnSongTitles());
         }
 
 
-        expandableListDetail = AlbumToTrackListMap;
+        expandableListDetail = AlbumTitleToTrackList;
         expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
@@ -481,7 +497,6 @@ public class MainActivity extends AppCompatActivity {
         statusButton.setOnClickListener(new View.OnClickListener() {
             Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
 
-
             @Override
             public void onClick(View view) {
                 if (!currentExists){
@@ -500,7 +515,6 @@ public class MainActivity extends AppCompatActivity {
 
                     mainActivityPlayerOb.next(MainActivity.this, textViews);
                     resetStatusButton();
-
                 }
                 else{
                     mainActivityPlayerOb.getCurrentSongObject().setFavoriteTrue();
@@ -509,6 +523,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        readData();
     }
 
     private void resetStatusButton(){
@@ -516,8 +532,8 @@ public class MainActivity extends AppCompatActivity {
         Boolean currentExists = mainActivityPlayerOb.getCurrentSongObject() != null;
 
         if (!currentExists){
-            statusButton.setImageResource(R.drawable.plus);
-            Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
+            //statusButton.setImageResource(R.drawable.plus);
+            //Toast.makeText(getBaseContext(), "No Current Song Playing", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -529,8 +545,6 @@ public class MainActivity extends AppCompatActivity {
         else{
             statusButton.setImageResource(R.drawable.plus);
         }
-
-
 
     }
 
@@ -638,6 +652,7 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
+
     public void addDownloadedSongs(Context c) {
         File downloadsDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download");
 
@@ -661,21 +676,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         if(mp3Downloads.size() == 0) {
             Toast.makeText(getBaseContext(), "List is empty -- No Downloads", Toast.LENGTH_SHORT).show();
         }
         else {
             for(File f: mp3Downloads){
                 //Toast.makeText(getBaseContext(), "File found: " + f.getName(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(getBaseContext(), "File path: " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
 
                 MediaMetadataRetriever metaRetriever2 = new MediaMetadataRetriever();
-                //Toast.makeText(getBaseContext(), "File path = " + f.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                metaRetriever2.setDataSource(f.getAbsolutePath());//c, Uri.parse(f.getName()));
+                metaRetriever2.setDataSource(f.getAbsolutePath());
 
-                String songTitle = f.getName();//metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                String songTitle = f.getName();
                 String songAlbum = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
                 String songArtist = metaRetriever2.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
@@ -687,8 +698,6 @@ public class MainActivity extends AppCompatActivity {
                 mainActivityPlayerOb.add(songTitle, songAlbum, songArtist, currUrl, uri);
 
                 songTitleToURI.put(songTitle, uri);
-                songTitleToAlbumName.put(songTitle, songAlbum);
-                songTitleToArtistName.put(songTitle, songArtist);
             }
         }
     }
@@ -714,18 +723,22 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        expandableListAdapter.updateSongsList(AlbumToTrackListMap);
+        expandableListAdapter.updateSongsList(AlbumTitleToTrackList);
     }
 
-    public void readFromDatabase() {
-
-    }
 
     public void addDatabaseEntries(DataSnapshot dataSnapshot) {
+        //VARIABLES NEEDED TO MAKE AND/OR UPDATE SONG IN ENTRY
         String songName = "", artist = "", album = "", url1 = "", city = "", playedBy = "";
-        int sec = 0, hour = 0, month = 0, year = 0, dayOfMonth = 0, min = 0;
-        double lat = 0.0, longt = 0.0;
+        int second = 0, hour = 0, month = 0, year = 0, dayOfMonth = 0, minute = 0;
+        double latitude = 0.0, longitude = 0.0;
+
+        //COUNTER
         int i = 0;
+
+        //Toast.makeText(MainActivity.mainContext, "Adding database entry" + dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
+
+        //ITERATING THROUGH EACH DATABASE ENTRY
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             switch (i) {
                 case 0:
@@ -741,15 +754,15 @@ public class MainActivity extends AppCompatActivity {
                     i++;
                     break;
                 case 3:
-                    lat = Double.parseDouble(ds.getValue().toString());//(double) ds.getValue();
+                    latitude = Double.parseDouble(ds.getValue().toString());
                     i++;
                     break;
                 case 4:
-                    longt = Double.parseDouble(ds.getValue().toString());
+                    longitude = Double.parseDouble(ds.getValue().toString());
                     i++;
                     break;
                 case 5:
-                    min = Integer.parseInt(ds.getValue().toString());
+                    minute = Integer.parseInt(ds.getValue().toString());
                     i++;
                     break;
                 case 6:
@@ -782,21 +795,21 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
+        }
 
-            mainActivityPlayerOb.add(songName, album, artist, url1, null);
-            Calendar currCal = Calendar.getInstance();
-            currCal.set(year, month, dayOfMonth, hour, min, sec);
-            Location currLoc = new Location(city);
-            currLoc.setLatitude(lat);
-            currLoc.setLongitude(longt);
-            ArrayList<Song> songObjects = mainActivityPlayerOb.getSongObjects();
+        //Toast.makeText(mainContext, "Trying to add " + songName + ", " + album + ", " + artist + ", " + url1 + ", " + city + ", " + playedBy, Toast.LENGTH_LONG).show();
+        mainActivityPlayerOb.add(songName, album, artist, url1, null);
+        Calendar currCal = Calendar.getInstance();
+        currCal.set(year, month, dayOfMonth, hour, minute, second);
+        Location currLoc = new Location(city);
+        currLoc.setLatitude(latitude);
+        currLoc.setLongitude(longitude);
 
-            for (int j = 0; j < songObjects.size(); j++) {
-                if (songObjects.get(j).getSongTitle().equals(songName)) {
-                    songObjects.get(j).update(currCal, currLoc, playedBy);
-                }
+        ArrayList<Song> songObjects = mainActivityPlayerOb.getSongObjects();
+        for (int j = 0; j < songObjects.size(); j++) {
+            if (songObjects.get(j).getSongTitle().equals(songName)) {
+                songObjects.get(j).update(currCal, currLoc, playedBy);
             }
         }
-        Toast.makeText(getApplicationContext(), "Added entries! " , Toast.LENGTH_LONG).show();
     }
 }
