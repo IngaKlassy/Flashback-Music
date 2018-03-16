@@ -45,6 +45,8 @@ public class Player {
     private Song currentSongObject;
     ArrayList<String> friends;
 
+    private ArrayList<Song> downloadingSongs;
+
 
     //////////// Functions ////////////
     public Player() {
@@ -70,6 +72,8 @@ public class Player {
             add("Mathias Smyrl");
             add("Stephanie Mitchener");
         }};
+
+        downloadingSongs = new ArrayList<>();
     }
 
     public ArrayList<Song> getSongObjects() {
@@ -230,17 +234,15 @@ public class Player {
                 currentLocation.setLongitude(MainActivity.currentLongitude);
                 currentLocation.setLatitude(MainActivity.currentLatitude);
 
-                /*if(someVaraible) {
-                    finishedSong.update(MainActivity.setCalendar, currentLocation, MainActivity.userName);
+                Calendar currCalendar;
+                if(MainActivity.useMockTime) {
+                    currCalendar = MainActivity.mockCalendar;
+                    finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
                 }
                 else {
-                    Calendar currCalendar = Calendar.getInstance();
-                    finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
-                }*/
-
-                Calendar currCalendar = Calendar.getInstance();
-
-                finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
+                   currCalendar = Calendar.getInstance();
+                   finishedSong.update(currCalendar, currentLocation, MainActivity.userName);
+                }
 
                 Toast.makeText(activity.getBaseContext(), "UPDATED!!", Toast.LENGTH_LONG).show();
 
@@ -299,18 +301,19 @@ public class Player {
             mediaPlayer = null;
         }
 
-        if(vibeModePlaylist.isEmpty()) {
-            return;
-        }
-
-        if(vibeModePlaylist.isEmpty()) {
-            return;
-        }
-
         Song currentSongInPlaylist = vibeModePlaylist.poll();
+
         currentSongName = currentSongInPlaylist.getSongTitle();
         currentSongObject = currentSongInPlaylist;
+
         final Uri currentURI = currentSongInPlaylist.getURI();
+
+        if(currentURI == null) {
+            String songURL = currentSongInPlaylist.getURL();
+            downloadingSongs.add(currentSongInPlaylist);
+            MainActivity.downloadEngine.tryToDownload(MainActivity.mainContext, songURL);
+            next(activity, textViews);
+        }
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
@@ -324,13 +327,24 @@ public class Player {
                 //Song finishedSong = urisToSongs.get(currentURI);
                 //songObjects.add(finishedSong);
 
-                if(!vibeModePlaylist.isEmpty())
-                {
+                if(!vibeModePlaylist.isEmpty()) {
                     vibeModePlay(activity, textViews);
                 }
-
-                prioritizeSongs();
-                vibeModePlay(activity, textViews);
+                else {
+                    if(downloadingSongs.isEmpty()) {
+                        prioritizeSongs();
+                        vibeModePlay(activity, textViews);
+                    }
+                    else {
+                        for(int i = 0; i < downloadingSongs.size(); i++) {
+                            Song current = downloadingSongs.get(i);
+                            if(current.getURI() != null) {
+                                vibeModePlaylist.add(current);
+                                vibeModePlay(activity, textViews);
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -384,10 +398,20 @@ public class Player {
             if(!vibeModePlaylist.isEmpty()) {
                 vibeModePlay(activity, textViews);
             }
-            else
-            {
-                prioritizeSongs();
-                vibeModePlay(activity, textViews);
+            else {
+                if(downloadingSongs.isEmpty()) {
+                    prioritizeSongs();
+                    vibeModePlay(activity, textViews);
+                }
+                else {
+                    for(int i = 0; i < downloadingSongs.size(); i++) {
+                        Song current = downloadingSongs.get(i);
+                        if(current.getURI() != null) {
+                            vibeModePlaylist.add(current);
+                            vibeModePlay(activity, textViews);
+                        }
+                    }
+                }
             }
         }
     }

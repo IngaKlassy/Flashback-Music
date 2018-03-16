@@ -19,8 +19,8 @@
         <android.widget.Toolbar
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="270dp"
-            android:layout_marginTop="85dp"
+            android:layout_height="310dp"
+            android:layout_marginTop="60dp"
             android:background="#618670"
             android:elevation="4dp"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -342,8 +342,8 @@
             android:id="@+id/bottomToolbar"
             style="?android:buttonBarStyle"
             android:layout_width="fill_parent"
-            android:layout_height="85dp"
-            android:layout_marginBottom="86dp"
+            android:layout_height="65dp"
+            android:layout_marginBottom="60dp"
             android:background="#618670"
             android:minHeight="?attr/actionBarSize"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -360,26 +360,29 @@
 
                 <ImageView
                     android:id="@+id/status"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginRight="15dp"
                     android:src="@drawable/plus" />
 
                 <ImageView
                     android:id="@+id/play"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginRight="15dp"
                     android:src="@drawable/play" />
 
                 <ImageView
                     android:id="@+id/pause"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginRight="15dp"
                     android:src="@drawable/pause_green" />
 
                 <ImageView
                     android:id="@+id/next"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:src="@drawable/skip" />
 
             </LinearLayout>

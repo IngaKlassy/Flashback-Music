@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     static String userName;
 
     private int dayMock = 0, monthMock = 0, yearMock = 0, hourMock = 0, minuteMock = 0, secondMock = 0;
-    boolean useMockTime;
+    static boolean useMockTime;
     static Calendar mockCalendar;
 
     @Override
@@ -138,49 +138,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         addDownloadedSongs(this);
-
-        //DATABASE SETUP*****
-        options = new FirebaseOptions.Builder()
-                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
-                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
-
-        database = FirebaseDatabase.getInstance(
-                FirebaseApp.initializeApp(this, options, "secondary"));
-
-        myRef = database.getReference();
-        myRef.orderByKey().addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String uniqueKey = dataSnapshot.getKey();
-
-                DatabaseReference currRef = myRef.child(uniqueKey);
-
-                currRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        addDatabaseEntries(dataSnapshot);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {}
-                });
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-
-        Intent output = new Intent();
-        setResult(RESULT_OK, output);
 
         downloadManager = (DownloadManager) this.getSystemService(DOWNLOAD_SERVICE);
         downloadEngine = new DownloadEngine(downloadManager);
@@ -386,7 +343,20 @@ public class MainActivity extends AppCompatActivity {
             String albumTitle = currentAlbum.getAlbumTitle();
 
             albumTitleToAlbumOb.put(albumTitle, currentAlbum);
-            AlbumTitleToTrackList.put(albumTitle, currentAlbum.returnSongTitles());
+
+            int numSongsAdded = 0;
+            ArrayList<Song> songsInAlbum = currentAlbum.getSongObs();
+            ArrayList<String> downloadedSongTitles = new ArrayList<>();
+            for(Song s: songsInAlbum) {
+                if(s.getURI() != null) {
+                    downloadedSongTitles.add(s.getSongTitle());
+                    numSongsAdded++;
+                }
+            }
+
+            if(numSongsAdded > 0) {
+                AlbumTitleToTrackList.put(albumTitle, downloadedSongTitles);
+            }
         }
 
 
@@ -436,6 +406,50 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
+        //DATABASE SETUP*****
+        options = new FirebaseOptions.Builder()
+                .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
+                .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
+
+        database = FirebaseDatabase.getInstance(
+                FirebaseApp.initializeApp(this, options, "secondary"));
+
+        myRef = database.getReference();
+        myRef.orderByKey().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String uniqueKey = dataSnapshot.getKey();
+
+                DatabaseReference currRef = myRef.child(uniqueKey);
+
+                currRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        addDatabaseEntries(dataSnapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        Intent output = new Intent();
+        setResult(RESULT_OK, output);
 
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -699,8 +713,7 @@ public class MainActivity extends AppCompatActivity {
     public void updateExpandableList() {
         ArrayList<Album> albums = mainActivityPlayerOb.albumObjects;
 
-        Map<String, Album> newAlbumTitleToAlbumOb = new LinkedHashMap<>();
-        Map<String, List<String>> newAlbumToTrackListMap = new TreeMap<>();
+        TreeMap<String, List<String>> newAlbumToTrackListMap = new TreeMap<>();
 
 
         for(int i = 0; i < albums.size(); i++)
@@ -708,15 +721,26 @@ public class MainActivity extends AppCompatActivity {
             Album currentAlbum = albums.get(i);
             String albumTitle = currentAlbum.getAlbumTitle();
 
-            newAlbumTitleToAlbumOb.put(albumTitle, currentAlbum);
-            newAlbumToTrackListMap.put(albumTitle, currentAlbum.returnSongTitles());
+            int numSongsAdded = 0;
+            ArrayList<Song> songsInAlbum = currentAlbum.getSongObs();
+            ArrayList<String> downloadedSongTitles = new ArrayList<>();
+            for(Song s: songsInAlbum) {
+                if(s.getURI() != null) {
+                    downloadedSongTitles.add(s.getSongTitle());
+                    numSongsAdded++;
+                }
+            }
+
+            if(numSongsAdded > 0) {
+                newAlbumToTrackListMap.put(albumTitle, downloadedSongTitles);
+            }
         }
 
         if(expandableListAdapter == null) {
             return;
         }
 
-        expandableListAdapter.updateSongsList(AlbumTitleToTrackList);
+        expandableListAdapter.updateSongsList(newAlbumToTrackListMap);
     }
 
 
@@ -795,6 +819,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Toast.makeText(mainContext, "Trying to add " + songName + ", " + album + ", " + artist + ", " + url1 + ", " + city + ", " + playedBy, Toast.LENGTH_LONG).show();
+        Toast.makeText(mainContext, "Picked up an entry", Toast.LENGTH_SHORT).show();
         mainActivityPlayerOb.add(songName, album, artist, url1, null);
         Calendar currCal = Calendar.getInstance();
         currCal.set(year, month, dayOfMonth, hour, minute, second);
