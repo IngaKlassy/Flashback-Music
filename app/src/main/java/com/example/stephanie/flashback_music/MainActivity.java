@@ -700,24 +700,30 @@ public class MainActivity extends AppCompatActivity {
 
             // determine if in flashback or main activity
             line = p.readLine();
-            if (line.equals("m"))
+            if (line.equals("m")) {
+                Toast.makeText(getBaseContext(), "Left app in MainActivity", Toast.LENGTH_SHORT).show();
                 mainActivity = true;
+            }
 
             // get the song name if applicable
             line = p.readLine();
-            if (line != null)
-                if(line.equals("n")) {
+            if (line != null) {
+                if (line.equals("n")) {
+                    Toast.makeText(getBaseContext(), "No song playing when app closed", Toast.LENGTH_SHORT).show();
                     line = p.readLine();
                 }
-            else {
-                String song = line;
+                else {
+                    int start = Integer.parseInt(line);
 
-                line = p.readLine();
-                int start = Integer.parseInt(line);
+                    line = p.readLine();
+                    String song = line;
 
-                //TODO play "song" at "start" time
+                    String message = "Song named: " + song + "was playing and app closed at " +
+                            start + " milliseconds into that song";
+                    Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+                    //TODO play "song" at "start" time
+                }
             }
-
             String key;
             String value;
 
