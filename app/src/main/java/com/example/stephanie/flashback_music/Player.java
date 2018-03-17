@@ -70,6 +70,7 @@ public class Player {
             add("Inga Klassy");
             add("Mathias Smyrl");
             add("Stephanie Mitchener");
+            add("Test Friend");
         }};
 
         downloadingSongs = new ArrayList<>();
