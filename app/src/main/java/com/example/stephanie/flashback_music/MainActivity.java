@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Acquire a reference to the system Location Manager
-    static LocationManager locationManager;
+    public static LocationManager locationManager;
 
     DownloadManager downloadManager;
     static DownloadEngine downloadEngine;

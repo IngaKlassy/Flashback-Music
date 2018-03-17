@@ -1,6 +1,7 @@
 package JUnitTests;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.test.espresso.proto.action.ViewActions;
 import android.support.test.rule.ActivityTestRule;
 
@@ -31,6 +32,8 @@ public class UnitTests {
     Song song, song1, song2, song3;
     Album album, album1;
     Player player;
+    Calendar c;
+    Location currentLocation;
     @Rule
     public ActivityTestRule<MainActivity> mainActivity = new ActivityTestRule<MainActivity>(MainActivity.class);
 
@@ -43,6 +46,16 @@ public class UnitTests {
         album = new Album("Formation", "Beyonce");
         album1 = new Album(null, null);
         player = new Player();
+
+        try {
+            currentLocation = MainActivity.locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(currentLocation == null){
+                currentLocation = MainActivity.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+        }catch(Exception e){
+        }
+
+        c = Calendar.getInstance();
     }
 
     @Test
@@ -138,7 +151,17 @@ public class UnitTests {
 
     @Test
     public void testLocationPts(){
+        song.update(c, currentLocation, "Matthias");
 
+        int res = player.setLocationPoints(song);
+        assertEquals(3, res);
+
+        Location wrongLoc = new Location("fakeProv");
+        wrongLoc.setLatitude(40000);
+        wrongLoc.setLongitude(23489762);
+        song1.update(c, wrongLoc, "Matthias");
+        int wrongRes = player.setLocationPoints(song1);
+        assertNotEquals(3, wrongRes);
     }
 
     @Test
