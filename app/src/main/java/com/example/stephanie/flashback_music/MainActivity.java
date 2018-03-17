@@ -740,6 +740,9 @@ public class MainActivity extends AppCompatActivity {
 
                 // add the key/value to the hash map
                 if (value != null) {
+                    String message = "Putting ' " + key + " ' (key) with ' " + value + " ' (value)" +
+                            "into the uriToUrl hash map";
+                    Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
                     uriToUrl.put(key, value);
                 }
                 else
