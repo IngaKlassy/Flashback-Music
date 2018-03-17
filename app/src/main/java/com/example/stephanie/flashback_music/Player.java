@@ -116,7 +116,7 @@ public class Player {
                 //Toast.makeText(MainActivity.mainContext, songTitle + " already an object", Toast.LENGTH_SHORT).show();
                 exists = true;
                 songObjects.get(i).setUri(uri);
-                if(uri != null && urisToSongs.containsKey(uri)) {
+                if(uri != null && !urisToSongs.containsKey(uri)) {
                     urisToSongs.put(uri, newSong);
                 }
             }
@@ -294,7 +294,7 @@ public class Player {
             mediaPlayer = null;
         }
 
-        if(vibeModePlaylist.isEmpty()){
+        /*if(vibeModePlaylist.isEmpty()){
             if(downloadingSongs.isEmpty()) {
                 prioritizeSongs();
                 vibeModePlay(activity, textViews);
@@ -308,7 +308,7 @@ public class Player {
                     }
                 }
             }
-        }
+        }*/
 
         Song currentSongInPlaylist = vibeModePlaylist.poll();
 
@@ -318,9 +318,9 @@ public class Player {
         final Uri currentURI = currentSongInPlaylist.getURI();
 
         if(currentURI == null) {
-            String songURL = currentSongInPlaylist.getURL();
-            downloadingSongs.add(currentSongInPlaylist);
-            MainActivity.downloadEngine.tryToDownload(MainActivity.mainContext, songURL);
+            //String songURL = currentSongInPlaylist.getURL();
+            //downloadingSongs.add(currentSongInPlaylist);
+            //MainActivity.downloadEngine.tryToDownload(MainActivity.mainContext, songURL);
             next(activity, textViews);
             return;
         }
@@ -338,7 +338,7 @@ public class Player {
                 if(!vibeModePlaylist.isEmpty()) {
                     vibeModePlay(activity, textViews);
                 }
-                else {
+                /*else {
                     if(downloadingSongs.isEmpty()) {
                         prioritizeSongs();
                         vibeModePlay(activity, textViews);
@@ -352,7 +352,9 @@ public class Player {
                             }
                         }
                     }
-                }
+                }*/
+                prioritizeSongs();
+                vibeModePlay(activity, textViews);
             }
         });
     }
@@ -407,7 +409,7 @@ public class Player {
                 vibeModePlay(activity, textViews);
             }
             else {
-                if(downloadingSongs.isEmpty()) {
+                /*if(downloadingSongs.isEmpty()) {
                     prioritizeSongs();
                     vibeModePlay(activity, textViews);
                 }
@@ -419,7 +421,9 @@ public class Player {
                             vibeModePlay(activity, textViews);
                         }
                     }
-                }
+                }*/
+                prioritizeSongs();
+                vibeModePlay(activity, textViews);
             }
         }
     }
