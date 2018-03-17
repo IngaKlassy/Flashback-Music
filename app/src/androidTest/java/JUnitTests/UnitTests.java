@@ -135,4 +135,19 @@ public class UnitTests {
         assertEquals(albums.get(1).getAlbumArtist(), "Beyonce");
         assertEquals(albums.get(2).getAlbumArtist(), "50 Cent");
     }
+
+    @Test
+    public void testLocationPts(){
+
+    }
+
+    @Test
+    public void testRecentlyPlayedPts(){
+
+    }
+
+    @Test
+    public void testFriendPts(){
+
+    }
 }
