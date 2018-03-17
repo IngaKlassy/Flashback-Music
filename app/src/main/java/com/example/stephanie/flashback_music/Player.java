@@ -29,7 +29,6 @@ public class Player {
     static boolean inRegularMode;
     static boolean inVibeMode;
 
-
     private MediaPlayer mediaPlayer;
 
     public ArrayList<Album> albumObjects;
@@ -647,5 +646,6 @@ public class Player {
     public PriorityQueue<Song> getVibeModePlaylist() {
         return vibeModePlaylist;
     }
+
 
 }
