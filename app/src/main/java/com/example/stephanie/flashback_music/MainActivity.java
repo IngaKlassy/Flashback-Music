@@ -592,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //readData();
+        readData();
     }
 
     private void resetStatusButton(){
@@ -703,9 +703,10 @@ public class MainActivity extends AppCompatActivity {
 
             // get the song name if applicable
             line = p.readLine();
-            if(line.equals("n")) {
-                line = p.readLine();
-            }
+            if (line != null)
+                if(line.equals("n")) {
+                    line = p.readLine();
+                }
             else {
                 String song = line;
 
