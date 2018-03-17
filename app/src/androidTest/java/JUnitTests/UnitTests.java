@@ -56,6 +56,7 @@ public class UnitTests {
         }
 
         c = Calendar.getInstance();
+        song.getWhoHasPlayedSong().add("Test Friend");
     }
 
     @Test
@@ -171,6 +172,8 @@ public class UnitTests {
 
     @Test
     public void testFriendPts(){
-
+        int result = player.setFriendPlayedPoints(song);
+        System.out.println("Testing setFriendPoints function....");
+        assertEquals(result, 1);
     }
 }
