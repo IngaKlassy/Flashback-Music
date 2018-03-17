@@ -367,6 +367,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            Toast.makeText(mainContext, "Found " + numSongsAdded + " in " + albumTitle + " album", Toast.LENGTH_SHORT).show();
+
             if(numSongsAdded > 0) {
                 AlbumTitleToTrackList.put(albumTitle, downloadedSongTitles);
             }
@@ -580,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        readData();
+        //readData();
     }
 
     private void resetStatusButton(){
@@ -798,12 +800,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            Toast.makeText(mainContext, "Found " + numSongsAdded + " in " + albumTitle + " album", Toast.LENGTH_SHORT).show();
+
             if(numSongsAdded > 0) {
                 newAlbumToTrackListMap.put(albumTitle, downloadedSongTitles);
             }
         }
 
         if(expandableListAdapter == null) {
+            Toast.makeText(mainContext, "NULL", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -819,8 +824,6 @@ public class MainActivity extends AppCompatActivity {
 
         //COUNTER
         int i = 0;
-
-        //Toast.makeText(MainActivity.mainContext, "Adding database entry" + dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
 
         //ITERATING THROUGH EACH DATABASE ENTRY
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -885,11 +888,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        //Toast.makeText(mainContext, "Trying to add " + songName + ", " + album + ", " + artist + ", " + url1 + ", " + city + ", " + playedBy, Toast.LENGTH_LONG).show();
         Toast.makeText(mainContext, "Picked up an entry", Toast.LENGTH_SHORT).show();
+
         mainActivityPlayerOb.add(songName, album, artist, url1, null);
+
         Calendar currCal = Calendar.getInstance();
         currCal.set(year, month, dayOfMonth, hour, minute, second);
+
         Location currLoc = new Location(city);
         currLoc.setLatitude(latitude);
         currLoc.setLongitude(longitude);
