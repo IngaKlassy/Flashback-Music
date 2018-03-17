@@ -167,7 +167,21 @@ public class UnitTests {
 
     @Test
     public void testRecentlyPlayedPts(){
+        System.out.println("Testing setRecentlyPlayedPoints() function...");
 
+        int result;
+        song.update(c, currentLocation, "Joel");
+        song1.update(c, currentLocation, "Joel");
+
+        result = player.setRecentlyPlayedPoints(song);
+        assertEquals(2, result);
+        assertNotEquals(0, result);
+
+        song1.getCalendar().set(2019, 12,5);
+
+        result = player.setRecentlyPlayedPoints(song1);
+        assertEquals(0, result);
+        assertNotEquals(2, result);
     }
 
     @Test
