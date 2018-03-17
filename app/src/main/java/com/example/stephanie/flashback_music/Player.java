@@ -301,6 +301,22 @@ public class Player {
             mediaPlayer = null;
         }
 
+        if(vibeModePlaylist.isEmpty()){
+            if(downloadingSongs.isEmpty()) {
+                prioritizeSongs();
+                vibeModePlay(activity, textViews);
+            }
+            else {
+                for(int i = 0; i < downloadingSongs.size(); i++) {
+                    Song current = downloadingSongs.get(i);
+                    if(current.getURI() != null) {
+                        vibeModePlaylist.add(current);
+                        vibeModePlay(activity, textViews);
+                    }
+                }
+            }
+        }
+
         Song currentSongInPlaylist = vibeModePlaylist.poll();
 
         currentSongName = currentSongInPlaylist.getSongTitle();
@@ -313,7 +329,9 @@ public class Player {
             downloadingSongs.add(currentSongInPlaylist);
             MainActivity.downloadEngine.tryToDownload(MainActivity.mainContext, songURL);
             next(activity, textViews);
+            return;
         }
+
 
         mediaPlayer = MediaPlayer.create(activity, currentURI);
         updateVibeModeSongDataTextview(textViews, currentSongInPlaylist);
@@ -323,9 +341,6 @@ public class Player {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-
-                //Song finishedSong = urisToSongs.get(currentURI);
-                //songObjects.add(finishedSong);
 
                 if(!vibeModePlaylist.isEmpty()) {
                     vibeModePlay(activity, textViews);
