@@ -164,7 +164,7 @@ public class Player {
 
         for(int i = 0; i < songObjects.size(); i++) {
             Song match = songObjects.get(i);
-            if((match.getURI().toString()).equals(uri.toString())) {
+            if(match.getURI() != null && (match.getURI().toString()).equals(uri.toString())) {
                 if(match.getDislikeStatus()) {
                     match.setNeutralTrue();
                 }

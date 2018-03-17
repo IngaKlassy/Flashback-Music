@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     MediaMetadataRetriever metaRetriever;
 
     ExpandableListView expandableListView;
-    CustomExpandableListAdapter expandableListAdapter;
+    static CustomExpandableListAdapter expandableListAdapter;
     List<String> expandableListTitle;
     TreeMap<String, List<String>> expandableListDetail;
 
