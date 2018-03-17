@@ -26,7 +26,7 @@ public class Album {
         else { albumTitle = title; }
 
         if(artist == null) { albumArtist = "Unknown Artist"; }
-        else { albumArtist = title; }
+        else { albumArtist = artist; }
 
         songObList = new ArrayList<>();
         songTitleList = new ArrayList<>();

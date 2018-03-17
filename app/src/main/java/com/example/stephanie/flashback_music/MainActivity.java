@@ -428,8 +428,20 @@ public class MainActivity extends AppCompatActivity {
                 .setApplicationId("1:757111785128:android:39aebf8f7043bb7b")
                 .setDatabaseUrl("https://cse-110-team-project-team-29.firebaseio.com/").build();
 
-        database = FirebaseDatabase.getInstance(
-                FirebaseApp.initializeApp(this, options, "secondary"));
+        //database = FirebaseDatabase.getInstance(FirebaseApp.initializeApp(this, options, "secondary"));
+        FirebaseApp firebaseApp = null;
+        List<FirebaseApp> firebaseApps = FirebaseApp.getApps(this);
+        if (firebaseApps != null && !firebaseApps.isEmpty()) {
+            for (FirebaseApp app : firebaseApps) {
+                if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
+                    firebaseApp = app;
+                }
+            }
+        } else {
+            firebaseApp = FirebaseApp.initializeApp(this, options);
+        }
+        database = FirebaseDatabase.getInstance(firebaseApp);
+
 
         myRef = database.getReference();
         myRef.orderByKey().addChildEventListener(new ChildEventListener() {
