@@ -209,12 +209,6 @@ public class Player {
             Toast.makeText(MainActivity.mainContext, "Couldnt find in map", Toast.LENGTH_SHORT).show();
         }
 
-        if(currentPlayingSong.getDislikeStatus()) {
-            ArrayList<TextView> temp = new ArrayList<TextView>();
-            temp.add(textView);
-            next(activity, temp);
-        }
-
         currentSongName = currentPlayingSong.getSongTitle();
         currentSongObject = currentPlayingSong;
 
