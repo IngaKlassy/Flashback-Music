@@ -752,7 +752,9 @@ public class MainActivity extends AppCompatActivity {
             p.close();
 
             if (mainActivity == false) {
-                //TODO change activities
+                Toast.makeText(getBaseContext(), "App was closed in Vibe mode, in Vibe mode now."
+                        , Toast.LENGTH_LONG).show();
+                startVibeMode();
             }
 
         }catch(IOException e){

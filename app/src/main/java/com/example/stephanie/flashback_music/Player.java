@@ -576,6 +576,7 @@ public class Player {
                 vibeModePlaylist.add(currentSong);
             }
         }
+
         System.out.println("Queue Reprioritized");
         Log.w("Reprioritizing in Player: ", "success!" );
     }

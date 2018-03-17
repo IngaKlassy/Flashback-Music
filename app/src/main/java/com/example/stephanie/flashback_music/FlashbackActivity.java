@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,12 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import static com.example.stephanie.flashback_music.MainActivity.mainActivityPlayerOb;
@@ -38,6 +45,8 @@ public class FlashbackActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 111;
 
     private final static int MAX_QUEUE_DISPLAY = 25;
+
+    private String saveFileName = "saveState";
 
     static String getResult;
     static Context mainContext;
@@ -331,6 +340,72 @@ public class FlashbackActivity extends AppCompatActivity {
 
             // Create the AlertDialog object and return it
             return builder.create();
+        }
+    }
+
+    //Save data inside of
+    public void onDestroy(){
+        saveState();
+        super.onDestroy();
+    }
+
+
+    public void saveState(){
+        FileOutputStream s;
+
+        File file = new File(this.getFilesDir(), saveFileName);
+
+        MediaPlayer mp = mainActivityPlayerOb.getMediaPlayer();
+
+        try {
+            if(file == null || !file.exists()){
+                file.createNewFile();
+            }
+
+            s = new FileOutputStream(file);
+
+            String state = "f";
+            String newLine = "\n";
+
+            s.write(state.getBytes());
+            s.write(newLine.getBytes());
+
+            if (mp == null){
+                String noSong = "n\nn\n";
+                s.write(noSong.getBytes());
+            }
+            else if (mp.isPlaying()) {
+                String currentPos = "" + mp.getCurrentPosition();
+                String currentSongName = mainActivityPlayerOb.getCurrentSongName();
+
+                s.write(currentPos.getBytes());
+                s.write(newLine.getBytes());
+                s.write(currentSongName.getBytes());
+                s.write(newLine.getBytes());
+            }
+            else {
+                String noSong = "n\nn\n";
+                s.write(noSong.getBytes());
+            }
+
+            // TODO write the uriToUrl map to the file
+            Object[] uriAndUrlStuff = MainActivity.uriToUrl.keySet().toArray();
+            int i = 0;
+
+            // while there are still keys to be written in uriToUrl
+            while(i < uriAndUrlStuff.length) {
+                // write the string and a new line
+                s.write(uriAndUrlStuff[i].toString().getBytes());
+                s.write(newLine.getBytes());
+                // go to the next line
+                i++;
+            }
+
+            s.flush();
+            s.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 }
