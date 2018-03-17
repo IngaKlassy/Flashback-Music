@@ -595,7 +595,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //readData();
+        readData();
     }
 
     private void resetStatusButton(){
@@ -664,6 +664,7 @@ public class MainActivity extends AppCompatActivity {
                 s.write(currentPos.getBytes());
                 s.write(newLine.getBytes());
                 s.write(currentSongName.getBytes());
+                s.write(newLine.getBytes());
             }
             else {
                 String noSong = "n\nn\n";
@@ -732,7 +733,7 @@ public class MainActivity extends AppCompatActivity {
 
             uriToUrl.clear();
 
-            while ((line = p.readLine()) != null) {
+            while ((line = p.readLine()) != null || line != "\n") {
                 // get the key and the value
                 key = line;
                 value = p.readLine();
@@ -741,6 +742,8 @@ public class MainActivity extends AppCompatActivity {
                 if (value != null) {
                     uriToUrl.put(key, value);
                 }
+                else
+                    break;
 
             }
             p.close();
