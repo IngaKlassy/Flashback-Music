@@ -43,6 +43,8 @@ public class UnitTests {
         album = new Album("Formation", "Beyonce");
         album1 = new Album(null, null);
         player = new Player();
+
+        song.getWhoHasPlayedSong().add("Test Friend");
     }
 
     @Test
@@ -148,6 +150,8 @@ public class UnitTests {
 
     @Test
     public void testFriendPts(){
-
+        int result = player.setFriendPlayedPoints(song);
+        System.out.println("Testing setFriendPoints function....");
+        assertEquals(result, 1);
     }
 }
