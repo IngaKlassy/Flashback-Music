@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
             int numSongsAdded = 0;
             ArrayList<Song> songsInAlbum = currentAlbum.getSongObs();
             ArrayList<String> downloadedSongTitles = new ArrayList<>();
+            downloadedSongTitles.add("PLAY ALBUM");
             for(Song s: songsInAlbum) {
                 if(s.getURI() != null) {
                     downloadedSongTitles.add(s.getSongTitle());
@@ -594,7 +595,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        readData();
+        //readData();
     }
 
     private void resetStatusButton(){
@@ -624,11 +625,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     //Save data inside of
     public void onDestroy(){
         saveState();
         super.onDestroy();
     }
+
 
     public void saveState(){
         FileOutputStream s;
@@ -810,6 +813,7 @@ public class MainActivity extends AppCompatActivity {
             int numSongsAdded = 0;
             ArrayList<Song> songsInAlbum = currentAlbum.getSongObs();
             ArrayList<String> downloadedSongTitles = new ArrayList<>();
+            downloadedSongTitles.add("PLAY ALBUM");
             for(Song s: songsInAlbum) {
                 if(s.getURI() != null) {
                     downloadedSongTitles.add(s.getSongTitle());
