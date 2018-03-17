@@ -633,6 +633,8 @@ public class MainActivity extends AppCompatActivity {
 
         File file = new File(this.getFilesDir(), saveFileName);
 
+        MediaPlayer mp = mainActivityPlayerOb.getMediaPlayer();
+
         try {
             if(file == null || !file.exists()){
                 file.createNewFile();
@@ -646,9 +648,11 @@ public class MainActivity extends AppCompatActivity {
             s.write(state.getBytes());
             s.write(newLine.getBytes());
 
-            MediaPlayer mp = mainActivityPlayerOb.getMediaPlayer();
-
-            if (mp.isPlaying()) {
+            if (mp == null){
+                String noSong = "n\nn\n";
+                s.write(noSong.getBytes());
+            }
+            else if (mp.isPlaying()) {
                 String currentPos = "" + mp.getCurrentPosition();
                 String currentSongName = mainActivityPlayerOb.getCurrentSongName();
 
@@ -656,15 +660,15 @@ public class MainActivity extends AppCompatActivity {
                 s.write(newLine.getBytes());
                 s.write(currentSongName.getBytes());
             }
-            // write an "n" on the next two lines to show that no song was playing
             else {
-                String notPlaying = "n\nn\n";
-                s.write(notPlaying.getBytes());
+                String noSong = "n\nn\n";
+                s.write(noSong.getBytes());
             }
 
             // TODO write the uriToUrl map to the file
             Object[] uriAndUrlStuff = uriToUrl.keySet().toArray();
             int i = 0;
+
             // while there are still keys to be written in uriToUrl
             while(i < uriAndUrlStuff.length) {
                 // write the string and a new line
